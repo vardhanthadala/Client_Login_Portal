@@ -11,6 +11,7 @@ import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
 
 export async function submitWizardAction(data: any) {
+  console.log("RECEIVED WIZARD DATA:", JSON.stringify(data, null, 2));
   try {
     const reqCookies = await cookies()
     const reqHeaders = await headers()
@@ -42,12 +43,12 @@ export async function submitWizardAction(data: any) {
     await prisma.clientProfile.update({
       where: { id: clientProfile.id },
       data: {
-        companyName: data.businessDetails?.companyName || clientProfile.companyName,
+        companyName: data.businessDetails?.businessName || data.businessDetails?.companyName || clientProfile.companyName,
         website: data.businessDetails?.website,
         industry: data.businessDetails?.industry,
         description: data.businessDetails?.description,
-        audience: data.businessDetails?.audience,
-        goals: data.businessDetails?.goals,
+        audience: data.questionnaire?.audience || data.businessDetails?.questionnaire?.audience,
+        goals: data.questionnaire?.goals || data.businessDetails?.questionnaire?.goals,
         locations: data.businessDetails?.locations,
         hours: data.businessDetails?.workingHours,
         phone: data.businessDetails?.phone,
@@ -69,11 +70,12 @@ export async function submitWizardAction(data: any) {
 
     // 4. Run Gemini AI summarization if questionnaire exists
     let aiSummary = {}
-    if (data.questionnaire) {
+    const questionnairePayload = data.questionnaire || data.businessDetails?.questionnaire
+    if (questionnairePayload) {
       const prompt = `Analyze this marketing onboarding data for a client:
       Industry: ${data.businessDetails?.industry}
       Description: ${data.businessDetails?.description}
-      Questionnaire Answers: ${JSON.stringify(data.questionnaire)}
+      Questionnaire Answers: ${JSON.stringify(questionnairePayload)}
       
       Extract and summarize the following in JSON format:
       - brandVoice: Array of 3-5 adjectives describing their desired tone.
@@ -83,16 +85,33 @@ export async function submitWizardAction(data: any) {
       `
       
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "dummy_key" })
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-          }
-        });
+        let aiResponseText = ""
+        try {
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "dummy_key" })
+          const response = await ai.models.generateContent({
+            model: 'gemini-2.0-flash',
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+            }
+          });
+          aiResponseText = response.text || "{}"
+        } catch (geminiError) {
+          console.warn("Gemini analysis failed, falling back to Groq:", geminiError)
+          const Groq = (await import('groq-sdk')).default;
+          const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || "dummy_key" });
+          
+          const chatCompletion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+            response_format: { type: "json_object" },
+          });
+          aiResponseText = chatCompletion.choices[0]?.message?.content || "{}"
+        }
         
-        aiSummary = JSON.parse(response.text() || "{}")
+        // Strip markdown backticks if they exist
+        const cleanedText = aiResponseText.replace(/```json/g, "").replace(/```/g, "").trim();
+        aiSummary = JSON.parse(cleanedText || "{}")
         
         await prisma.aIAnalysis.upsert({
           where: { clientProfileId: clientProfile.id },
@@ -100,7 +119,7 @@ export async function submitWizardAction(data: any) {
           create: { clientProfileId: clientProfile.id, summary: aiSummary }
         })
       } catch (aiError) {
-        console.error("Gemini analysis failed:", aiError)
+        console.error("All AI analysis attempts failed:", aiError)
         // We continue even if AI fails
       }
     }

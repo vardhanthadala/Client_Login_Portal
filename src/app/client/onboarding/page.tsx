@@ -16,6 +16,18 @@ export default function ClientOnboardingWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleNext = () => {
+    if (step === 2) {
+      if (!businessDetails?.businessName || !businessDetails?.website || !businessDetails?.description) {
+        return alert("Please fill in all the required fields (Business Name, Website, and Description) before continuing.")
+      }
+    }
+
+    if (step === 4) {
+      if (!businessDetails?.questionnaire?.audience || !businessDetails?.questionnaire?.goals) {
+        return alert("Please answer both questions in the questionnaire before continuing.")
+      }
+    }
+
     if (step < 5) {
       nextStep()
     } else {

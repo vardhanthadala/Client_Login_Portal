@@ -23,6 +23,7 @@ model User {
   updatedAt    DateTime       @updatedAt
   
   clientProfile ClientProfile?
+  messages      Message[]
 }
 
 model ClientProfile {
@@ -40,6 +41,7 @@ model ClientProfile {
   locations   String?
   hours       String?
   phone       String?
+  status      String   @default("ONBOARDED") // "ONBOARDED", "IN PROGRESS", "IN REVIEW", "COMPLETED", "ON HOLD"
 
   brandAssets         BrandAsset[]
   socialAccounts      SocialAccount[]
@@ -47,6 +49,9 @@ model ClientProfile {
   contentRequirements ContentRequirement?
   questionnaire       Questionnaire?
   aiAnalysis          AIAnalysis?
+  messages            Message[]
+  projects            Project[]
+  approvals           Approval[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -110,3 +115,72 @@ model AIAnalysis {
   
   summary         Json          // { brandVoice: [...], targetAudience: "...", coreServices: [...] }
 }
+
+model Message {
+  id              String        @id @default(uuid())
+  clientProfileId String
+  clientProfile   ClientProfile @relation(fields: [clientProfileId], references: [id], onDelete: Cascade)
+  
+  senderId        String
+  sender          User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  content         String
+  isRead          Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+}
+
+model Project {
+  id              String        @id @default(uuid())
+  clientProfileId String
+  clientProfile   ClientProfile @relation(fields: [clientProfileId], references: [id], onDelete: Cascade)
+  
+  name            String        // e.g., "Website Redesign" or "Video Editing"
+  stages          Json          // Array of strings: ["Design", "Frontend", "Backend", "Finished"]
+  currentStageIdx Int           @default(0) // Index of the currently active stage
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Approval {
+  id              String        @id @default(uuid())
+  clientProfileId String
+  clientProfile   ClientProfile @relation(fields: [clientProfileId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  
+  items           ApprovalItem[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model ApprovalItem {
+  id          String   @id @default(uuid())
+  approvalId  String
+  approval    Approval @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  
+  fileUrl     String
+  fileName    String
+  fileType    String
+  status      String   @default("PENDING") // PENDING | APPROVED | CHANGES_REQUESTED
+  version     Int      @default(1)
+  
+  feedback    ApprovalFeedback[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ApprovalFeedback {
+  id             String       @id @default(uuid())
+  approvalItemId String
+  approvalItem   ApprovalItem @relation(fields: [approvalItemId], references: [id], onDelete: Cascade)
+  
+  action         String   // "APPROVED" | "CHANGES_REQUESTED" | "RESUBMITTED"
+  comment        String?
+  
+  createdAt      DateTime @default(now())
+}
+

@@ -3,9 +3,22 @@ import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
 import { ArrowLeft, Download, ExternalLink } from "lucide-react"
-
+import ChatInterface from "@/components/ChatInterface"
+import ManageProjects from "./ManageProjects"
+import ManageApprovals from "./ManageApprovals"
+import GenerateAiButton from "./GenerateAiButton"
+import { getToken } from "next-auth/jwt"
+import { cookies, headers } from "next/headers"
 export default async function ClientDetailsPage({ params }: { params: { id: string } }) {
   const { id } = await params
+
+  const reqCookies = await cookies()
+  const reqHeaders = await headers()
+  const req = {
+    cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
+    headers: Object.fromEntries(reqHeaders.entries())
+  } as any
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
 
   const client = await prisma.user.findUnique({
     where: { id },
@@ -14,7 +27,9 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
         include: {
           brandAssets: true,
           aiAnalysis: true,
-          questionnaire: true
+          questionnaire: true,
+          projects: { orderBy: { createdAt: "asc" } },
+          approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } }
         }
       }
     }
@@ -57,11 +72,11 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground mb-1">Target Audience (Raw Input)</p>
-              <p className="text-sm text-foreground leading-relaxed">{qna?.audience || "N/A"}</p>
+              <p className="text-sm text-foreground leading-relaxed">{clientProfile.audience || qna?.audience || "N/A"}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground mb-1">Business Goals (Raw Input)</p>
-              <p className="text-sm text-foreground leading-relaxed">{qna?.goals || "N/A"}</p>
+              <p className="text-sm text-foreground leading-relaxed">{clientProfile.goals || qna?.goals || "N/A"}</p>
             </div>
           </CardContent>
         </Card>
@@ -99,13 +114,16 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
 
         {/* Gemini AI Summary */}
         <Card className="md:col-span-2 border-primary/20 shadow-lg shadow-primary/5">
-          <CardHeader>
-            <CardTitle className="text-primary flex items-center gap-2 text-xl font-bold">
-              ✨ Gemini AI Summary
-            </CardTitle>
-            <CardDescription>
-              Automated brand extraction based on the client's questionnaire.
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle className="text-primary flex items-center gap-2 text-xl font-bold">
+                ✨ Gemini AI Summary
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Automated brand extraction based on the client's questionnaire.
+              </CardDescription>
+            </div>
+            <GenerateAiButton clientProfileId={clientProfile.id} />
           </CardHeader>
           <CardContent>
             {clientProfile.aiAnalysis ? (
@@ -130,6 +148,21 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
             )}
           </CardContent>
         </Card>
+
+        {/* Approval Center */}
+        <div className="md:col-span-2">
+          <ManageApprovals clientProfileId={clientProfile.id} initialApprovals={clientProfile.approvals as any} />
+        </div>
+
+        {/* Project Tracker Admin UI */}
+        <div className="md:col-span-2">
+          <ManageProjects clientProfileId={clientProfile.id} initialProjects={clientProfile.projects as any} />
+        </div>
+
+        {/* Client Chat */}
+        <div className="md:col-span-2">
+          <ChatInterface clientProfileId={clientProfile.id} currentUserId={token?.id as string} />
+        </div>
       </div>
     </div>
   )
