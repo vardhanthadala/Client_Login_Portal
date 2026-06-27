@@ -1,0 +1,70 @@
+"use client"
+
+import { useActionState } from "react"
+import { loginAction } from "@/app/actions/auth"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2 } from "lucide-react"
+
+export default function LoginPage() {
+  const [state, action, isPending] = useActionState(loginAction, undefined)
+
+  return (
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-card border-border shadow-xl rounded-2xl">
+        <CardHeader className="space-y-2 pt-8 pb-4">
+          <CardTitle className="text-3xl font-bold tracking-[-0.02em] text-center text-foreground">Dexze Portal</CardTitle>
+          <CardDescription className="text-muted-foreground text-center text-base">
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <form action={action}>
+          <CardContent className="space-y-5 px-8">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-semibold">Email</Label>
+              <Input 
+                id="email" 
+                name="email"
+                type="email" 
+                placeholder="client@company.com" 
+                required 
+                className="bg-muted/50 border-border placeholder:text-muted-foreground focus-visible:ring-primary h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-semibold">Password</Label>
+              <Input 
+                id="password" 
+                name="password"
+                type="password" 
+                required 
+                className="bg-muted/50 border-border focus-visible:ring-primary h-11"
+              />
+            </div>
+            {state?.error && (
+              <p className="text-sm font-medium text-destructive text-center">{state.error}</p>
+            )}
+          </CardContent>
+          <CardFooter className="px-8 pb-8 pt-4">
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isPending}
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
+  )
+}
