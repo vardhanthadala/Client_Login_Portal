@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
+import Script from "next/script"
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const reqCookies = await cookies()
@@ -29,5 +30,10 @@ export default async function ClientLayout({ children }: { children: React.React
     redirect("/api/force-logout")
   }
 
-  return <>{children}</>
+  return (
+    <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      {children}
+    </>
+  )
 }

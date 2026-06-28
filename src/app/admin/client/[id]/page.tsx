@@ -2,10 +2,11 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import Link from "next/link"
-import { ArrowLeft, Download, ExternalLink } from "lucide-react"
+import { ArrowLeft, Download, ExternalLink, Receipt } from "lucide-react"
 import ChatInterface from "@/components/ChatInterface"
 import ManageProjects from "./ManageProjects"
 import ManageApprovals from "./ManageApprovals"
+import ManageInvoices from "./ManageInvoices"
 import GenerateAiButton from "./GenerateAiButton"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
@@ -29,7 +30,8 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
           aiAnalysis: true,
           questionnaire: true,
           projects: { orderBy: { createdAt: "asc" } },
-          approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } }
+          approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } },
+          invoices: { include: { items: true }, orderBy: { createdAt: "desc" } }
         }
       }
     }
@@ -152,6 +154,11 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
         {/* Approval Center */}
         <div className="md:col-span-2">
           <ManageApprovals clientProfileId={clientProfile.id} initialApprovals={clientProfile.approvals as any} />
+        </div>
+
+        {/* Invoicing & Billing */}
+        <div className="md:col-span-2">
+          <ManageInvoices clientProfileId={clientProfile.id} initialInvoices={clientProfile.invoices as any} />
         </div>
 
         {/* Project Tracker Admin UI */}

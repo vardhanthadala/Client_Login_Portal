@@ -10,6 +10,7 @@ import ClientUploader from "./ClientUploader"
 import ChatInterface from "@/components/ChatInterface"
 import ProjectTracker from "@/components/ProjectTracker"
 import ApprovalReview from "@/components/ApprovalReview"
+import ClientInvoices from "@/components/ClientInvoices"
 
 export default async function ClientDashboardPage() {
   const reqCookies = await cookies()
@@ -38,7 +39,8 @@ export default async function ClientDashboardPage() {
         where: { isRead: false },
         select: { id: true, senderId: true }
       },
-      approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } }
+      approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } },
+      invoices: { include: { items: true }, orderBy: { createdAt: "desc" } }
     }
   })
 
@@ -91,6 +93,11 @@ export default async function ClientDashboardPage() {
       {/* Approval Review Section */}
       {clientProfile.approvals && clientProfile.approvals.length > 0 && (
         <ApprovalReview approvals={clientProfile.approvals as any} />
+      )}
+
+      {/* Invoices Section */}
+      {clientProfile.invoices && (
+        <ClientInvoices invoices={clientProfile.invoices as any} clientProfile={clientProfile} />
       )}
 
       <div className="grid md:grid-cols-2 gap-4">

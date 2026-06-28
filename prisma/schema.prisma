@@ -52,6 +52,7 @@ model ClientProfile {
   messages            Message[]
   projects            Project[]
   approvals           Approval[]
+  invoices            Invoice[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -182,5 +183,38 @@ model ApprovalFeedback {
   comment        String?
   
   createdAt      DateTime @default(now())
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  clientProfileId String
+  clientProfile   ClientProfile @relation(fields: [clientProfileId], references: [id], onDelete: Cascade)
+  
+  title           String        // e.g., "Website Design - Phase 1", "Monthly Retainer - Jan 2026"
+  amount          Float         // Amount in currency subunits (e.g. paisa/cents) or whole depending on your choice. Standard is usually subunits, let's keep it as standard float and we handle the x100 in Razorpay.
+  currency        String        @default("INR") // INR, USD, etc.
+  status          String        @default("DRAFT") // DRAFT, SENT, PAID, OVERDUE, CANCELLED
+  type            String        @default("ONE_OFF") // ONE_OFF, RETAINER
+  dueDate         DateTime?
+  notes           String?
+  
+  razorpayOrderId   String?     // Stored when generated
+  razorpayPaymentId String?     // Stored when paid
+  
+  items           InvoiceItem[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int      @default(1)
+  rate        Float    
+  amount      Float
 }
 
