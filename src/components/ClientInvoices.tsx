@@ -226,12 +226,12 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
     const opt = {
       margin:       0,
       filename:     `Invoice-${invoice.id.substring(0,8)}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
+      image:        { type: "jpeg" as const, quality: 0.98 },
       html2canvas:  { scale: 2 },
       jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     }
 
-    html2pdf().set(opt).from(element).save()
+    html2pdf().set(opt as any).from(element).save()
   }
 
   const activeInvoices = invoices.filter(i => i.status !== "DRAFT")
