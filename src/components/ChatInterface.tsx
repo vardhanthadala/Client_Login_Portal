@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { getMessagesAction, sendMessageAction, markMessagesAsReadAction } from "@/app/actions/messages"
+import { toast } from "sonner"
 
 export default function ChatInterface({
   clientProfileId,
@@ -65,7 +66,7 @@ export default function ChatInterface({
     } else {
       // Revert if failed
       setMessages((prev) => prev.filter(m => m.id !== tempId))
-      alert(res.error || "Failed to send message")
+      toast.error(res.error || "Failed to send message")
       setContent(newMessage.content) // restore input
     }
     setIsSending(false)

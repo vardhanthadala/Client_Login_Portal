@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createInvoiceAction, deleteInvoiceAction, updateInvoiceStatusAction } from "@/app/actions/invoices"
 import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send } from "lucide-react"
+import { toast } from "sonner"
 
 type InvoiceItem = {
   id: string
@@ -76,7 +77,7 @@ export default function ManageInvoices({
 
   const handleCreate = async () => {
     if (!title || items.length === 0 || items.some(i => !i.description || i.rate <= 0)) {
-      return alert("Please fill in the title and ensure all items have descriptions and valid rates.")
+      return toast.error("Please fill in the title and ensure all items have descriptions and valid rates.")
     }
     
     setIsSaving(true)
@@ -99,7 +100,7 @@ export default function ManageInvoices({
       setNotes("")
       setItems([{ description: "", quantity: 1, rate: 0 }])
     } else {
-      alert(res.error)
+      toast.error(res.error)
     }
     setIsSaving(false)
   }

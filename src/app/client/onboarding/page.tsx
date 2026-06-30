@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from "sonner"
 import { useWizardStore } from "@/store/useWizardStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,19 +19,19 @@ export default function ClientOnboardingWizard() {
   const handleNext = () => {
     if (step === 2) {
       if (!businessDetails?.businessName || !businessDetails?.website || !businessDetails?.description) {
-        return alert("Please fill in all the required fields (Business Name, Website, and Description) before continuing.")
+        return toast.error("Please fill in all the required fields (Business Name, Website, and Description) before continuing.")
       }
     }
 
     if (step === 4) {
       if (!businessDetails?.questionnaire?.audience || !businessDetails?.questionnaire?.goals) {
-        return alert("Please answer both questions in the questionnaire before continuing.")
+        return toast.error("Please answer both questions in the questionnaire before continuing.")
       }
     }
 
     if (step === 5) {
       if (!slaDetails?.slaAgreed || !slaDetails?.signature) {
-        return alert("Please agree to the Service Level Agreement and provide your digital signature.")
+        return toast.error("Please agree to the Service Level Agreement and provide your digital signature.")
       }
     }
 
@@ -48,10 +49,10 @@ export default function ClientOnboardingWizard() {
       if (result?.success) {
         window.location.href = "/client/dashboard"
       } else {
-        alert("Error: " + (result?.error || "Unknown error occurred."))
+        toast.error("Error: " + (result?.error || "Unknown error occurred."))
       }
     } catch (err: any) {
-      alert("Network or Server Error: " + err.message)
+      toast.error("Network or Server Error: " + err.message)
       console.error(err)
     } finally {
       setIsSubmitting(false)
@@ -141,7 +142,7 @@ export default function ClientOnboardingWizard() {
                     updateData("businessDetails", { brandAssets: newAssets })
                   } catch (err) {
                     console.error("Upload failed", err)
-                    alert("Upload failed. Please check AWS keys.")
+                    toast.error("Upload failed. Please check AWS keys.")
                   }
                 }} 
               />

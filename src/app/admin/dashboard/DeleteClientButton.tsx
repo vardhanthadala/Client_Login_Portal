@@ -5,6 +5,8 @@ import { Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { deleteClientAction } from "@/app/actions/admin"
 
+import { toast } from "sonner"
+
 export default function DeleteClientButton({ clientId, companyName }: { clientId: string, companyName: string }) {
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -13,7 +15,7 @@ export default function DeleteClientButton({ clientId, companyName }: { clientId
       setIsDeleting(true)
       const res = await deleteClientAction(clientId)
       if (res.error) {
-        alert(res.error)
+        toast.error(res.error)
       }
       setIsDeleting(false)
     }

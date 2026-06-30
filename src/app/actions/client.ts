@@ -2,7 +2,6 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { analyzeClientQuestionnaire } from "@/lib/gemini"
 import { sendOnboardingCompleteEmail } from "@/lib/mail"
 import { GoogleGenAI } from "@google/genai"
 import { revalidatePath } from "next/cache"

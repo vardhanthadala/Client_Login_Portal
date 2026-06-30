@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Receipt, CheckCircle2, Clock, AlertCircle, Download, FileText } from "lucide-react"
+import { toast } from "sonner"
 
 // Ensure razorpay is loaded globally
 declare global {
@@ -87,10 +88,10 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
           
           const verifyData = await verifyRes.json()
           if (verifyRes.ok) {
-            alert("Payment successful!")
+            toast.success("Payment successful!")
             window.location.reload()
           } else {
-            alert("Payment verification failed: " + verifyData.error)
+            toast.error("Payment verification failed: " + verifyData.error)
           }
         },
         prefill: {
@@ -104,13 +105,13 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
 
       const rzp1 = new window.Razorpay(options)
       rzp1.on('payment.failed', function (response: any){
-        alert("Payment Failed: " + response.error.description)
+        toast.error("Payment Failed: " + response.error.description)
       })
       
       rzp1.open()
       
     } catch (error: any) {
-      alert(error.message)
+      toast.error(error.message)
     } finally {
       setLoadingId(null)
     }

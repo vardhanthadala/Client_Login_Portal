@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { respondToApprovalItemAction } from "@/app/actions/approvals"
 import { Loader2, ExternalLink, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp, Download, Image as ImageIcon } from "lucide-react"
+import { toast } from "sonner"
 
 type ApprovalFeedback = {
   id: string
@@ -62,14 +63,14 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
         } : item)
       })))
     } else {
-      alert(res.error)
+      toast.error(res.error)
     }
     setLoadingId(null)
   }
 
   const handleRequestChanges = async (itemId: string) => {
     const comment = feedbackText[itemId]
-    if (!comment?.trim()) return alert("Please describe what changes you need.")
+    if (!comment?.trim()) return toast.error("Please describe what changes you need.")
     setLoadingId(itemId)
     const res = await respondToApprovalItemAction(itemId, "CHANGES_REQUESTED", comment)
     if (res.success) {
@@ -84,7 +85,7 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
       setFeedbackText({ ...feedbackText, [itemId]: "" })
       setShowFeedbackFor(null)
     } else {
-      alert(res.error)
+      toast.error(res.error)
     }
     setLoadingId(null)
   }

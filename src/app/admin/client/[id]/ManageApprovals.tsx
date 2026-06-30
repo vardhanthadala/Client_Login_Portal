@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createApprovalAction, resubmitApprovalItemAction, deleteApprovalAction } from "@/app/actions/approvals"
 import { Loader2, Plus, Upload, Trash2, ExternalLink, RefreshCw, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp, X, Image as ImageIcon } from "lucide-react"
+import { toast } from "sonner"
 
 type ApprovalFeedback = {
   id: string
@@ -86,7 +87,7 @@ export default function ManageApprovals({
         const result = await uploadSingleFile(files[i])
         newFiles.push(result)
       } catch (err) {
-        alert(`Failed to upload: ${files[i].name}`)
+        toast.error(`Failed to upload: ${files[i].name}`)
       }
     }
 
@@ -111,7 +112,7 @@ export default function ManageApprovals({
       setDescription("")
       setUploadedFiles([])
     } else {
-      alert(res.error)
+      toast.error(res.error)
     }
     setIsSaving(false)
   }
@@ -138,10 +139,10 @@ export default function ManageApprovals({
         })))
         setResubmitItemId(null)
       } else {
-        alert(res.error)
+        toast.error(res.error)
       }
     } catch (err) {
-      alert("Failed to upload file")
+      toast.error("Failed to upload file")
     }
     setResubmitUploading(false)
   }

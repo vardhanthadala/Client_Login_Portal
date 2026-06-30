@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { updateClientStatusAction } from "@/app/actions/admin"
+import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
 const STATUS_OPTIONS = [
@@ -29,7 +30,7 @@ export default function StatusDropdown({
     
     const res = await updateClientStatusAction(clientProfileId, newStatus)
     if (!res.success) {
-      alert(res.error)
+      toast.error(res.error)
       setStatus(currentStatus) // Revert on failure
     }
     

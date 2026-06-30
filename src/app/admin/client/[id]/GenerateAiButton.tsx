@@ -3,6 +3,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { generateAiSummaryAction } from "@/app/actions/admin"
 
+import { toast } from "sonner"
+
 export default function GenerateAiButton({ clientProfileId }: { clientProfileId: string }) {
   const [loading, setLoading] = useState(false)
   
@@ -10,9 +12,9 @@ export default function GenerateAiButton({ clientProfileId }: { clientProfileId:
     setLoading(true)
     try {
       const res = await generateAiSummaryAction(clientProfileId)
-      if (res.error) alert(res.error)
+      if (res.error) toast.error(res.error)
     } catch (e: any) {
-      alert("Error: " + e.message)
+      toast.error("Error: " + e.message)
     } finally {
       setLoading(false)
     }

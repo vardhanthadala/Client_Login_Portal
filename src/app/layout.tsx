@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   description: "Client Login and Management Portal",
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,7 +36,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

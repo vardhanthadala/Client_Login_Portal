@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createProjectAction, updateProjectStageAction, deleteProjectAction, generateProjectPhasesAction } from "@/app/actions/projects"
 import { Loader2, Plus, ArrowRight, ArrowLeft, Trash2, CheckCircle2 } from "lucide-react"
+import { toast } from "sonner"
 
 type Project = {
   id: string
@@ -38,21 +39,21 @@ export default function ManageProjects({
       if (res.success && res.data) {
         setCustomStages(res.data.join(", "))
       } else {
-        alert(res.error)
+        toast.error(res.error)
       }
     } catch (e: any) {
-      alert("Error: " + e.message)
+      toast.error("Error: " + e.message)
     } finally {
       setIsGeneratingPhases(false)
     }
   }
 
   const handleAddProject = async () => {
-    if (!customName || !customStages) return alert("Please fill all fields")
+    if (!customName || !customStages) return toast.error("Please fill all fields")
     const name = customName
     const stagesArray = customStages.split(",").map(s => s.trim()).filter(s => s)
 
-    if (stagesArray.length < 2) return alert("At least 2 stages are required")
+    if (stagesArray.length < 2) return toast.error("At least 2 stages are required")
 
     setIsLoading(true)
     const res = await createProjectAction(clientProfileId, name, stagesArray)
@@ -62,7 +63,7 @@ export default function ManageProjects({
       setCustomName("")
       setCustomStages("")
     } else {
-      alert(res.error)
+      toast.error(res.error)
     }
     setIsLoading(false)
   }
@@ -77,7 +78,7 @@ export default function ManageProjects({
 
     const res = await updateProjectStageAction(project.id, newIdx, clientProfileId)
     if (!res.success) {
-      alert(res.error)
+      toast.error(res.error)
       // Revert on error
       setProjects(projects.map(p => p.id === project.id ? { ...p, currentStageIdx: project.currentStageIdx } : p))
     }
