@@ -136,7 +136,7 @@ export default async function ClientDashboardPage() {
           <CardContent>
             {clientProfile.brandAssets.length > 0 ? (
               <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {clientProfile.brandAssets.map((asset) => (
+                {clientProfile.brandAssets.map((asset: any) => (
                   <li key={asset.id} className="flex items-center justify-between px-4 py-3 bg-card border-b sm:border border-border sm:rounded-xl hover:bg-muted/30 transition-colors">
                     <span className="truncate text-sm font-medium mr-2" title={asset.type}>{asset.type}</span>
                     <div className="flex gap-4">

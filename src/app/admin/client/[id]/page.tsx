@@ -92,7 +92,7 @@ export default async function ClientDetailsPage({ params }: { params: { id: stri
           <CardContent>
             {clientProfile.brandAssets.length > 0 ? (
               <ul className="space-y-2">
-                {clientProfile.brandAssets.map((asset) => (
+                {clientProfile.brandAssets.map((asset: any) => (
                   <li key={asset.id} className="flex items-center justify-between px-4 py-3 bg-card border-b sm:border border-border sm:rounded-xl hover:bg-muted/30 transition-colors">
                     <span className="truncate text-sm font-medium mr-2">{asset.type}</span>
                     <div className="flex gap-4">
