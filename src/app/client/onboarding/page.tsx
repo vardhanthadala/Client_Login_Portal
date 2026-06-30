@@ -12,7 +12,7 @@ import { UploadCloud } from "lucide-react"
 import { submitWizardAction } from "@/app/actions/client"
 
 export default function ClientOnboardingWizard() {
-  const { step, nextStep, prevStep, businessDetails, updateData } = useWizardStore()
+  const { step, nextStep, prevStep, businessDetails, slaDetails, updateData } = useWizardStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleNext = () => {
@@ -28,7 +28,13 @@ export default function ClientOnboardingWizard() {
       }
     }
 
-    if (step < 5) {
+    if (step === 5) {
+      if (!slaDetails?.slaAgreed || !slaDetails?.signature) {
+        return alert("Please agree to the Service Level Agreement and provide your digital signature.")
+      }
+    }
+
+    if (step < 6) {
       nextStep()
     } else {
       submitWizard()
@@ -38,7 +44,7 @@ export default function ClientOnboardingWizard() {
   const submitWizard = async () => {
     setIsSubmitting(true)
     try {
-      const result = await submitWizardAction({ businessDetails, questionnaire: businessDetails?.questionnaire })
+      const result = await submitWizardAction({ businessDetails, questionnaire: businessDetails?.questionnaire, slaDetails })
       if (result?.success) {
         window.location.href = "/client/dashboard"
       } else {
@@ -195,6 +201,50 @@ export default function ClientOnboardingWizard() {
         return (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <CardHeader className="pt-8">
+              <CardTitle className="text-2xl font-bold tracking-[-0.02em] text-foreground">Contracts & SLA</CardTitle>
+              <CardDescription>Please review and agree to our Service Level Agreement.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="bg-muted/30 border border-border rounded-xl p-4 h-48 overflow-y-auto text-sm text-muted-foreground">
+                <h4 className="font-bold text-foreground mb-2">Service Level Agreement (SLA)</h4>
+                <p className="mb-2">1. Scope of Services. We will provide marketing and design services as outlined in your plan.</p>
+                <p className="mb-2">2. Communication. All communications should happen via this portal for tracking purposes.</p>
+                <p className="mb-2">3. Revisions. Each deliverable includes a specified number of revisions. Additional revisions may incur fees.</p>
+                <p className="mb-2">4. Payment Terms. Invoices are due upon receipt unless otherwise specified.</p>
+                <p className="mb-2">5. Confidentiality. Both parties agree to keep sensitive business information confidential.</p>
+                <p>By signing below, you agree to these terms and conditions.</p>
+              </div>
+              
+              <div className="flex items-center space-x-2 pt-2">
+                <input 
+                  type="checkbox" 
+                  id="sla-agree" 
+                  checked={slaDetails?.slaAgreed || false}
+                  onChange={(e) => updateData("slaDetails", { slaAgreed: e.target.checked })}
+                  className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary"
+                />
+                <Label htmlFor="sla-agree" className="text-sm font-medium leading-none cursor-pointer">
+                  I have read and agree to the Service Level Agreement
+                </Label>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-border/50">
+                <Label className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-semibold">Digital Signature</Label>
+                <Input 
+                  value={slaDetails?.signature || ""} 
+                  onChange={(e) => updateData("slaDetails", { signature: e.target.value })}
+                  placeholder="Type your full name to sign" 
+                  className="bg-muted/50 border-border h-11"
+                />
+                <p className="text-xs text-muted-foreground">Typing your name acts as a legally binding digital signature.</p>
+              </div>
+            </CardContent>
+          </motion.div>
+        )
+      case 6:
+        return (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <CardHeader className="pt-8">
               <CardTitle className="text-3xl font-bold tracking-[-0.02em] text-foreground">Review & Submit</CardTitle>
               <CardDescription className="text-base mt-2">Almost done! Please review your information.</CardDescription>
             </CardHeader>
@@ -215,7 +265,7 @@ export default function ClientOnboardingWizard() {
       <div className="w-full max-w-2xl">
         {/* Progress indicator */}
         <div className="mb-8 flex justify-between items-center px-2 gap-2">
-          {[1, 2, 3, 4, 5].map((s) => (
+          {[1, 2, 3, 4, 5, 6].map((s) => (
             <div key={s} className="flex flex-col items-center w-full">
               <div className={`h-2 w-full rounded-full transition-all duration-300 ${s <= step ? 'bg-primary' : 'bg-muted'}`} />
             </div>
@@ -236,7 +286,7 @@ export default function ClientOnboardingWizard() {
               </Button>
             ) : <div />}
             <Button onClick={handleNext} disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : step === 5 ? "Submit" : "Continue"}
+              {isSubmitting ? "Submitting..." : step === 6 ? "Submit" : "Continue"}
             </Button>
           </CardFooter>
         </Card>

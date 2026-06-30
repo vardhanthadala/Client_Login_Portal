@@ -9,6 +9,7 @@ type WizardState = {
   designPreferences: any
   contentRequirements: any
   questionnaireAnswers: any[]
+  slaDetails: any
   setStep: (step: number) => void
   nextStep: () => void
   prevStep: () => void
@@ -24,6 +25,7 @@ export const useWizardStore = create<WizardState>((set) => ({
   designPreferences: {},
   contentRequirements: {},
   questionnaireAnswers: [],
+  slaDetails: { slaAgreed: false, signature: "" },
   
   setStep: (step) => set({ step }),
   nextStep: () => set((state) => ({ step: state.step + 1 })),

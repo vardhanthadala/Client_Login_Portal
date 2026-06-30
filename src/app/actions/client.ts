@@ -52,6 +52,9 @@ export async function submitWizardAction(data: any) {
         locations: data.businessDetails?.locations,
         hours: data.businessDetails?.workingHours,
         phone: data.businessDetails?.phone,
+        slaAgreed: data.slaDetails?.slaAgreed || false,
+        signature: data.slaDetails?.signature || null,
+        agreedAt: data.slaDetails?.slaAgreed ? new Date() : null,
       },
     })
 
@@ -137,7 +140,7 @@ export async function submitWizardAction(data: any) {
     return { success: true, aiSummary }
   } catch (error: any) {
     console.error("Wizard submit error:", error)
-    return { error: "Failed to submit onboarding data." }
+    return { error: `Failed to submit onboarding data: ${error.message}` }
   }
 }
 
