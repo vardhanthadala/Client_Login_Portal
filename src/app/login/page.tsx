@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 import Image from "next/image"
-import bgImage from "../../../public/login-bg.png"
 
 export default function LoginPage() {
   const [state, action, isPending] = useActionState(loginAction, undefined)
@@ -19,7 +18,7 @@ export default function LoginPage() {
       {/* Left Side - Image */}
       <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
         <Image
-          src={bgImage}
+          src="/login-bg.png"
           alt="Abstract Background"
           fill
           priority
