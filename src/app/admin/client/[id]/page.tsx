@@ -53,37 +53,38 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
 
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32">
+      <div className="max-w-screen-2xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
-        <div className="flex items-center gap-6">
+        <div className="flex items-start sm:items-center gap-4 sm:gap-6 min-w-0 w-full">
           <Link 
             href="/admin/dashboard" 
-            className="flex items-center justify-center w-12 h-12 bg-white border border-[#E5E7EB] text-[#64748B] hover:text-[#5A52FF] hover:border-[#5A52FF]/30 rounded-full transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_14px_rgba(90,82,255,0.15)] hover:-translate-x-0.5 shrink-0"
+            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white border border-[#E5E7EB] text-[#64748B] hover:text-[#5A52FF] hover:border-[#5A52FF]/30 rounded-full transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_14px_rgba(90,82,255,0.15)] hover:-translate-x-0.5 shrink-0 mt-1 sm:mt-0"
             title="Back to Dashboard"
           >
-            <RiArrowGoBackFill className="w-5 h-5" />
+            <RiArrowGoBackFill className="w-4 h-4 sm:w-5 sm:h-5" />
           </Link>
-          <div>
-            <h1 className="text-4xl sm:text-5xl text-[#0F172A] font-sans font-bold tracking-tight">{clientProfile.companyName}</h1>
-            <div className="flex flex-wrap items-center gap-3 mt-4">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[13px] font-semibold text-[#475569] shadow-sm">
-                <Mail className="w-3.5 h-3.5 text-[#5A52FF]" />
-                {client.email}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl text-[#0F172A] font-sans font-bold tracking-tight break-words">{clientProfile.companyName}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm truncate max-w-full">
+                <Mail className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
+                <span className="truncate">{client.email}</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[13px] font-semibold text-[#475569] shadow-sm">
-                <User className="w-3.5 h-3.5 text-[#5A52FF]" />
-                {clientProfile.clientName}
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm truncate max-w-full">
+                <User className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
+                <span className="truncate">{clientProfile.clientName}</span>
               </div>
               {clientProfile.website && (
-                <a href={clientProfile.website.startsWith('http') ? clientProfile.website : `https://${clientProfile.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[13px] font-semibold text-[#475569] shadow-sm hover:text-[#5A52FF] hover:border-[#5A52FF]/30 transition-colors">
-                  <GlobeIcon className="w-3.5 h-3.5 text-[#5A52FF]" />
-                  Website
+                <a href={clientProfile.website.startsWith('http') ? clientProfile.website : `https://${clientProfile.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm hover:text-[#5A52FF] hover:border-[#5A52FF]/30 transition-colors truncate max-w-full">
+                  <GlobeIcon className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
+                  <span className="truncate">Website</span>
                 </a>
               )}
             </div>
           </div>
         </div>
         
-        <div className="ml-16 sm:ml-0">
+        <div className="ml-[56px] sm:ml-0 shrink-0">
           <StatusDropdown 
             clientProfileId={clientProfile.id} 
             currentStatus={clientProfile.status || "ONBOARDED"} 
@@ -149,7 +150,7 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
         </Card>
 
         {/* Brand Assets */}
-        <Card className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] flex flex-col">
+        <Card className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] flex flex-col overflow-hidden min-w-0">
           <CardHeader className="pb-4 px-8 pt-7 bg-white border-b border-[#F1F5F9]">
             <CardTitle className="text-xl font-sans font-bold text-[#0F172A]">Uploaded Brand Assets</CardTitle>
             <CardDescription className="mt-2 text-[#64748B]">Files uploaded by the client during onboarding.</CardDescription>
@@ -158,15 +159,15 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
             {clientProfile.brandAssets.length > 0 ? (
               <ul className="grid gap-3">
                 {clientProfile.brandAssets.map((asset: any) => (
-                  <li key={asset.id} className="group flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#5A52FF] hover:shadow-md transition-all duration-200">
-                    <div className="flex items-center gap-3 overflow-hidden">
+                  <li key={asset.id} className="group flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#5A52FF] hover:shadow-md transition-all duration-200 overflow-hidden min-w-0">
+                    <div className="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
                       <div className="shrink-0 w-10 h-10 rounded-lg bg-[#F3F5FF] flex items-center justify-center text-[#5A52FF]">
                         <ImageIcon className="w-5 h-5" />
                       </div>
-                      <div className="flex flex-col overflow-hidden">
-                        <span className="truncate text-sm font-semibold text-[#0F172A]">{asset.type}</span>
+                      <div className="flex flex-col flex-1 min-w-0 w-full">
+                        <span className="break-all text-sm font-semibold text-[#0F172A]">{asset.type}</span>
                         {asset.description && (
-                          <span className="truncate text-xs text-[#64748B] mt-0.5" title={asset.description}>
+                          <span className="break-words text-xs text-[#64748B] mt-1">
                             {asset.description}
                           </span>
                         )}
@@ -195,33 +196,35 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
           </CardContent>
         </Card>
 
-        {/* Gemini AI Summary */}
-        <Card className="md:col-span-2 bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 px-8 pt-7 pb-4">
-            <div>
-              <CardTitle className="text-[#5A52FF] flex items-center gap-2 text-2xl font-sans font-bold">
-                ✨ Gemini AI Summary
+        {/* AI Summary */}
+        <Card className="md:col-span-2 bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 px-6 sm:px-8 pt-7 pb-4">
+            <div className="min-w-0 flex-1 w-full sm:w-auto">
+              <CardTitle className="text-[#5A52FF] flex items-center gap-2 text-xl sm:text-2xl font-sans font-bold truncate">
+                ✨ AI Summary
               </CardTitle>
-              <CardDescription className="mt-2 text-[#64748B]">
+              <CardDescription className="mt-2 text-[#64748B] break-words">
                 Automated brand extraction based on the client's questionnaire.
               </CardDescription>
             </div>
-            <GenerateAiButton clientProfileId={clientProfile.id} />
+            <div className="shrink-0 w-full sm:w-auto">
+              <GenerateAiButton clientProfileId={clientProfile.id} />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 sm:px-8">
             {clientProfile.aiAnalysis ? (
               <div className="grid gap-6 md:grid-cols-3">
-                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3">Target Audience</h3>
-                  <p className="text-sm text-foreground leading-relaxed">{aiSummary?.targetAudience || "Not analyzed yet."}</p>
+                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
+                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Target Audience</h3>
+                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.targetAudience || "Not analyzed yet."}</p>
                 </div>
-                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3">Brand Voice</h3>
-                  <p className="text-sm text-foreground leading-relaxed">{aiSummary?.brandVoice || "Not analyzed yet."}</p>
+                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
+                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Brand Voice</h3>
+                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.brandVoice || "Not analyzed yet."}</p>
                 </div>
-                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3">Marketing Angle</h3>
-                  <p className="text-sm text-foreground leading-relaxed">{aiSummary?.marketingAngle || "Not analyzed yet."}</p>
+                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
+                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Marketing Angle</h3>
+                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.marketingAngle || "Not analyzed yet."}</p>
                 </div>
               </div>
             ) : (
@@ -251,6 +254,7 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
           <ChatInterface clientProfileId={clientProfile.id} currentUserId={token?.id as string} />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   )
 }

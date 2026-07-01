@@ -41,20 +41,26 @@ export default async function AdminDashboard() {
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32 bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-[#FAFAFA] to-[#FAFAFA]">
+      <div className="max-w-screen-2xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div>
           <h1 className="text-4xl sm:text-5xl text-[#0F172A] font-sans font-bold tracking-tight">
-            Agency Dashboard
+            Welcome to your dashboard
           </h1>
           <p className="text-muted-foreground mt-4 text-base leading-relaxed max-w-2xl">
             Manage your clients and view their onboarding progress.
           </p>
         </div>
-        <div className="flex gap-4 items-center">
-          <NotificationBell unreadClients={unreadClientsData} />
-          <div className="w-px h-8 bg-gray-200 mx-2"></div>
-          <SignOutButton />
-          <InviteClientModal />
+        <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
+          <div className="w-full sm:w-auto flex justify-between items-center">
+            <span className="sm:hidden text-sm font-semibold text-muted-foreground">Notifications</span>
+            <NotificationBell unreadClients={unreadClientsData} />
+          </div>
+          <div className="hidden sm:block w-px h-8 bg-gray-200 mx-2"></div>
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+            <SignOutButton />
+            <InviteClientModal />
+          </div>
         </div>
       </div>
 
@@ -86,22 +92,22 @@ export default async function AdminDashboard() {
         {clients.map((client) => {
           const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUser?.id).length
           return (
-            <Card key={client.id} className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-200">
-              <CardHeader className="flex flex-row justify-between items-start space-y-0 pb-4 px-8 pt-7">
-                <div>
-                  <CardTitle className="text-2xl font-sans font-bold text-[#0F172A] flex items-center gap-2">
-                    {client.clientProfile?.companyName || "Unknown Company"}
+            <Card key={client.id} className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-200 min-w-0 overflow-hidden">
+              <CardHeader className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 pb-4 px-6 sm:px-8 pt-7 gap-3">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A] flex flex-wrap items-center gap-2">
+                    <span className="break-words w-full sm:w-auto">{client.clientProfile?.companyName || "Unknown Company"}</span>
                     {unreadCount > 0 && (
-                      <span className="relative flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[11px] font-bold" title={`${unreadCount} unread message(s)`}>
+                      <span className="relative flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[11px] font-bold shrink-0" title={`${unreadCount} unread message(s)`}>
                         <Bell className="w-3 h-3" />
                         {unreadCount}
                         <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-destructive animate-ping" />
                       </span>
                     )}
                   </CardTitle>
-                  <CardDescription className="mt-2 text-[15px] text-[#64748B] font-medium">{client.email}</CardDescription>
+                  <CardDescription className="mt-2 text-[14px] sm:text-[15px] text-[#64748B] font-medium break-all sm:break-normal">{client.email}</CardDescription>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center shrink-0 w-full sm:w-auto justify-start sm:justify-end mt-2 sm:mt-0">
                   {client.clientProfile ? (
                     <StatusDropdown
                       clientProfileId={client.clientProfile.id}
@@ -115,8 +121,8 @@ export default async function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="px-8 pb-7">
-                <div className="flex flex-col sm:flex-row items-center gap-3 pt-6 border-t border-[#F1F5F9]">
-                  <Link href={`/admin/client/${client.id}`} className="w-full sm:w-auto flex-1">
+                <div className="flex flex-row items-center gap-3 pt-6 border-t border-[#F1F5F9]">
+                  <Link href={`/admin/client/${client.id}`} className="w-full flex-1">
                     <Button variant="outline" className="w-full bg-[#FAFAFA] border-[#E5E7EB] hover:bg-[#5A52FF] hover:text-white hover:border-[#5A52FF] h-11 rounded-xl text-[15px] font-medium transition-colors">
                       View Details
                     </Button>
@@ -134,6 +140,7 @@ export default async function AdminDashboard() {
             <p className="text-sm">Click "Invite New Client" to get started.</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

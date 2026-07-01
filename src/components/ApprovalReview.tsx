@@ -120,26 +120,26 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
             <Card key={approval.id} className="overflow-hidden transition-all duration-200">
               {/* Batch Header */}
               <div
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted/10 transition-colors"
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-muted/10 transition-colors"
                 onClick={() => setExpandedBatch(isExpanded ? null : approval.id)}
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <ImageIcon className="w-4 h-4 text-primary" />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-sm flex items-center gap-2">
-                      {approval.title}
-                      <span className="text-[10px] text-muted-foreground font-normal">{approval.items.length} file(s)</span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-sm flex items-center gap-2 flex-wrap">
+                      <span className="truncate">{approval.title}</span>
+                      <span className="text-[10px] text-muted-foreground font-normal shrink-0">{approval.items.length} file(s)</span>
                     </h3>
                     {approval.description && <p className="text-xs text-muted-foreground truncate">{approval.description}</p>}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold ${batchStatus.className}`}>
+                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 w-full sm:w-auto pl-11 sm:pl-0">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold truncate ${batchStatus.className}`}>
                     {batchStatus.label}
                   </span>
-                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
                 </div>
               </div>
 

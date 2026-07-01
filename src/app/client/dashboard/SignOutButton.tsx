@@ -40,7 +40,7 @@ export default function SignOutButton() {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
           <AlertDialogDescription>
-            You will need to log back in to access the agency dashboard.
+            You will need to log back in to access your client portal.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

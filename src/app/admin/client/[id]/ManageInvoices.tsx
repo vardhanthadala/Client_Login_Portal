@@ -69,7 +69,7 @@ const StatusDropdown = ({ invoiceId, status, onChange, config }: any) => {
   ]
 
   return (
-    <div className="relative mt-1 flex justify-end" ref={dropdownRef}>
+    <div className="relative mt-1 flex justify-start sm:justify-end" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full border ${config.className} border-current/20 hover:opacity-80 transition-opacity`}
@@ -79,7 +79,7 @@ const StatusDropdown = ({ invoiceId, status, onChange, config }: any) => {
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-slate-100 overflow-hidden z-50 py-1">
+        <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-slate-100 overflow-hidden z-50 py-1">
           {options.map((option) => (
             <button
               key={option.value}
@@ -187,14 +187,14 @@ export default function ManageInvoices({
   }
 
   return (
-    <Card className="hover:border-primary/50 transition-all duration-200">
-      <CardHeader className="flex flex-row items-start justify-between pb-4 border-b border-border/50">
-        <div>
+    <Card className="hover:border-primary/50 transition-all duration-200 overflow-visible">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
+        <div className="w-full sm:w-auto">
           <CardTitle className="text-lg font-sans font-bold">💳 Billing & Invoices</CardTitle>
           <CardDescription>Manage one-off invoices and monthly retainers.</CardDescription>
         </div>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0">
             <Plus className="w-4 h-4" /> Create Invoice
           </Button>
         )}
@@ -325,7 +325,7 @@ export default function ManageInvoices({
                   </div>
 
                   <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <p className="font-bold text-lg">{invoice.currency} {invoice.amount.toLocaleString()}</p>
                       <StatusDropdown 
                         invoiceId={invoice.id} 

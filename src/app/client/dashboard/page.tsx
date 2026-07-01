@@ -13,6 +13,7 @@ import ChatInterface from "@/components/ChatInterface"
 import ProjectTracker from "@/components/ProjectTracker"
 import ApprovalReview from "@/components/ApprovalReview"
 import ClientInvoices from "@/components/ClientInvoices"
+import SignOutButton from "./SignOutButton"
 
 export default async function ClientDashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const resolvedSearchParams = await searchParams;
@@ -58,6 +59,7 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32 bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-[#FAFAFA] to-[#FAFAFA]">
+      <div className="max-w-screen-2xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
@@ -79,11 +81,9 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
             Manage your brand assets and view your profile.
           </p>
         </div>
-        <Link href="/api/auth/signout">
-          <Button className="bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5">
-            Sign Out
-          </Button>
-        </Link>
+        <div className="w-full sm:w-auto mt-2 sm:mt-0 shrink-0">
+          <SignOutButton />
+        </div>
       </div>
 
       <Tabs defaultValue={initialTab} className="w-full">
@@ -148,7 +148,7 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
             </Card>
 
             {/* Uploaded Files Card */}
-            <Card className="md:col-span-2 bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] flex flex-col">
+            <Card className="md:col-span-2 bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] flex flex-col overflow-hidden min-w-0">
               <CardHeader className="pb-4 px-8 pt-7 bg-white border-b border-[#F1F5F9]">
                 <CardTitle className="text-xl font-sans font-bold text-[#0F172A]">Your Uploaded Files</CardTitle>
                 <CardDescription className="mt-2 text-[#64748B]">Files you have uploaded so far.</CardDescription>
@@ -157,14 +157,14 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
                 {clientProfile.brandAssets.length > 0 ? (
                   <ul className="grid gap-3">
                     {clientProfile.brandAssets.map((asset: any) => (
-                      <li key={asset.id} className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-[#E5E7EB] bg-white hover:border-[#5A52FF]/30 hover:shadow-[0_4px_12px_rgba(90,82,255,0.05)] transition-all duration-300">
-                        <div className="flex items-center gap-4 mb-3 sm:mb-0">
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#F8FAFC] text-[#5A52FF] group-hover:bg-[#5A52FF]/10 transition-colors">
+                      <li key={asset.id} className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-[#E5E7EB] bg-white hover:border-[#5A52FF]/30 hover:shadow-[0_4px_12px_rgba(90,82,255,0.05)] transition-all duration-300 overflow-hidden min-w-0">
+                        <div className="flex items-center gap-4 mb-3 sm:mb-0 flex-1 min-w-0">
+                          <div className="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[#F8FAFC] text-[#5A52FF] group-hover:bg-[#5A52FF]/10 transition-colors">
                             <PiImageDuotone className="w-5 h-5" />
                           </div>
-                          <div className="flex flex-col overflow-hidden w-full max-w-[200px] sm:max-w-[300px]">
-                            <p className="text-sm font-semibold text-[#0F172A] truncate">{asset.type || "Asset"}</p>
-                            <p className="text-xs text-[#64748B] mt-0.5 truncate" title={asset.description || "Uploaded recently"}>
+                          <div className="flex flex-col flex-1 min-w-0 w-full">
+                            <p className="text-sm font-semibold text-[#0F172A] break-all">{asset.type || "Asset"}</p>
+                            <p className="text-xs text-[#64748B] mt-1 break-words">
                               {asset.description || "Uploaded recently"}
                             </p>
                           </div>
@@ -219,6 +219,7 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
           <ChatInterface clientProfileId={clientProfile.id} currentUserId={token.id as string} />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   )
 }

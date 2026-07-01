@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "@/components/ui/sonner";
+import SessionGuard from "@/components/SessionGuard";
 
 export default function RootLayout({
   children,
@@ -37,6 +38,7 @@ export default function RootLayout({
       className={`${inter.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <SessionGuard />
         {children}
         <Toaster position="top-center" richColors />
       </body>

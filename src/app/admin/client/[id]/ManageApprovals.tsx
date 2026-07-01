@@ -182,13 +182,13 @@ export default function ManageApprovals({
 
   return (
     <Card className="hover:border-primary/50 transition-all duration-200">
-      <CardHeader className="flex flex-row items-start justify-between pb-4 border-b border-border/50">
-        <div>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
+        <div className="w-full sm:w-auto">
           <CardTitle className="text-lg font-sans font-bold">📋 Approval Center</CardTitle>
           <CardDescription>Upload drafts for client review. Each file gets its own approval.</CardDescription>
         </div>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0">
             <Plus className="w-4 h-4" /> New Batch
           </Button>
         )}
@@ -271,32 +271,34 @@ export default function ManageApprovals({
                 <div key={approval.id} className="border border-border rounded-xl overflow-hidden bg-card hover:border-primary/30 transition-colors">
                   {/* Batch Header */}
                   <div
-                    className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted/10 transition-colors"
+                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-muted/10 transition-colors gap-3 sm:gap-0"
                     onClick={() => setExpandedApproval(isExpanded ? null : approval.id)}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <ImageIcon className="w-4 h-4 text-primary" />
                       </div>
-                      <div className="min-w-0">
-                        <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                          {approval.title}
-                          <span className="text-[10px] text-muted-foreground font-normal">{approval.items.length} file(s)</span>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-sm text-foreground flex items-center gap-2 truncate">
+                          <span className="truncate">{approval.title}</span>
+                          <span className="text-[10px] text-muted-foreground font-normal shrink-0">{approval.items.length} file(s)</span>
                         </h4>
                         {approval.description && <p className="text-xs text-muted-foreground truncate">{approval.description}</p>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold ${batchStatus.className}`}>
+                    <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-end pl-11 sm:pl-0 mt-1 sm:mt-0">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold truncate max-w-full ${batchStatus.className}`}>
                         {batchStatus.label}
                       </span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDeleteClick(approval.id) }}
-                        className="text-destructive hover:text-destructive/80 p-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteClick(approval.id) }}
+                          className="text-destructive hover:text-destructive/80 p-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                      </div>
                     </div>
                   </div>
 

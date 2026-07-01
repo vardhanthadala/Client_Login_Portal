@@ -115,13 +115,13 @@ export default function ManageProjects({
 
   return (
     <Card className="hover:border-primary/50 transition-all duration-200">
-      <CardHeader className="flex flex-row items-start justify-between pb-4 border-b border-border/50">
-        <div>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
+        <div className="w-full sm:w-auto">
           <CardTitle className="text-lg font-sans font-bold">Active Projects</CardTitle>
           <CardDescription>Track deliverable progress for this client.</CardDescription>
         </div>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0">
             <Plus className="w-4 h-4" /> Add Project
           </Button>
         )}
