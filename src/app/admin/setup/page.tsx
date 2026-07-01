@@ -5,7 +5,6 @@ import { AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import bgImage from "../../../public/login-bg.png"
 
 export default async function SetupPage() {
   const adminExists = await prisma.user.findFirst({
@@ -39,7 +38,7 @@ export default async function SetupPage() {
       {/* Left Side - Image */}
       <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
         <Image
-          src={bgImage}
+          src="/login-bg.png"
           alt="Abstract Background"
           fill
           priority

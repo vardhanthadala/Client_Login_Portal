@@ -74,6 +74,7 @@ export default function SetupForm() {
                 )}
               </button>
             </div>
+          </div>
           <div className="pt-4 pb-2">
             <Button 
               type="submit" 
