@@ -50,8 +50,8 @@ export default async function ClientDashboardPage({ searchParams }: { searchPara
     }
   })
 
-  // If they somehow skipped onboarding, force them back
-  if (!clientProfile?.companyName) {
+  // If they haven't completed the onboarding wizard (SLA not agreed to), force them back
+  if (!clientProfile?.slaAgreed) {
     redirect("/client/onboarding")
   }
 

@@ -40,7 +40,17 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <SessionGuard />
         {children}
-        <Toaster position="top-center" richColors />
+        <Toaster 
+          position="top-center" 
+          toastOptions={{
+            classNames: {
+              error: 'bg-red-50 text-red-900 border border-red-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+              success: 'bg-emerald-50 text-emerald-900 border border-emerald-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+              warning: 'bg-amber-50 text-amber-900 border border-amber-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+              info: 'bg-blue-50 text-blue-900 border border-blue-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+            }
+          }}
+        />
       </body>
     </html>
   );

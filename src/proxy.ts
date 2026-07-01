@@ -26,11 +26,11 @@ export async function proxy(req: NextRequest) {
       if (userRole === "ADMIN") {
         return NextResponse.redirect(new URL("/admin/dashboard", nextUrl))
       }
-      return NextResponse.redirect(new URL("/client/onboarding", nextUrl))
+      return NextResponse.redirect(new URL("/client/dashboard", nextUrl))
     }
 
     if (isAdminRoute && userRole !== "ADMIN") {
-      return NextResponse.redirect(new URL("/client/onboarding", nextUrl))
+      return NextResponse.redirect(new URL("/client/dashboard", nextUrl))
     }
 
     if (isClientRoute && userRole !== "CLIENT") {

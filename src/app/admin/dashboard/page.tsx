@@ -16,6 +16,7 @@ import NotificationBell, { UnreadClient } from "./NotificationBell"
 export default async function AdminDashboard() {
   const clients = await prisma.user.findMany({
     where: { role: "CLIENT" },
+    orderBy: { createdAt: "desc" },
     include: {
       clientProfile: {
         include: {
