@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Eye, EyeOff } from "lucide-react"
-import Image from "next/image"
+
 
 export default function LoginPage() {
   const [state, action, isPending] = useActionState(loginAction, undefined)
@@ -17,12 +17,11 @@ export default function LoginPage() {
     <div className="flex min-h-screen bg-gray-50">
       {/* Left Side - Image */}
       <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/login-bg.png"
           alt="Abstract Background"
-          fill
-          priority
-          className="object-cover opacity-90"
+          className="absolute inset-0 w-full h-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
         <div className="absolute bottom-12 left-12 right-12 text-white">

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import SetupForm from "./SetupForm"
 import { ShieldCheck, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
+
 
 export default async function SetupPage() {
   const adminExists = await prisma.user.findFirst({
@@ -14,12 +14,11 @@ export default async function SetupPage() {
       <div className="flex min-h-screen bg-gray-50">
         {/* Left Side - Gradient */}
         <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/login-bg.png"
             alt="Abstract Background"
-            fill
-            priority
-            className="object-cover opacity-90"
+            className="absolute inset-0 w-full h-full object-cover opacity-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
           <div className="absolute bottom-12 left-12 right-12 text-white">
@@ -56,12 +55,11 @@ export default async function SetupPage() {
     <div className="flex min-h-screen bg-gray-50">
       {/* Left Side - Image */}
       <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/login-bg.png"
           alt="Abstract Background"
-          fill
-          priority
-          className="object-cover opacity-90"
+          className="absolute inset-0 w-full h-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
         <div className="absolute bottom-12 left-12 right-12 text-white">
