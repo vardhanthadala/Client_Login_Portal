@@ -117,7 +117,7 @@ export default function ManageProjects({
     <Card className="hover:border-primary/50 transition-all duration-200">
       <CardHeader className="flex flex-row items-start justify-between pb-4 border-b border-border/50">
         <div>
-          <CardTitle className="text-lg font-bold">Active Projects</CardTitle>
+          <CardTitle className="text-lg font-sans font-bold">Active Projects</CardTitle>
           <CardDescription>Track deliverable progress for this client.</CardDescription>
         </div>
         {!isAdding && (

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createInvoiceAction, deleteInvoiceAction, updateInvoiceStatusAction } from "@/app/actions/invoices"
-import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send } from "lucide-react"
+import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send, ChevronDown } from "lucide-react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -45,6 +45,57 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; icon: an
   PAID: { label: "Paid", className: "bg-green-100 text-green-700", icon: CheckCircle2 },
   OVERDUE: { label: "Overdue", className: "bg-red-100 text-red-700", icon: Clock },
   CANCELLED: { label: "Cancelled", className: "bg-gray-100 text-gray-500", icon: X },
+}
+
+const StatusDropdown = ({ invoiceId, status, onChange, config }: any) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const options = [
+    { value: "SENT", label: "Pending" },
+    { value: "PAID", label: "Paid" },
+    { value: "OVERDUE", label: "Overdue" },
+    { value: "CANCELLED", label: "Cancelled" }
+  ]
+
+  return (
+    <div className="relative mt-1 flex justify-end" ref={dropdownRef}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full border ${config.className} border-current/20 hover:opacity-80 transition-opacity`}
+      >
+        {options.find(o => o.value === status)?.label || status}
+        <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-slate-100 overflow-hidden z-50 py-1">
+          {options.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                onChange(invoiceId, option.value)
+                setIsOpen(false)
+              }}
+              className={`w-full text-left px-3 py-2 text-xs font-semibold ${status === option.value ? 'bg-slate-50 text-[#5A52FF]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'} transition-colors`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function ManageInvoices({
@@ -139,7 +190,7 @@ export default function ManageInvoices({
     <Card className="hover:border-primary/50 transition-all duration-200">
       <CardHeader className="flex flex-row items-start justify-between pb-4 border-b border-border/50">
         <div>
-          <CardTitle className="text-lg font-bold">💳 Billing & Invoices</CardTitle>
+          <CardTitle className="text-lg font-sans font-bold">💳 Billing & Invoices</CardTitle>
           <CardDescription>Manage one-off invoices and monthly retainers.</CardDescription>
         </div>
         {!isAdding && (
@@ -276,16 +327,12 @@ export default function ManageInvoices({
                   <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                     <div className="text-right">
                       <p className="font-bold text-lg">{invoice.currency} {invoice.amount.toLocaleString()}</p>
-                      <select 
-                        className={`mt-1 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full outline-none cursor-pointer border ${config.className} border-current/20`}
-                        value={invoice.status}
-                        onChange={(e) => handleStatusChange(invoice.id, e.target.value)}
-                      >
-                        <option value="SENT">Pending</option>
-                        <option value="PAID">Paid</option>
-                        <option value="OVERDUE">Overdue</option>
-                        <option value="CANCELLED">Cancelled</option>
-                      </select>
+                      <StatusDropdown 
+                        invoiceId={invoice.id} 
+                        status={invoice.status} 
+                        onChange={handleStatusChange} 
+                        config={config} 
+                      />
                     </div>
                     <button onClick={() => handleDeleteClick(invoice.id)} className="text-destructive hover:text-destructive/80 p-2 rounded-full hover:bg-destructive/10 transition-colors">
                       <Trash2 className="w-4 h-4" />

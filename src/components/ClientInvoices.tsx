@@ -127,77 +127,112 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
       <div style="padding: 60px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto; background: #fff;">
         
         <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
           <div>
-            <h1 style="font-size: 36px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -1px;">INVOICE</h1>
-            <p style="color: #64748b; font-size: 14px; margin-top: 4px; font-weight: 500;">INV-${invoice.id.substring(0,8).toUpperCase()}</p>
+            <h1 style="font-size: 42px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -1px; line-height: 1;">INVOICE</h1>
+            <p style="color: #64748b; font-size: 14px; margin-top: 8px; font-weight: 500; letter-spacing: 0.5px;">INV-${invoice.id.substring(0,8).toUpperCase()}</p>
           </div>
           <div style="text-align: right;">
-            <h2 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Your Agency</h2>
-            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0 0; line-height: 1.5;">
-              123 Business Avenue<br>
-              Tech District, NY 10001<br>
-              billing@youragency.com
+            <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Sreehisoft Agency</h2>
+            <p style="color: #475569; font-size: 13px; margin: 6px 0 0 0; line-height: 1.6;">
+              123 Innovation Drive<br>
+              Tech Park, Suite 400<br>
+              San Francisco, CA 94105<br>
+              contact@sreehisoft.com<br>
+              +1 (555) 123-4567
             </p>
           </div>
         </div>
         
         <!-- Divider -->
-        <div style="height: 1px; background: #e2e8f0; margin-bottom: 40px;"></div>
+        <div style="height: 2px; background: #f1f5f9; margin-bottom: 40px;"></div>
         
         <!-- Billing Details -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 50px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 40px; background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #f1f5f9;">
           <div style="flex: 1;">
-            <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 8px 0;">Billed To</p>
-            <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #0f172a;">${clientProfile.companyName}</h3>
-            <p style="margin: 4px 0 0 0; color: #475569; font-size: 14px;">Attn: ${clientProfile.clientName}</p>
+            <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 10px 0;">Billed To</p>
+            <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #0f172a;">${clientProfile.companyName || 'Client Company'}</h3>
+            <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.5; font-weight: 500;">Attn: ${clientProfile.clientName}</p>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px; line-height: 1.5;">
+              Client Address Line 1<br>
+              City, State, ZIP
+            </p>
           </div>
           <div style="display: flex; gap: 40px; text-align: right;">
             <div>
-              <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 8px 0;">Invoice Date</p>
-              <p style="margin: 0; font-size: 15px; font-weight: 500; color: #0f172a;">${new Date(invoice.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 10px 0;">Invoice Date</p>
+              <p style="margin: 0; font-size: 15px; font-weight: 600; color: #0f172a;">${new Date(invoice.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div>
-              <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 8px 0;">Due Date</p>
-              <p style="margin: 0; font-size: 15px; font-weight: 600; color: ${invoice.status === 'OVERDUE' ? '#ef4444' : '#0f172a'};">${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Upon Receipt'}</p>
+              <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 10px 0;">Due Date</p>
+              <p style="margin: 0; font-size: 15px; font-weight: 700; color: ${invoice.status === 'OVERDUE' ? '#ef4444' : '#0f172a'};">${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Upon Receipt'}</p>
             </div>
           </div>
         </div>
         
         <!-- Items Table -->
-        <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 30px;">
-          <table style="width: 100%; border-collapse: collapse;">
+        <div style="margin-bottom: 40px;">
+          <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                <th style="padding: 16px 20px; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: left;">Description</th>
-                <th style="padding: 16px 20px; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">Qty</th>
-                <th style="padding: 16px 20px; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">Rate</th>
-                <th style="padding: 16px 20px; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">Amount</th>
+              <tr>
+                <th style="padding: 12px 16px; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: left; border-bottom: 2px solid #e2e8f0;">Description</th>
+                <th style="padding: 12px 16px; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center; border-bottom: 2px solid #e2e8f0;">Qty</th>
+                <th style="padding: 12px 16px; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: right; border-bottom: 2px solid #e2e8f0;">Rate</th>
+                <th style="padding: 12px 16px; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: right; border-bottom: 2px solid #e2e8f0;">Amount</th>
               </tr>
             </thead>
             <tbody>
               ${invoice.items.map((item, index) => `
-                <tr style="${index !== invoice.items.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : ''}">
-                  <td style="padding: 16px 20px; font-size: 14px; color: #1e293b; font-weight: 500;">${item.description}</td>
-                  <td style="padding: 16px 20px; font-size: 14px; color: #475569; text-align: center;">${item.quantity}</td>
-                  <td style="padding: 16px 20px; font-size: 14px; color: #475569; text-align: right;">${invoice.currency} ${item.rate.toLocaleString()}</td>
-                  <td style="padding: 16px 20px; font-size: 14px; color: #0f172a; font-weight: 600; text-align: right;">${invoice.currency} ${item.amount.toLocaleString()}</td>
+                <tr>
+                  <td style="padding: 16px; font-size: 14px; color: #0f172a; font-weight: 500; border-bottom: 1px solid #f1f5f9;">${item.description}</td>
+                  <td style="padding: 16px; font-size: 14px; color: #475569; text-align: center; border-bottom: 1px solid #f1f5f9;">${item.quantity}</td>
+                  <td style="padding: 16px; font-size: 14px; color: #475569; text-align: right; border-bottom: 1px solid #f1f5f9;">${invoice.currency} ${item.rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                  <td style="padding: 16px; font-size: 14px; color: #0f172a; font-weight: 600; text-align: right; border-bottom: 1px solid #f1f5f9;">${invoice.currency} ${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
         </div>
         
-        <!-- Totals -->
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 50px;">
-          <div style="width: 320px;">
-            <div style="display: flex; justify-content: space-between; padding: 12px 20px; color: #475569; font-size: 14px;">
-              <span>Subtotal</span>
-              <span>${invoice.currency} ${invoice.amount.toLocaleString()}</span>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+          <!-- Payment Info -->
+          <div style="width: 50%; padding-right: 40px;">
+            <p style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0 0 12px 0;">Payment Details</p>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #f1f5f9;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 4px 0; color: #64748b; font-size: 12px; width: 40%;">Bank Name:</td>
+                  <td style="padding: 4px 0; color: #0f172a; font-size: 12px; font-weight: 600;">Global Tech Bank</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; color: #64748b; font-size: 12px;">Account Name:</td>
+                  <td style="padding: 4px 0; color: #0f172a; font-size: 12px; font-weight: 600;">Sreehisoft LLC</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; color: #64748b; font-size: 12px;">Account Number:</td>
+                  <td style="padding: 4px 0; color: #0f172a; font-size: 12px; font-weight: 600;">xxxx-xxxx-1234</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; color: #64748b; font-size: 12px;">Routing / SWIFT:</td>
+                  <td style="padding: 4px 0; color: #0f172a; font-size: 12px; font-weight: 600;">GTBXXX</td>
+                </tr>
+              </table>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 16px 20px; background: #f8fafc; border-radius: 8px; margin-top: 8px;">
-              <span style="font-weight: 600; font-size: 16px; color: #0f172a;">Total Due</span>
-              <span style="font-weight: 700; font-size: 20px; color: #0f172a;">${invoice.currency} ${invoice.amount.toLocaleString()}</span>
+          </div>
+
+          <!-- Totals -->
+          <div style="width: 40%;">
+            <div style="display: flex; justify-content: space-between; padding: 8px 16px; color: #475569; font-size: 14px;">
+              <span>Subtotal</span>
+              <span style="font-weight: 500;">${invoice.currency} ${invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 16px; color: #475569; font-size: 14px;">
+              <span>Tax (0%)</span>
+              <span style="font-weight: 500;">${invoice.currency} 0.00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 16px; background: #0f172a; color: white; border-radius: 8px; margin-top: 12px; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);">
+              <span style="font-weight: 600; font-size: 16px;">Total Due</span>
+              <span style="font-weight: 700; font-size: 20px;">${invoice.currency} ${invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             
             ${invoice.status === 'PAID' ? `
@@ -210,15 +245,20 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
         
         <!-- Notes -->
         ${invoice.notes ? `
-          <div style="padding: 24px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-            <p style="margin: 0 0 8px 0; color: #0f172a; font-weight: 600; font-size: 14px;">Notes</p>
-            <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.6;">${invoice.notes}</p>
+          <div style="padding: 24px; background: #fff8f1; border-radius: 8px; border: 1px solid #ffedd5; margin-bottom: 40px;">
+            <p style="margin: 0 0 8px 0; color: #9a3412; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Notes & Terms</p>
+            <p style="margin: 0; color: #c2410c; font-size: 13px; line-height: 1.6;">${invoice.notes}</p>
           </div>
-        ` : ''}
+        ` : `
+          <div style="padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #f1f5f9; margin-bottom: 40px;">
+            <p style="margin: 0 0 6px 0; color: #64748b; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Terms & Conditions</p>
+            <p style="margin: 0; color: #475569; font-size: 12px; line-height: 1.5;">Please pay within 15 days of receiving this invoice. Late payments may be subject to a 1.5% monthly fee.</p>
+          </div>
+        `}
         
         <!-- Footer -->
-        <div style="margin-top: 60px; text-align: center; color: #94a3b8; font-size: 12px;">
-          <p style="margin: 0;">Thank you for your business.</p>
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 13px; font-weight: 500;">
+          <p style="margin: 0;">Thank you for your business. We appreciate working with you.</p>
         </div>
       </div>
     `

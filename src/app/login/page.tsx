@@ -5,80 +5,101 @@ import { loginAction } from "@/app/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Eye, EyeOff } from "lucide-react"
+import Image from "next/image"
+import bgImage from "../../../public/login-bg.png"
 
 export default function LoginPage() {
   const [state, action, isPending] = useActionState(loginAction, undefined)
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-card border-border shadow-xl rounded-2xl">
-        <CardHeader className="space-y-2 pt-8 pb-4">
-          <CardTitle className="text-3xl font-bold tracking-[-0.02em] text-center text-foreground">Dexze Portal</CardTitle>
-          <CardDescription className="text-muted-foreground text-center text-base">
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <form action={action}>
-          <CardContent className="space-y-5 px-8">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-semibold">Email</Label>
-              <Input 
-                id="email" 
-                name="email"
-                type="email" 
-                placeholder="client@company.com" 
-                required 
-                className="bg-muted/50 border-border placeholder:text-muted-foreground focus-visible:ring-primary h-11"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-semibold">Password</Label>
-              <div className="relative">
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
+        <Image
+          src={bgImage}
+          alt="Abstract Background"
+          fill
+          priority
+          className="object-cover opacity-90"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
+        <div className="absolute bottom-12 left-12 right-12 text-white">
+          <h2 className="text-4xl font-bold mb-4 tracking-tight">Dexze Portal</h2>
+          <p className="text-lg text-zinc-300 max-w-md">
+            Manage your clients, track progress, and securely share deliverables all in one place.
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-white border-none shadow-sm rounded-2xl">
+          <CardHeader className="space-y-1 pt-12 pb-8">
+            <CardTitle className="text-3xl font-medium text-center text-gray-900">Welcome back</CardTitle>
+          </CardHeader>
+          <form action={action}>
+            <CardContent className="space-y-5 px-10">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[14px] font-medium text-gray-700">E-mail</Label>
                 <Input 
-                  id="password" 
-                  name="password"
-                  type={showPassword ? "text" : "password"} 
+                  id="email" 
+                  name="email"
+                  type="email" 
+                  placeholder="name@example.com" 
                   required 
-                  className="bg-muted/50 border-border focus-visible:ring-primary h-11 pr-10"
+                  className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors"
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
               </div>
-            </div>
-            {state?.error && (
-              <p className="text-sm font-medium text-destructive text-center">{state.error}</p>
-            )}
-          </CardContent>
-          <CardFooter className="px-8 pb-8 pt-4">
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isPending}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </>
-              ) : (
-                "Sign In"
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-[14px] font-medium text-gray-700">Password</Label>
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    name="password"
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 pr-12 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-[15px] w-[15px]" />
+                    ) : (
+                      <Eye className="h-[15px] w-[15px]" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              {state?.error && (
+                <p className="text-[14px] font-medium text-red-500 text-center pt-2">{state.error}</p>
               )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+              
+              <div className="pt-4 pb-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#2ea3f2] hover:bg-[#258bce] text-white h-12 rounded-lg text-[15px] font-medium transition-colors" 
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </>
+                  ) : (
+                    "Continue"
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </form>
+        </Card>
+      </div>
     </div>
   )
 }

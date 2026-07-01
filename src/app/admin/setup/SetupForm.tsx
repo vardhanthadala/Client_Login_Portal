@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { setupAdminAction } from "@/app/actions/setup"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Label } from "@/components/ui/label"
 
 export default function SetupForm() {
   const [loading, setLoading] = useState(false)
@@ -32,31 +33,25 @@ export default function SetupForm() {
   }
 
   return (
-    <Card className="w-full max-w-md bg-white shadow-xl">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold tracking-tight">Setup Admin Account</CardTitle>
-        <CardDescription>
-          Create the master admin account for this portal. Once created, this setup page will be locked.
-        </CardDescription>
+    <Card className="w-full max-w-md bg-white border-none shadow-sm rounded-2xl">
+      <CardHeader className="space-y-1 pt-12 pb-8">
+        <CardTitle className="text-3xl font-medium text-center text-gray-900">Setup Admin</CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSetup} className="space-y-4">
+      <form onSubmit={handleSetup}>
+        <CardContent className="space-y-5 px-10">
           <div className="space-y-2">
-            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
-              Email
-            </label>
+            <Label htmlFor="email" className="text-[14px] font-medium text-gray-700">E-mail</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="admin@youragency.com"
+              placeholder="name@example.com"
               required
+              className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
-              Password
-            </label>
+            <Label htmlFor="password" className="text-[14px] font-medium text-gray-700">Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -65,26 +60,38 @@ export default function SetupForm() {
                 placeholder="••••••••"
                 required
                 minLength={8}
-                className="pr-10"
+                className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 pr-12 transition-colors"
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-[15px] w-[15px]" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-[15px] w-[15px]" />
                 )}
               </button>
             </div>
+          <div className="pt-4 pb-2">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full bg-[#2ea3f2] hover:bg-[#258bce] text-white h-12 rounded-lg text-[15px] font-medium transition-colors"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Account"
+              )}
+            </Button>
           </div>
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Creating..." : "Create Admin Account"}
-          </Button>
-        </form>
-      </CardContent>
+        </CardContent>
+      </form>
     </Card>
   )
 }

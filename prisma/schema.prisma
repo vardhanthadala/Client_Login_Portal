@@ -69,6 +69,7 @@ model BrandAsset {
   
   type            String        // e.g. "LOGO_DARK", "LOGO_LIGHT", "BRAND_GUIDELINES", "IMAGE", "VIDEO"
   fileUrl         String
+  description     String?       // Optional description provided by the client
   
   createdAt       DateTime      @default(now())
 }

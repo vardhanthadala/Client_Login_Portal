@@ -143,7 +143,7 @@ export async function submitWizardAction(data: any) {
   }
 }
 
-export async function addBrandAssetAction(fileUrl: string, fileName: string) {
+export async function addBrandAssetAction(fileUrl: string, fileName: string, description?: string) {
   try {
     const reqCookies = await cookies()
     const reqHeaders = await headers()
@@ -168,6 +168,7 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string) {
         clientProfileId: clientProfile.id,
         type: fileName,
         fileUrl: fileUrl,
+        description: description || null,
       }
     })
 
@@ -178,6 +179,6 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string) {
     return { success: true }
   } catch (error: any) {
     console.error("Failed to add asset:", error)
-    return { error: "Failed to add asset" }
+    return { error: `Failed to add asset: ${error.message || error.toString()}` }
   }
 }
