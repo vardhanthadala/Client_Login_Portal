@@ -8,7 +8,16 @@ import { Label } from "@/components/ui/label"
 import { createApprovalAction, resubmitApprovalItemAction, deleteApprovalAction } from "@/app/actions/approvals"
 import { Loader2, Plus, Upload, Trash2, ExternalLink, RefreshCw, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp, X, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner"
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 type ApprovalFeedback = {
   id: string
   action: string
@@ -147,10 +156,20 @@ export default function ManageApprovals({
     setResubmitUploading(false)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this entire approval batch?")) return
+  const [deleteApprovalId, setDeleteApprovalId] = useState<string | null>(null)
+  const isDeleting = deleteApprovalId !== null
+
+  const confirmDelete = async () => {
+    if (!deleteApprovalId) return
+    const id = deleteApprovalId
     setApprovals(approvals.filter(a => a.id !== id))
     await deleteApprovalAction(id)
+    setDeleteApprovalId(null)
+    toast.success("Approval batch deleted")
+  }
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteApprovalId(id)
   }
 
   const isImage = (fileType: string) => fileType.startsWith("image/")
@@ -272,7 +291,7 @@ export default function ManageApprovals({
                         {batchStatus.label}
                       </span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(approval.id) }}
+                        onClick={(e) => { e.stopPropagation(); handleDeleteClick(approval.id) }}
                         className="text-destructive hover:text-destructive/80 p-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -369,6 +388,23 @@ export default function ManageApprovals({
           )
         )}
       </CardContent>
+      <AlertDialog open={deleteApprovalId !== null} onOpenChange={(open) => !open && setDeleteApprovalId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Approval Batch?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this entire approval batch? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

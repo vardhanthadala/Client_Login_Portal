@@ -8,7 +8,16 @@ import { Label } from "@/components/ui/label"
 import { createProjectAction, updateProjectStageAction, deleteProjectAction, generateProjectPhasesAction } from "@/app/actions/projects"
 import { Loader2, Plus, ArrowRight, ArrowLeft, Trash2, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 type Project = {
   id: string
   name: string
@@ -84,11 +93,24 @@ export default function ManageProjects({
     }
   }
 
-  const handleDelete = async (projectId: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return
-    
-    setProjects(projects.filter(p => p.id !== projectId))
-    await deleteProjectAction(projectId, clientProfileId)
+  const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null)
+  const isDeleting = deleteProjectId !== null
+
+  const confirmDelete = async () => {
+    if (!deleteProjectId) return
+    const idToDelete = deleteProjectId
+    setProjects(projects.filter(p => p.id !== idToDelete))
+    const res = await deleteProjectAction(idToDelete, clientProfileId)
+    if (!res?.success) {
+      toast.error("Failed to delete project")
+    } else {
+      toast.success("Project deleted")
+    }
+    setDeleteProjectId(null)
+  }
+
+  const handleDeleteClick = (projectId: string) => {
+    setDeleteProjectId(projectId)
   }
 
   return (
@@ -192,7 +214,7 @@ export default function ManageProjects({
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      onClick={() => handleDelete(project.id)}
+                      onClick={() => handleDeleteClick(project.id)}
                       className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -210,6 +232,23 @@ export default function ManageProjects({
           )
         )}
       </CardContent>
+      <AlertDialog open={deleteProjectId !== null} onOpenChange={(open) => !open && setDeleteProjectId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this project? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

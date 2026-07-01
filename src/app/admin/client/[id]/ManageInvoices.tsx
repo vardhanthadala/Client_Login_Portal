@@ -8,7 +8,16 @@ import { Label } from "@/components/ui/label"
 import { createInvoiceAction, deleteInvoiceAction, updateInvoiceStatusAction } from "@/app/actions/invoices"
 import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send } from "lucide-react"
 import { toast } from "sonner"
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 type InvoiceItem = {
   id: string
   description: string
@@ -105,10 +114,20 @@ export default function ManageInvoices({
     setIsSaving(false)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this invoice?")) return
+  const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null)
+  const isDeleting = deleteInvoiceId !== null
+
+  const confirmDelete = async () => {
+    if (!deleteInvoiceId) return
+    const id = deleteInvoiceId
     setInvoices(invoices.filter(i => i.id !== id))
     await deleteInvoiceAction(id)
+    setDeleteInvoiceId(null)
+    toast.success("Invoice deleted")
+  }
+
+  const handleDeleteClick = (id: string) => {
+    setDeleteInvoiceId(id)
   }
 
   const handleStatusChange = async (id: string, status: string) => {
@@ -268,7 +287,7 @@ export default function ManageInvoices({
                         <option value="CANCELLED">Cancelled</option>
                       </select>
                     </div>
-                    <button onClick={() => handleDelete(invoice.id)} className="text-destructive hover:text-destructive/80 p-2 rounded-full hover:bg-destructive/10 transition-colors">
+                    <button onClick={() => handleDeleteClick(invoice.id)} className="text-destructive hover:text-destructive/80 p-2 rounded-full hover:bg-destructive/10 transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -284,6 +303,23 @@ export default function ManageInvoices({
           )
         )}
       </CardContent>
+      <AlertDialog open={deleteInvoiceId !== null} onOpenChange={(open) => !open && setDeleteInvoiceId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Invoice?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this invoice? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }
