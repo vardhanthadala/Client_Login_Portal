@@ -28,7 +28,11 @@ export async function createInvoiceAction(data: {
 }) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the client profile belongs to this admin's tenant
+    const profile = await prisma.clientProfile.findUnique({ where: { id: data.clientProfileId } })
+    if (!profile || profile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     // Calculate total amount
     const totalAmount = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0)
@@ -68,7 +72,14 @@ export async function createInvoiceAction(data: {
 export async function deleteInvoiceAction(invoiceId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the invoice belongs to this admin's tenant
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: { clientProfile: true }
+    })
+    if (!invoice || invoice.clientProfile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     await prisma.invoice.delete({
       where: { id: invoiceId }
@@ -87,7 +98,14 @@ export async function deleteInvoiceAction(invoiceId: string) {
 export async function updateInvoiceStatusAction(invoiceId: string, status: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the invoice belongs to this admin's tenant
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: { clientProfile: true }
+    })
+    if (!invoice || invoice.clientProfile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     await prisma.invoice.update({
       where: { id: invoiceId },

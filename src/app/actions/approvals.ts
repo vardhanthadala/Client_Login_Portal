@@ -26,7 +26,11 @@ export async function createApprovalAction(
 ) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the client profile belongs to this admin's tenant
+    const profile = await prisma.clientProfile.findUnique({ where: { id: clientProfileId } })
+    if (!profile || profile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     const approval = await prisma.approval.create({
       data: {
@@ -154,7 +158,14 @@ export async function resubmitApprovalItemAction(
 export async function deleteApprovalAction(approvalId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the approval belongs to this admin's tenant
+    const approval = await prisma.approval.findUnique({
+      where: { id: approvalId },
+      include: { clientProfile: true }
+    })
+    if (!approval || approval.clientProfile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     await prisma.approval.delete({
       where: { id: approvalId }

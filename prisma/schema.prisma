@@ -10,15 +10,38 @@ datasource db {
 }
 
 enum Role {
+  SUPER_ADMIN
   ADMIN
   CLIENT
 }
+
+model Tenant {
+  id                 String   @id @default(uuid())
+  name               String   // Agency Name
+  subscriptionPlan   String   @default("FREE")
+  subscriptionStatus String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  subscriptionStart  DateTime?
+  subscriptionEnd    DateTime?
+  
+  razorpayCustomerId      String?
+  razorpaySubscriptionId  String?
+  
+  users              User[]
+  clientProfiles     ClientProfile[]
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
 
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
   passwordHash String
   role         Role           @default(CLIENT)
+  mustChangePassword Boolean  @default(false)
+  tenantId     String?
+  tenant       Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   
@@ -30,6 +53,8 @@ model ClientProfile {
   id          String   @id @default(uuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
   companyName String
   clientName  String

@@ -21,7 +21,11 @@ async function getAuthSession() {
 export async function createProjectAction(clientProfileId: string, name: string, stages: string[]) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the client profile belongs to this admin's tenant
+    const profile = await prisma.clientProfile.findUnique({ where: { id: clientProfileId } })
+    if (!profile || profile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     const project = await prisma.project.create({
       data: {
@@ -44,7 +48,14 @@ export async function createProjectAction(clientProfileId: string, name: string,
 export async function updateProjectStageAction(projectId: string, currentStageIdx: number, clientProfileId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the project belongs to this admin's tenant
+    const existingProject = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: { clientProfile: true }
+    })
+    if (!existingProject || existingProject.clientProfile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     const project = await prisma.project.update({
       where: { id: projectId },
@@ -64,7 +75,14 @@ export async function updateProjectStageAction(projectId: string, currentStageId
 export async function deleteProjectAction(projectId: string, clientProfileId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // Verify the project belongs to this admin's tenant
+    const existingProject = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: { clientProfile: true }
+    })
+    if (!existingProject || existingProject.clientProfile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     await prisma.project.delete({
       where: { id: projectId }

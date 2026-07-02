@@ -47,6 +47,11 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
     return notFound()
   }
 
+  // Tenant isolation: ensure this client belongs to the admin's tenant
+  if (token?.tenantId && client.tenantId !== token.tenantId) {
+    return notFound()
+  }
+
   const { clientProfile } = client
   const aiSummary = clientProfile.aiAnalysis?.summary as any || {}
   const qna = clientProfile.questionnaire?.qna as any || {}

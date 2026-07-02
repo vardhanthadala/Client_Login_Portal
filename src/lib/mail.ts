@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 
 const ADMIN_EMAIL = process.env.SMTP_USER || "vardhan.thadala23@gmail.com"
 
-export async function sendWelcomeEmail(toEmail: string, tempPassword: string) {
+export async function sendWelcomeEmail(toEmail: string, tempPassword: string, agencyName: string = "Our Platform") {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
     console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping welcome email to ${toEmail}.`)
     return { success: false, error: "SMTP credentials not set." }
@@ -19,14 +19,14 @@ export async function sendWelcomeEmail(toEmail: string, tempPassword: string) {
 
   try {
     const info = await transporter.sendMail({
-      from: `"Dexze Portal" <${process.env.SMTP_USER}>`,
+      from: `"${agencyName} Portal" <${process.env.SMTP_USER}>`,
       to: toEmail,
-      subject: "Welcome to Dexze! Your Client Portal Access",
+      subject: `Welcome to ${agencyName}! Your Admin Access`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #465fff;">Welcome to Dexze!</h1>
-          <p>We are thrilled to start working with you. Your client portal is ready.</p>
-          <p>You can access your personalized dashboard and begin the onboarding process here:</p>
+          <h1 style="color: #465fff;">Welcome to ${agencyName}!</h1>
+          <p>We are thrilled to have you on board. Your agency workspace is ready.</p>
+          <p>You can access your new admin dashboard and begin managing your clients here:</p>
           
           <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
             <p style="margin: 0 0 8px 0;"><strong>Portal URL:</strong> <a href="http://localhost:3000/login">http://localhost:3000/login</a></p>
@@ -35,7 +35,7 @@ export async function sendWelcomeEmail(toEmail: string, tempPassword: string) {
           </div>
           
           <p>If you have any questions, please reply directly to this email.</p>
-          <p>Best regards,<br>The Dexze Team</p>
+          <p>Best regards,<br>The ${agencyName} Team</p>
         </div>
       `,
     })

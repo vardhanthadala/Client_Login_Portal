@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { auth } from "@/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -14,8 +15,14 @@ import { LuMessageCircle } from "react-icons/lu"
 import NotificationBell, { UnreadClient } from "./NotificationBell"
 
 export default async function AdminDashboard() {
+  const session = await auth()
+  const tenantId = session?.user?.tenantId
+
   const clients = await prisma.user.findMany({
-    where: { role: "CLIENT" },
+    where: { 
+      role: "CLIENT",
+      tenantId: tenantId
+    },
     orderBy: { createdAt: "desc" },
     include: {
       clientProfile: {
@@ -30,13 +37,13 @@ export default async function AdminDashboard() {
   })
 
   // For admin, we need the admin user ID to filter out admin's own messages
-  const adminUser = await prisma.user.findFirst({ where: { role: "ADMIN" }, select: { id: true } })
+  const adminUserId = session?.user?.id
 
   const unreadClientsData: UnreadClient[] = clients
     .map(c => ({
       id: c.id,
       companyName: c.clientProfile?.companyName || "Unknown Company",
-      messageCount: (c.clientProfile?.messages || []).filter(m => m.senderId !== adminUser?.id).length
+      messageCount: (c.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
     }))
     .filter(c => c.messageCount > 0)
 
@@ -71,7 +78,7 @@ export default async function AdminDashboard() {
           { label: "Total Clients", value: clients.length, icon: <GoPeople className="w-6 h-6" />, color: "bg-blue-500/10 text-blue-600" },
           { label: "Completed", value: clients.filter(c => c.clientProfile?.status === "COMPLETED").length, icon: <CiStar className="w-6 h-6" />, color: "bg-emerald-500/10 text-emerald-600" },
           { label: "In Progress", value: clients.filter(c => c.clientProfile && c.clientProfile.status !== "COMPLETED").length, icon: <GrInProgress className="w-5 h-5" />, color: "bg-amber-500/10 text-amber-600" },
-          { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUser?.id).length, 0), icon: <LuMessageCircle className="w-5 h-5" />, color: "bg-purple-500/10 text-purple-600" }
+          { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length, 0), icon: <LuMessageCircle className="w-5 h-5" />, color: "bg-purple-500/10 text-purple-600" }
         ].map((stat, i) => (
           <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center gap-4 transition-transform hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.04)]">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${stat.color}`}>
@@ -91,7 +98,7 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {clients.map((client) => {
-          const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUser?.id).length
+          const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
           return (
             <Card key={client.id} className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-200 min-w-0 overflow-hidden">
               <CardHeader className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 pb-4 px-6 sm:px-8 pt-7 gap-3">

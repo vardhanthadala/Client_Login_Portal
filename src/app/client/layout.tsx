@@ -21,13 +21,26 @@ export default async function ClientLayout({ children }: { children: React.React
 
   // Check if user still exists in DB
   const user = await prisma.user.findUnique({
-    where: { id: token.id as string }
+    where: { id: token.id as string },
+    include: { tenant: true }
   })
 
   if (!user) {
     // If the user was deleted by admin, their JWT is still in the browser.
     // Force them to sign out so the dead JWT is cleared.
     redirect("/api/force-logout")
+  }
+
+  const tenant = user.tenant
+  if (tenant && (tenant.subscriptionStatus === "EXPIRED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date()))) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+        <div className="bg-white p-8 rounded-2xl shadow max-w-md text-center border border-gray-100">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Suspended</h2>
+          <p className="text-gray-600 mb-6">Your agency's subscription has expired. Please contact them to restore access.</p>
+        </div>
+      </div>
+    )
   }
 
   return (

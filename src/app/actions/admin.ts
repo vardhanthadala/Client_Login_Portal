@@ -23,6 +23,9 @@ async function getAuthSession() {
 
 export async function inviteClientAction(formData: FormData) {
   try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
     const companyName = formData.get("companyName") as string
     const clientName = formData.get("clientName") as string
     const email = formData.get("email") as string
@@ -48,12 +51,14 @@ export async function inviteClientAction(formData: FormData) {
           email,
           passwordHash,
           role: "CLIENT",
+          tenantId: token.tenantId,
         },
       })
 
       await tx.clientProfile.create({
         data: {
           userId: user.id,
+          tenantId: token.tenantId,
           companyName,
           clientName,
           description: `Purchased: ${servicePurchased}`,
@@ -79,10 +84,10 @@ export async function inviteClientAction(formData: FormData) {
 export async function deleteClientAction(clientId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
 
     await prisma.user.delete({
-      where: { id: clientId }
+      where: { id: clientId, tenantId: token.tenantId }
     })
 
     revalidatePath("/admin/dashboard")
@@ -97,7 +102,11 @@ export async function deleteClientAction(clientId: string) {
 export async function updateClientStatusAction(clientProfileId: string, newStatus: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    // First ensure the client profile belongs to the tenant
+    const profile = await prisma.clientProfile.findUnique({ where: { id: clientProfileId } })
+    if (!profile || profile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     await prisma.clientProfile.update({
       where: { id: clientProfileId },
@@ -121,13 +130,13 @@ import { GoogleGenAI } from "@google/genai"
 export async function generateAiSummaryAction(clientProfileId: string) {
   try {
     const token = await getAuthSession()
-    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
 
     const clientProfile = await prisma.clientProfile.findUnique({
       where: { id: clientProfileId },
       include: { questionnaire: true }
     })
-    if (!clientProfile) return { error: "Profile not found" }
+    if (!clientProfile || clientProfile.tenantId !== token.tenantId) return { error: "Profile not found or unauthorized" }
 
     const qna = clientProfile.questionnaire?.qna as any || {}
     const audience = clientProfile.audience || qna?.audience || "N/A"

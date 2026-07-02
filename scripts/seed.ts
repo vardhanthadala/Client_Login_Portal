@@ -1,20 +1,21 @@
+import "dotenv/config"
 import { prisma } from "../src/lib/prisma"
 import bcrypt from "bcryptjs"
 
 async function main() {
-  const passwordHash = await bcrypt.hash("admin123", 10)
+  const passwordHash = await bcrypt.hash("8639504644", 10)
   
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@dexze.com" },
-    update: {},
+  const superadmin = await prisma.user.upsert({
+    where: { email: "vardhan.thadala23@gmail.com" },
+    update: { role: "SUPER_ADMIN", passwordHash },
     create: {
-      email: "admin@dexze.com",
+      email: "vardhan.thadala23@gmail.com",
       passwordHash,
-      role: "ADMIN",
+      role: "SUPER_ADMIN",
     },
   })
 
-  console.log({ admin })
+  console.log({ superadmin })
 }
 
 main()
