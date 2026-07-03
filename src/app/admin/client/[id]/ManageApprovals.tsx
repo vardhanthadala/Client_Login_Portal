@@ -316,7 +316,7 @@ export default function ManageApprovals({
                               {/* Thumbnail */}
                               <div className="w-14 h-14 rounded-md overflow-hidden border border-border bg-muted/30 flex items-center justify-center shrink-0">
                                 {isImage(item.fileType) ? (
-                                  <img src={item.fileUrl} alt={item.fileName} className="w-full h-full object-cover" />
+                                  <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
                                 ) : (
                                   <p className="text-[10px] font-bold text-muted-foreground uppercase">{item.fileType.split("/")[1]?.slice(0, 4)}</p>
                                 )}
@@ -331,7 +331,7 @@ export default function ManageApprovals({
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                  <a href={item.fileUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary font-semibold hover:underline flex items-center gap-1">
+                                  <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer" className="text-[10px] text-primary font-semibold hover:underline flex items-center gap-1">
                                     <ExternalLink className="w-2.5 h-2.5" /> View
                                   </a>
                                   {item.status === "CHANGES_REQUESTED" && (

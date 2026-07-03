@@ -12,6 +12,8 @@ type ApprovalFeedback = {
   action: string
   comment: string | null
   createdAt: string
+  x?: number | null
+  y?: number | null
 }
 
 type ApprovalItem = {
@@ -160,9 +162,9 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
                             {/* Preview */}
                             <div className="w-full sm:w-36 h-28 rounded-lg overflow-hidden border border-border bg-muted/30 flex items-center justify-center shrink-0">
                               {isImage(item.fileType) ? (
-                                <img src={item.fileUrl} alt={item.fileName} className="w-full h-full object-cover" />
+                                <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
                               ) : isVideo(item.fileType) ? (
-                                <video src={item.fileUrl} className="w-full h-full object-cover" muted />
+                                <video src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} className="w-full h-full object-cover" muted />
                               ) : (
                                 <div className="text-center p-3">
                                   <p className="text-base font-bold text-muted-foreground uppercase">{item.fileType.split("/")[1]?.slice(0, 4) || "FILE"}</p>
@@ -182,12 +184,12 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
 
                               {/* Actions */}
                               <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                <a href={item.fileUrl} target="_blank" rel="noreferrer">
+                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer">
                                   <Button variant="outline" size="sm" className="gap-1 text-xs h-7 px-2">
                                     <ExternalLink className="w-3 h-3" /> View Full
                                   </Button>
                                 </a>
-                                <a href={`/api/download?url=${encodeURIComponent(item.fileUrl)}`} download>
+                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}&download=true`} download>
                                   <Button variant="outline" size="sm" className="gap-1 text-xs h-7 px-2">
                                     <Download className="w-3 h-3" /> Download
                                   </Button>

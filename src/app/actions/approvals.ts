@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache"
 async function getAuthSession() {
   const reqCookies = await cookies()
   const reqHeaders = await headers()
-  
+
   const req = {
     cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
     headers: Object.fromEntries(reqHeaders.entries())
