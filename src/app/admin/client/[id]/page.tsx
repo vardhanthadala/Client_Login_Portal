@@ -270,9 +270,9 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
           </div>
         </TabsContent>
 
-        <TabsContent value="projects" className="mt-0 outline-none">
-          <ManageProjects clientProfileId={clientProfile.id} initialProjects={clientProfile.projects as any} />
-        </TabsContent>
+          <TabsContent value="projects" className="mt-8 m-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <ManageProjects clientProfileId={clientProfile.id} initialProjects={clientProfile.projects as any} />
+          </TabsContent>
 
         <TabsContent value="approvals" className="mt-0 outline-none">
           <ManageApprovals clientProfileId={clientProfile.id} initialApprovals={clientProfile.approvals as any} />
