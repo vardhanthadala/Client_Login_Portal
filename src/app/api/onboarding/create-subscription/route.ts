@@ -9,7 +9,7 @@ const razorpay = new Razorpay({
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, agencyName, planType } = await req.json()
+    const { email, agencyName, planType, currency } = await req.json()
 
     if (!email || !agencyName) {
       return NextResponse.json({ error: "Email and Agency Name are required" }, { status: 400 })
@@ -23,9 +23,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "An account with this email already exists. Please log in." }, { status: 400 })
     }
 
-    // Default to monthly if planType isn't provided (for backwards compatibility)
+    // Select plan ID based on billing cycle and currency
     const isYearly = planType === "YEARLY";
-    const planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY : process.env.RAZORPAY_PLAN_ID_MONTHLY;
+    const isUSD = currency === "USD";
+    
+    let planId;
+    if (isUSD) {
+      planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY_USD : process.env.RAZORPAY_PLAN_ID_MONTHLY_USD;
+    } else {
+      planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY : process.env.RAZORPAY_PLAN_ID_MONTHLY;
+    }
 
     if (!planId) {
       return NextResponse.json({ error: `Razorpay Plan ID not configured for ${isYearly ? 'yearly' : 'monthly'} plan` }, { status: 500 })

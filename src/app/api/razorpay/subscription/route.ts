@@ -23,10 +23,18 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}));
     const planType = body.planType || "MONTHLY";
+    const currency = body.currency || "INR";
 
-    // Select correct plan ID based on planType
+    // Select correct plan ID based on planType and currency
     const isYearly = planType === "YEARLY";
-    const planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY : process.env.RAZORPAY_PLAN_ID_MONTHLY;
+    const isUSD = currency === "USD";
+
+    let planId;
+    if (isUSD) {
+      planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY_USD : process.env.RAZORPAY_PLAN_ID_MONTHLY_USD;
+    } else {
+      planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY : process.env.RAZORPAY_PLAN_ID_MONTHLY;
+    }
     
     if (!planId) {
       return NextResponse.json({ error: `Razorpay Plan ID not configured for ${planType}` }, { status: 500 })

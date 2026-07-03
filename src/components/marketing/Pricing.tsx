@@ -7,6 +7,18 @@ import { CheckoutModal } from "./CheckoutModal"
 
 export function Pricing() {
   const [isYearly, setIsYearly] = useState(false)
+  const [currency, setCurrency] = useState<"INR" | "USD">("INR")
+
+  const getPrice = () => {
+    if (currency === "USD") {
+      return isYearly ? 990 : 99;
+    }
+    return isYearly ? 21000 : 2500;
+  }
+
+  const getSymbol = () => currency === "USD" ? "$" : "₹";
+  
+  const currentPriceStr = `${getSymbol()}${getPrice()}/${isYearly ? 'year' : 'month'}`;
 
   return (
     <div id="pricing" className="bg-gray-50 py-24 sm:py-32">
@@ -16,23 +28,43 @@ export function Pricing() {
           <p className="mt-6 text-lg leading-8 text-gray-600">
             One flat rate to manage all your company&apos;s clients. Choose what works best for you.
           </p>
-          <div className="mt-8 flex justify-center items-center gap-4">
-            <span className={`text-sm font-semibold ${!isYearly ? 'text-gray-900' : 'text-gray-500'}`}>Monthly</span>
-            <button
-              type="button"
-              className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-[#5A52FF] transition-colors duration-200 ease-in-out focus:outline-none"
-              role="switch"
-              aria-checked={isYearly}
-              onClick={() => setIsYearly(!isYearly)}
-            >
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isYearly ? 'translate-x-5' : 'translate-x-0'}`}
-              />
-            </button>
-            <span className={`text-sm font-semibold ${isYearly ? 'text-gray-900' : 'text-gray-500'}`}>
-              Yearly <span className="text-[#5A52FF] bg-blue-50 px-2 py-0.5 rounded-full text-xs ml-1">Save 30%</span>
-            </span>
+          
+          <div className="mt-8 flex justify-center items-center gap-8 flex-col sm:flex-row">
+            {/* Currency Toggle */}
+            <div className="flex bg-gray-200 rounded-full p-1">
+              <button 
+                onClick={() => setCurrency("INR")}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${currency === "INR" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              >
+                INR (₹)
+              </button>
+              <button 
+                onClick={() => setCurrency("USD")}
+                className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${currency === "USD" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              >
+                USD ($)
+              </button>
+            </div>
+
+            {/* Billing Cycle Toggle */}
+            <div className="flex items-center gap-4">
+              <span className={`text-sm font-semibold ${!isYearly ? 'text-gray-900' : 'text-gray-500'}`}>Monthly</span>
+              <button
+                type="button"
+                className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-[#5A52FF] transition-colors duration-200 ease-in-out focus:outline-none"
+                role="switch"
+                aria-checked={isYearly}
+                onClick={() => setIsYearly(!isYearly)}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isYearly ? 'translate-x-5' : 'translate-x-0'}`}
+                />
+              </button>
+              <span className={`text-sm font-semibold ${isYearly ? 'text-gray-900' : 'text-gray-500'}`}>
+                Yearly <span className="text-[#5A52FF] bg-blue-50 px-2 py-0.5 rounded-full text-xs ml-1">Save {currency === "USD" ? "15%" : "30%"}</span>
+              </span>
+            </div>
           </div>
         </div>
         <motion.div 
@@ -63,13 +95,14 @@ export function Pricing() {
               <div className="mx-auto max-w-xs px-8">
                 <p className="text-base font-semibold text-gray-600">Pay {isYearly ? 'yearly' : 'monthly'}, cancel anytime</p>
                 <p className="mt-6 flex items-baseline justify-center gap-x-2">
-                  <span className="text-5xl font-bold tracking-tight text-gray-900">₹{isYearly ? '21000' : '2500'}</span>
+                  <span className="text-5xl font-bold tracking-tight text-gray-900">{getSymbol()}{getPrice()}</span>
                   <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">/{isYearly ? 'year' : 'month'}</span>
                 </p>
                 <div className="mt-10">
                   <CheckoutModal 
                     planType={isYearly ? 'YEARLY' : 'MONTHLY'} 
-                    price={isYearly ? '₹21000/year' : '₹2500/month'}
+                    price={currentPriceStr}
+                    currency={currency}
                   />
                 </div>
                 <p className="mt-6 text-xs leading-5 text-gray-600">

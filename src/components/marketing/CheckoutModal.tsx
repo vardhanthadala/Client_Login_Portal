@@ -25,13 +25,15 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 import Script from "next/script"
+import Link from "next/link"
 
 interface CheckoutModalProps {
   planType?: "MONTHLY" | "YEARLY";
   price?: string;
+  currency?: "INR" | "USD";
 }
 
-export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month" }: CheckoutModalProps) {
+export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", currency = "INR" }: CheckoutModalProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -66,7 +68,7 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month" }:
       const res = await fetch("/api/onboarding/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, planType })
+        body: JSON.stringify({ ...data, planType, currency })
       })
       const apiData = await res.json()
 
@@ -202,8 +204,13 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month" }:
               </div>
 
               {error && (
-                <div className="p-3 rounded bg-red-50 text-sm text-red-500 font-medium border border-red-100">
-                  {error}
+                <div className="p-4 rounded bg-red-50 text-sm text-red-600 font-medium border border-red-100 flex flex-col items-start gap-3">
+                  <p>{error}</p>
+                  {error.includes("already exists") && (
+                    <Link href="/login" className="bg-white border border-red-200 text-red-700 px-4 py-2 rounded-md hover:bg-red-50 transition-colors shadow-sm">
+                      Go to Login
+                    </Link>
+                  )}
                 </div>
               )}
 

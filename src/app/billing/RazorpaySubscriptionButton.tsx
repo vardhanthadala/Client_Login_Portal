@@ -8,6 +8,7 @@ import { toast } from "sonner" // assuming sonner is used, or fallback to alert
 export default function RazorpaySubscriptionButton() {
   const [loading, setLoading] = useState(false)
   const [planType, setPlanType] = useState<"MONTHLY" | "YEARLY">("MONTHLY")
+  const [currency, setCurrency] = useState<"INR" | "USD">("INR")
   const router = useRouter()
 
   const handleSubscribe = async () => {
@@ -17,7 +18,7 @@ export default function RazorpaySubscriptionButton() {
       const response = await fetch("/api/razorpay/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType })
+        body: JSON.stringify({ planType, currency })
       })
       const data = await response.json()
 
@@ -39,7 +40,8 @@ export default function RazorpaySubscriptionButton() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 ...response,
-                planType
+                planType,
+                currency
               })
             })
             const verifyData = await verifyRes.json()
@@ -72,6 +74,11 @@ export default function RazorpaySubscriptionButton() {
     }
   }
 
+  const getPrice = (type: "MONTHLY" | "YEARLY") => {
+    if (currency === "USD") return type === "YEARLY" ? "$990" : "$99";
+    return type === "YEARLY" ? "₹21,000" : "₹2,500";
+  }
+
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
@@ -79,17 +86,34 @@ export default function RazorpaySubscriptionButton() {
         <div className="flex bg-gray-100 rounded-lg p-1">
           <button 
             type="button"
+            onClick={() => setCurrency("INR")}
+            className={`flex-1 py-1 text-xs font-medium rounded-md transition ${currency === "INR" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            INR
+          </button>
+          <button 
+            type="button"
+            onClick={() => setCurrency("USD")}
+            className={`flex-1 py-1 text-xs font-medium rounded-md transition ${currency === "USD" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
+            USD
+          </button>
+        </div>
+        
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button 
+            type="button"
             onClick={() => setPlanType("MONTHLY")}
             className={`flex-1 py-2 text-sm font-medium rounded-md transition ${planType === "MONTHLY" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
           >
-            Monthly (₹2,500)
+            Monthly ({getPrice("MONTHLY")})
           </button>
           <button 
             type="button"
             onClick={() => setPlanType("YEARLY")}
             className={`flex-1 py-2 text-sm font-medium rounded-md transition ${planType === "YEARLY" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
           >
-            Yearly (₹21,000)
+            Yearly ({getPrice("YEARLY")})
           </button>
         </div>
         <button 
