@@ -62,6 +62,22 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
   const aiSummary = clientProfile.aiAnalysis?.summary as any || {}
   const qna = clientProfile.questionnaire?.qna as any || {}
 
+  const clientEarningsByCurrency: Record<string, number> = {}
+  ;(clientProfile.invoices || []).forEach((inv: any) => {
+    if (inv.status === "PAID") {
+      const currency = inv.currency || "USD"
+      clientEarningsByCurrency[currency] = (clientEarningsByCurrency[currency] || 0) + inv.amount
+    }
+  })
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
+  }
+
+  const clientEarningsDisplay = Object.entries(clientEarningsByCurrency).length > 0
+    ? Object.entries(clientEarningsByCurrency).map(([curr, amt]) => formatCurrency(amt, curr)).join(' + ')
+    : formatCurrency(0, "USD")
+
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32">
       <div className="max-w-screen-2xl mx-auto">
@@ -91,6 +107,10 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
                   <span className="truncate">Website</span>
                 </a>
               )}
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-[12px] sm:text-[13px] font-bold text-emerald-700 shadow-sm truncate max-w-full">
+                <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="truncate">Earnings: {clientEarningsDisplay}</span>
+              </div>
             </div>
           </div>
         </div>

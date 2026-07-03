@@ -12,8 +12,10 @@ import { GoPeople } from "react-icons/go"
 import { CiStar } from "react-icons/ci"
 import { GrInProgress } from "react-icons/gr"
 import { LuMessageCircle } from "react-icons/lu"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, DollarSign } from "lucide-react"
 import NotificationBell, { UnreadClient } from "./NotificationBell"
+import AdminAnalyticsCharts from "./AdminAnalyticsCharts"
+import { format, subMonths, isSameMonth } from "date-fns"
 
 export default async function AdminDashboard() {
   const session = await auth()
@@ -38,6 +40,10 @@ export default async function AdminDashboard() {
           messages: {
             where: { isRead: false },
             select: { id: true, senderId: true }
+          },
+          invoices: {
+            where: { status: "PAID" },
+            select: { amount: true, currency: true, createdAt: true }
           }
         }
       }
@@ -54,6 +60,53 @@ export default async function AdminDashboard() {
       messageCount: (c.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
     }))
     .filter(c => c.messageCount > 0)
+
+  // Calculate total earnings grouped by currency
+  const earningsByCurrency: Record<string, number> = {}
+  clients.forEach(client => {
+    (client.clientProfile?.invoices || []).forEach(inv => {
+      const currency = inv.currency || "USD"
+      earningsByCurrency[currency] = (earningsByCurrency[currency] || 0) + inv.amount
+    })
+  })
+
+  // Format currency properly
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
+  }
+
+  const totalEarningsDisplay = Object.entries(earningsByCurrency).length > 0
+    ? Object.entries(earningsByCurrency).map(([curr, amt]) => formatCurrency(amt, curr)).join(' + ')
+    : formatCurrency(0, "USD")
+
+  // Generate Chart Data for the last 6 months
+  const chartData = Array.from({ length: 6 }).map((_, i) => {
+    const d = subMonths(new Date(), 5 - i)
+    return {
+      month: format(d, 'MMM'),
+      date: d,
+      earnings: 0,
+      clients: 0
+    }
+  })
+
+  clients.forEach(client => {
+    // Client Growth
+    const clientDate = new Date(client.createdAt)
+    const clientMonth = chartData.find(m => isSameMonth(m.date, clientDate))
+    if (clientMonth) clientMonth.clients += 1
+
+    // Earnings Growth
+    ;(client.clientProfile?.invoices || []).forEach(inv => {
+      if (inv.createdAt) {
+        const invDate = new Date(inv.createdAt)
+        const invMonth = chartData.find(m => isSameMonth(m.date, invDate))
+        if (invMonth) {
+          invMonth.earnings += inv.amount
+        }
+      }
+    })
+  })
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32 bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-[#FAFAFA] to-[#FAFAFA]">
@@ -110,7 +163,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {[
           { label: "Total Clients", value: clients.length, icon: <GoPeople className="w-6 h-6" />, color: "bg-blue-500/10 text-blue-600" },
-          { label: "Completed", value: clients.filter(c => c.clientProfile?.status === "COMPLETED").length, icon: <CiStar className="w-6 h-6" />, color: "bg-emerald-500/10 text-emerald-600" },
+          { label: "Total Earnings", value: totalEarningsDisplay, icon: <DollarSign className="w-5 h-5" />, color: "bg-green-500/10 text-green-600" },
           { label: "In Progress", value: clients.filter(c => c.clientProfile && c.clientProfile.status !== "COMPLETED").length, icon: <GrInProgress className="w-5 h-5" />, color: "bg-amber-500/10 text-amber-600" },
           { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length, 0), icon: <LuMessageCircle className="w-5 h-5" />, color: "bg-purple-500/10 text-purple-600" }
         ].map((stat, i) => (
@@ -126,6 +179,8 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
+      <AdminAnalyticsCharts data={chartData} />
+
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-[#0F172A]">Recent Clients</h2>
       </div>
@@ -133,6 +188,16 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {clients.map((client) => {
           const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
+          
+          const clientEarningsByCurrency: Record<string, number> = {}
+          ;(client.clientProfile?.invoices || []).forEach(inv => {
+            const currency = inv.currency || "USD"
+            clientEarningsByCurrency[currency] = (clientEarningsByCurrency[currency] || 0) + inv.amount
+          })
+          const clientEarningsDisplay = Object.entries(clientEarningsByCurrency).length > 0
+            ? Object.entries(clientEarningsByCurrency).map(([curr, amt]) => formatCurrency(amt, curr)).join(' + ')
+            : formatCurrency(0, "USD")
+
           return (
             <Card key={client.id} className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-200 min-w-0 overflow-hidden">
               <CardHeader className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 pb-4 px-6 sm:px-8 pt-7 gap-3">
@@ -163,6 +228,10 @@ export default async function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="px-8 pb-7">
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Client Earnings:</span>
+                  <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{clientEarningsDisplay}</span>
+                </div>
                 <div className="flex flex-row items-center gap-3 pt-6 border-t border-[#F1F5F9]">
                   <Link href={`/admin/client/${client.id}`} className="w-full flex-1">
                     <Button variant="outline" className="w-full bg-[#FAFAFA] border-[#E5E7EB] hover:bg-[#5A52FF] hover:text-white hover:border-[#5A52FF] h-11 rounded-xl text-[15px] font-medium transition-colors">

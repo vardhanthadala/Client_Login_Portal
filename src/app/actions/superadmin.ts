@@ -1,4 +1,4 @@
-"use server"
+﻿"use server"
 
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
@@ -60,6 +60,14 @@ export async function createAgencyAction(formData: FormData) {
           tenantId: tenant.id
         }
       })
+
+      await tx.superAdminLog.create({
+        data: {
+          action: "AGENCY_CREATED",
+          message: `Agency "${agencyName}" was created on a 15-day Free Trial.`,
+          tenantId: tenant.id
+        }
+      })
     })
 
     revalidatePath("/superadmin/dashboard")
@@ -95,10 +103,19 @@ export async function cancelSubscriptionAction(tenantId: string) {
       await razorpay.subscriptions.cancel(tenant.razorpaySubscriptionId, true)
     }
 
-    await prisma.tenant.update({
-      where: { id: tenantId },
-      data: { cancelAtPeriodEnd: true }
-    })
+    await prisma.$transaction([
+      prisma.tenant.update({
+        where: { id: tenantId },
+        data: { cancelAtPeriodEnd: true }
+      }),
+      prisma.superAdminLog.create({
+        data: {
+          action: "SUBSCRIPTION_CANCELLED",
+          message: `Subscription for agency "${tenant.name}" was set to cancel at cycle end.`,
+          tenantId
+        }
+      })
+    ])
 
     revalidatePath("/superadmin/dashboard")
     return { success: true }
@@ -115,3 +132,85 @@ export async function cancelSubscriptionAction(tenantId: string) {
     return { error: errorMessage }
   }
 }
+
+export async function getSuperAdminAnalytics() {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const tenants = await prisma.tenant.findMany({
+      select: {
+        id: true,
+        subscriptionPlan: true,
+        subscriptionStatus: true,
+        createdAt: true,
+        subscriptionStart: true,
+        subscriptionEnd: true
+      }
+    })
+    
+    // Quick calculations for the charts
+    // 1. Plan Distribution
+    let freeCount = 0;
+    let premiumMonthlyCount = 0;
+    let premiumYearlyCount = 0;
+    
+    tenants.forEach(t => {
+      if (t.subscriptionPlan === "FREE") freeCount++;
+      if (t.subscriptionPlan === "PREMIUM_MONTHLY") premiumMonthlyCount++;
+      if (t.subscriptionPlan === "PREMIUM_YEARLY") premiumYearlyCount++;
+    })
+    
+    // 2. Growth over last 6 months
+    const growthData: any[] = []
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date()
+      d.setMonth(d.getMonth() - i)
+      const monthName = months[d.getMonth()]
+      
+      const countForMonth = tenants.filter(t => {
+        const tDate = new Date(t.createdAt)
+        return tDate.getMonth() === d.getMonth() && tDate.getFullYear() === d.getFullYear()
+      }).length
+      
+      growthData.push({ name: monthName, agencies: countForMonth })
+    }
+
+    return { 
+      success: true, 
+      data: {
+        planDistribution: [
+          { name: "Free", value: freeCount },
+          { name: "Premium Monthly", value: premiumMonthlyCount },
+          { name: "Premium Yearly", value: premiumYearlyCount }
+        ],
+        growth: growthData
+      }
+    }
+  } catch (error) {
+    console.error("Failed to get analytics", error)
+    return { error: "Failed to get analytics" }
+  }
+}
+
+export async function getSuperAdminLogs() {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const logs = await prisma.superAdminLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: {
+        tenant: { select: { name: true } }
+      }
+    })
+    return { success: true, data: logs }
+  } catch (error) {
+    console.error("Failed to get logs", error)
+    return { error: "Failed to get logs" }
+  }
+}
+
