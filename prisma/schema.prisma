@@ -26,6 +26,15 @@ model Tenant {
   razorpayCustomerId      String?
   razorpaySubscriptionId  String?
   
+  razorpayKeyId           String?
+  razorpayKeySecret       String?
+  
+  awsAccessKeyId          String?
+  awsSecretAccessKey      String?
+  awsRegion               String?
+  awsS3BucketName         String?
+  
+
   users              User[]
   clientProfiles     ClientProfile[]
   

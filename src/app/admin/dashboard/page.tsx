@@ -12,11 +12,19 @@ import { GoPeople } from "react-icons/go"
 import { CiStar } from "react-icons/ci"
 import { GrInProgress } from "react-icons/gr"
 import { LuMessageCircle } from "react-icons/lu"
+import { AlertCircle } from "lucide-react"
 import NotificationBell, { UnreadClient } from "./NotificationBell"
 
 export default async function AdminDashboard() {
   const session = await auth()
   const tenantId = session?.user?.tenantId
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId as string },
+    select: { razorpayKeySecret: true, awsSecretAccessKey: true }
+  })
+
+  const isSetupComplete = !!(tenant?.razorpayKeySecret && tenant?.awsSecretAccessKey)
 
   const clients = await prisma.user.findMany({
     where: { 
@@ -50,6 +58,29 @@ export default async function AdminDashboard() {
   return (
     <div className="min-h-screen w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32 bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-[#FAFAFA] to-[#FAFAFA]">
       <div className="max-w-screen-2xl mx-auto">
+      
+      {!isSetupComplete && (
+        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
+          <div className="bg-amber-100 p-2 rounded-full shrink-0 hidden sm:block">
+            <AlertCircle className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-amber-900 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 sm:hidden" /> Action Required: Complete Your Setup
+            </h3>
+            <p className="text-sm text-amber-800 mt-1">
+              You must configure your <strong>Payment Gateway (Razorpay)</strong> and <strong>AWS S3 Storage (BYOS)</strong> before inviting clients. 
+              Your clients will be completely blocked from paying invoices or uploading files until this is configured.
+            </p>
+          </div>
+          <Link href="/admin/settings" className="shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
+            <Button size="sm" className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold">
+              Go to Settings
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div>
           <h1 className="text-4xl sm:text-5xl text-[#0F172A] font-sans font-bold tracking-tight">
@@ -66,6 +97,9 @@ export default async function AdminDashboard() {
           </div>
           <div className="hidden sm:block w-px h-8 bg-gray-200 mx-2"></div>
           <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+            <Link href="/admin/settings">
+              <Button variant="outline" className="w-full sm:w-auto">Settings</Button>
+            </Link>
             <SignOutButton />
             <InviteClientModal />
           </div>

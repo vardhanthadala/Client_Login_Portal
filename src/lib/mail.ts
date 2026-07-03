@@ -35,7 +35,14 @@ export async function sendWelcomeEmail(toEmail: string, tempPassword: string, ag
             <p style="margin: 0;"><strong>Your Password:</strong> <span style="font-family: monospace; font-size: 1.1em; color: #101828; font-weight: bold;">${tempPassword}</span></p>
           </div>
           
-          <p>If you have any questions, please reply directly to this email.</p>
+          <h2 style="font-size: 1.2em; border-bottom: 1px solid #e4e7ec; padding-bottom: 8px; margin-top: 32px;">🚀 Next Steps: Complete Your Setup</h2>
+          <p>Before you invite your clients, please log in and navigate to your <strong>Settings</strong> page to configure your integrations:</p>
+          <ul style="padding-left: 20px; color: #333;">
+            <li style="margin-bottom: 8px;"><strong>Payment Gateway (Razorpay):</strong> Add your Razorpay Key ID and Secret so you can receive payments directly from your clients into your own bank account.</li>
+            <li style="margin-bottom: 8px;"><strong>AWS S3 Storage (BYOS):</strong> Add your AWS S3 bucket credentials so that all files and brand assets uploaded by your clients are stored securely in your private cloud infrastructure.</li>
+          </ul>
+          
+          <p style="margin-top: 24px;">If you have any questions, please reply directly to this email.</p>
           <p>Best regards,<br>The ${agencyName} Team</p>
         </div>
       `,

@@ -3,12 +3,11 @@
 import { useState } from "react"
 import { UploadCloud, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { addBrandAssetAction } from "@/app/actions/client"
 
 export default function ClientUploader() {
   const [isUploading, setIsUploading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
   const [description, setDescription] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
@@ -16,8 +15,6 @@ export default function ClientUploader() {
     const file = e.target.files?.[0]
     if (file) {
       setSelectedFile(file)
-      setError("")
-      setSuccess(false)
     }
   }
 
@@ -25,8 +22,6 @@ export default function ClientUploader() {
     if (!selectedFile) return
 
     setIsUploading(true)
-    setError("")
-    setSuccess(false)
 
     try {
       // 1. Get Presigned URL
@@ -37,8 +32,9 @@ export default function ClientUploader() {
       })
       
       if (!res.ok) {
-        const errText = await res.text()
-        throw new Error(`API Error: ${res.status} - ${errText}`)
+        const errData = await res.json().catch(() => ({}))
+        const errorMessage = errData.error || `API Error: ${res.status}`
+        throw new Error(errorMessage)
       }
       const { uploadUrl, fileUrl } = await res.json()
       
@@ -49,7 +45,11 @@ export default function ClientUploader() {
         body: selectedFile
       })
       
-      if (!s3Res.ok) throw new Error("Failed to upload to S3.")
+      if (!s3Res.ok) {
+        const s3ErrorText = await s3Res.text()
+        console.error("S3 Error Response:", s3ErrorText)
+        throw new Error(`AWS S3 Error: ${s3Res.status} - Please check your browser console for details.`)
+      }
 
       // 3. Save to Database
       const actionRes = await addBrandAssetAction(fileUrl, selectedFile.name, description)
@@ -57,13 +57,14 @@ export default function ClientUploader() {
         throw new Error(actionRes.error)
       }
 
-      setSuccess(true)
+      toast.success("File uploaded successfully!")
+      
       // Reset input
       setSelectedFile(null)
       setDescription("")
     } catch (err: any) {
       console.error(err)
-      setError(err.message || "An unknown error occurred.")
+      toast.error(err.message || "An unknown error occurred.")
     } finally {
       setIsUploading(false)
     }
@@ -130,9 +131,6 @@ export default function ClientUploader() {
           </Button>
         </div>
       )}
-      
-      {error && <p className="text-destructive text-sm font-medium">{error}</p>}
-      {success && <p className="text-green-600 text-sm font-medium">File uploaded successfully!</p>}
     </div>
   )
 }

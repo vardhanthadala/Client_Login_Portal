@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import Razorpay from "razorpay"
 import { getToken } from "next-auth/jwt"
 import { prisma } from "@/lib/prisma"
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
-
+import { decrypt } from "@/lib/encryption"
 import { cookies, headers } from "next/headers"
 
 export async function POST(req: NextRequest) {
@@ -31,14 +26,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invoice ID required" }, { status: 400 })
     }
 
-    // Verify invoice belongs to this user or admin
+    // Verify invoice belongs to this user or admin, and fetch tenant
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
-      include: { clientProfile: true }
+      include: { 
+        clientProfile: {
+          include: {
+            tenant: true
+          }
+        } 
+      }
     })
 
-    if (!invoice) {
-      return NextResponse.json({ error: "Invoice not found" }, { status: 404 })
+    if (!invoice || !invoice.clientProfile || !invoice.clientProfile.tenant) {
+      return NextResponse.json({ error: "Invoice or tenant not found" }, { status: 404 })
     }
 
     if (token.role === "CLIENT" && invoice.clientProfile.userId !== token.id) {
@@ -49,13 +50,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invoice is already paid" }, { status: 400 })
     }
 
+    const tenant = invoice.clientProfile.tenant
+    
+    if (!tenant.razorpayKeyId || !tenant.razorpayKeySecret) {
+      return NextResponse.json({ error: "Agency payment gateway not configured. Please contact your agency." }, { status: 400 })
+    }
+
+    const decryptedSecret = decrypt(tenant.razorpayKeySecret)
+
+    // Instantiate Razorpay dynamically with Tenant's keys
+    const razorpay = new Razorpay({
+      key_id: tenant.razorpayKeyId,
+      key_secret: decryptedSecret,
+    })
+
     // If order already exists, return it (to avoid creating duplicates if client clicks pay multiple times)
     if (invoice.razorpayOrderId) {
-      // You could optionally verify the order status with Razorpay here
       return NextResponse.json({ 
         orderId: invoice.razorpayOrderId, 
         amount: invoice.amount * 100, // Razorpay expects subunits
-        currency: invoice.currency
+        currency: invoice.currency,
+        razorpayKeyId: tenant.razorpayKeyId // Pass the tenant's key ID to the frontend
       })
     }
 
@@ -81,7 +96,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ 
       orderId: order.id, 
       amount: options.amount,
-      currency: options.currency
+      currency: options.currency,
+      razorpayKeyId: tenant.razorpayKeyId // Pass the tenant's key ID to the frontend
     })
 
   } catch (error) {

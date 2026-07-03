@@ -67,7 +67,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
 
       // 2. Initialize Razorpay Checkout
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: data.razorpayKeyId,
         amount: data.amount,
         currency: data.currency,
         name: clientProfile.companyName || "Our Company",

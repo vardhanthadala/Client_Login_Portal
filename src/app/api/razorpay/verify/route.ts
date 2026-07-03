@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
+import { decrypt } from "@/lib/encryption"
 import { sendClientInvoiceSuccessEmail, sendAdminInvoicePaidEmail } from "@/lib/mail"
 
 export async function POST(req: NextRequest) {
@@ -11,7 +12,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 })
     }
 
-    const secret = process.env.RAZORPAY_KEY_SECRET!
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        clientProfile: {
+          include: {
+            tenant: true
+          }
+        }
+      }
+    })
+
+    if (!invoice || !invoice.clientProfile || !invoice.clientProfile.tenant) {
+      return NextResponse.json({ error: "Invoice or tenant not found" }, { status: 404 })
+    }
+
+    const tenant = invoice.clientProfile.tenant
+
+    if (!tenant.razorpayKeySecret) {
+      return NextResponse.json({ error: "Agency payment gateway not configured" }, { status: 400 })
+    }
+
+    const secret = decrypt(tenant.razorpayKeySecret)
 
     const body = razorpay_order_id + "|" + razorpay_payment_id
     const expectedSignature = crypto

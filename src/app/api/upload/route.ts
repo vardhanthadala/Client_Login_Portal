@@ -2,15 +2,8 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { NextRequest, NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
-
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-})
-
+import { prisma } from "@/lib/prisma"
+import { decrypt } from "@/lib/encryption"
 import { cookies, headers } from "next/headers"
 
 export async function POST(req: NextRequest) {
@@ -35,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // 1. Strict File Type Whitelisting
+    // Strict File Type Whitelisting
     const ALLOWED_MIME_TYPES = [
       "image/jpeg",
       "image/png",
@@ -50,27 +43,56 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid file type. Only images, PDFs, MP4s, CSVs, and DOCX files are allowed for security." }, { status: 400 })
     }
 
-    // 2. File Size Limits (Max 50MB)
+    // File Size Limits (Max 50MB)
     const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
     if (fileSize && fileSize > MAX_FILE_SIZE) {
       return NextResponse.json({ error: "File size exceeds the 50MB limit." }, { status: 400 })
     }
 
+    // Fetch user and tenant
+    const user = await prisma.user.findUnique({
+      where: { id: token.id as string },
+      include: { tenant: true }
+    })
+
+    if (!user || !user.tenant) {
+      return NextResponse.json({ error: "Tenant not found for user." }, { status: 404 })
+    }
+
+    const tenant = user.tenant
+
+    // Strict Blocking: Agency MUST configure S3 storage
+    if (!tenant.awsAccessKeyId || !tenant.awsSecretAccessKey || !tenant.awsRegion || !tenant.awsS3BucketName) {
+      return NextResponse.json({ error: "Agency storage is not configured. Please contact your administrator." }, { status: 400 })
+    }
+
+    const decryptedSecret = decrypt(tenant.awsSecretAccessKey)
+
+    // Sanitize the region (in case the user pasted "Asia Pacific (Sydney) ap-southeast-2")
+    const cleanRegion = tenant.awsRegion.split(" ").pop()?.trim() || tenant.awsRegion
+
+    // Dynamically initialize S3 client with Agency credentials
+    const s3Client = new S3Client({
+      region: cleanRegion,
+      credentials: {
+        accessKeyId: tenant.awsAccessKeyId,
+        secretAccessKey: decryptedSecret,
+      },
+    })
+
     const key = `uploads/${token.id}/${Date.now()}-${filename}`
     
-    // 3. Force attachment headers so browsers don't execute raw HTML/SVG
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME!,
+      Bucket: tenant.awsS3BucketName,
       Key: key,
-      ContentType: contentType,
-      ContentDisposition: 'attachment'
+      ContentType: contentType
     })
 
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
 
     return NextResponse.json({ 
       uploadUrl: signedUrl, 
-      fileUrl: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}` 
+      fileUrl: `https://${tenant.awsS3BucketName}.s3.${tenant.awsRegion}.amazonaws.com/${key}` 
     })
   } catch (error) {
     console.error("Presigned URL generation error:", error)
