@@ -31,7 +31,7 @@ const features = [
   },
   {
     name: "Instant Provisioning",
-    description: "Sign up today and your agency workspace is ready in milliseconds. Zero setup required.",
+    description: "Sign up today and your company workspace is ready in milliseconds. Zero setup required.",
     icon: Zap,
   },
 ]
@@ -43,10 +43,10 @@ export function Features() {
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-[#5A52FF]">Everything you need</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Streamline your entire agency workflow
+            Streamline your entire company workflow
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Stop chasing clients for passwords and assets. Dexze provides a white-glove onboarding experience that makes your agency look incredibly professional.
+            Stop chasing clients for passwords and assets. Dexze provides a white-glove onboarding experience that makes your company look incredibly professional.
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">

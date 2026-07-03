@@ -1,8 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Link from "next/link"
-import { CheckoutModal } from "./CheckoutModal"
 
 export function Navbar() {
   return (
@@ -28,7 +26,12 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             <div className="scale-90 sm:scale-100 origin-right">
-              <CheckoutModal />
+              <a 
+                href="#pricing"
+                className="inline-block bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-3 px-6 text-base sm:py-4 sm:px-8 sm:text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+              >
+                Purchase Subscription
+              </a>
             </div>
           </div>
         </div>

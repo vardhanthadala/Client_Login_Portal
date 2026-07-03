@@ -9,7 +9,7 @@ const razorpay = new Razorpay({
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, agencyName } = await req.json()
+    const { email, agencyName, planType } = await req.json()
 
     if (!email || !agencyName) {
       return NextResponse.json({ error: "Email and Agency Name are required" }, { status: 400 })
@@ -23,19 +23,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "An account with this email already exists. Please log in." }, { status: 400 })
     }
 
-    const planId = process.env.RAZORPAY_PLAN_ID
+    // Default to monthly if planType isn't provided (for backwards compatibility)
+    const isYearly = planType === "YEARLY";
+    const planId = isYearly ? process.env.RAZORPAY_PLAN_ID_YEARLY : process.env.RAZORPAY_PLAN_ID_MONTHLY;
+
     if (!planId) {
-      return NextResponse.json({ error: "Razorpay Plan ID not configured" }, { status: 500 })
+      return NextResponse.json({ error: `Razorpay Plan ID not configured for ${isYearly ? 'yearly' : 'monthly'} plan` }, { status: 500 })
     }
 
     const subscription = await razorpay.subscriptions.create({
       plan_id: planId,
-      total_count: 12,
+      total_count: isYearly ? 10 : 12, // Let's set some default limits (e.g. 10 years or 12 months)
       quantity: 1,
       customer_notify: 1,
       notes: {
         email,
-        agencyName
+        agencyName,
+        planType: isYearly ? 'YEARLY' : 'MONTHLY'
       }
     })
 

@@ -14,7 +14,7 @@ export default async function BillingPage() {
       <div className="bg-white p-10 rounded-2xl shadow max-w-lg text-center border border-gray-100">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Subscription Expired</h1>
         <p className="text-gray-600 mb-8 leading-relaxed">
-          Your agency's subscription has expired or is currently inactive. Please renew your subscription to restore access for you and your clients.
+          Your company's subscription has expired or is currently inactive. Please renew your subscription to restore access for you and your clients.
         </p>
         
         <div className="space-y-4">

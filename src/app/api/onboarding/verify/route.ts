@@ -7,9 +7,9 @@ import { sendWelcomeEmail } from "@/lib/mail"
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature, email, agencyName } = body
+    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature, email, agencyName, adminName } = body
 
-    if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature || !email || !agencyName) {
+    if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature || !email || !agencyName || !adminName) {
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 })
     }
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const tenant = await tx.tenant.create({
         data: {
           name: agencyName,
-          subscriptionPlan: "PREMIUM",
+          subscriptionPlan: body.planType === "YEARLY" ? "PREMIUM_YEARLY" : "PREMIUM",
           subscriptionStatus: "ACTIVE",
           razorpaySubscriptionId: razorpay_subscription_id,
         }
@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
       const user = await tx.user.create({
         data: {
           email,
+          name: adminName,
           passwordHash,
           role: "ADMIN",
-          mustChangePassword: true,
           tenantId: tenant.id
         }
       })
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     })
 
     // Send email to new admin
-    const emailResult = await sendWelcomeEmail(email, tempPassword, agencyName)
+    const emailResult = await sendWelcomeEmail(email, tempPassword, agencyName, adminName)
     
     console.log(`\n==============================================`)
     console.log(`🔑 DEV LOG: NEW ACCOUNT CREATED`)

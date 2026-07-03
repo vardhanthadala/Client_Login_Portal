@@ -87,7 +87,7 @@ export default function BillingPage() {
           Activate Your Subscription
         </h2>
         <p className="mt-2 text-sm text-gray-600">
-          Your agency account is pending activation. Please subscribe to unlock your dashboard.
+          Your company account is pending activation. Please subscribe to unlock your dashboard.
         </p>
       </div>
 

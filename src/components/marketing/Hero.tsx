@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { CheckoutModal } from "./CheckoutModal"
 
 export function Hero() {
   return (
@@ -38,7 +37,12 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="flex justify-center"
         >
-          <CheckoutModal />
+          <a 
+            href="#pricing"
+            className="inline-block bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-4 px-10 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            Purchase Subscription
+          </a>
         </motion.div>
         
         {/* Mock App Screenshot */}

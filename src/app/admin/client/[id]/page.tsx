@@ -12,9 +12,15 @@ import ManageProjects from "./ManageProjects"
 import ManageApprovals from "./ManageApprovals"
 import ManageInvoices from "./ManageInvoices"
 import GenerateAiButton from "./GenerateAiButton"
+import ResetPasswordButton from "./ResetPasswordButton"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
-export default async function ClientDetailsPage({ params, searchParams }: { params: { id: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
+type Props = {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function ClientDetailsPage({ params, searchParams }: Props) {
   const { id } = await params
   const resolvedSearchParams = await searchParams;
   const initialTab = (resolvedSearchParams?.tab as string) || "overview";
@@ -89,7 +95,8 @@ export default async function ClientDetailsPage({ params, searchParams }: { para
           </div>
         </div>
         
-        <div className="ml-[56px] sm:ml-0 shrink-0">
+        <div className="ml-[56px] sm:ml-0 shrink-0 flex items-center gap-3">
+          <ResetPasswordButton clientId={clientProfile.id} />
           <StatusDropdown 
             clientProfileId={clientProfile.id} 
             currentStatus={clientProfile.status || "ONBOARDED"} 

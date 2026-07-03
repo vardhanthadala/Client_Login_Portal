@@ -32,12 +32,12 @@ export default async function ClientLayout({ children }: { children: React.React
   }
 
   const tenant = user.tenant
-  if (tenant && (tenant.subscriptionStatus === "EXPIRED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date()))) {
+  if (tenant && (tenant.subscriptionStatus === "EXPIRED" || tenant.subscriptionStatus === "CANCELLED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date()))) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
         <div className="bg-white p-8 rounded-2xl shadow max-w-md text-center border border-gray-100">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Suspended</h2>
-          <p className="text-gray-600 mb-6">Your agency's subscription has expired. Please contact them to restore access.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Temporarily Unavailable</h2>
+          <p className="text-gray-600 mb-6">Your dashboard access is temporarily blocked due to a routine system update. Please contact your company administrator to restore access.</p>
         </div>
       </div>
     )

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
+import { sendClientInvoiceSuccessEmail, sendAdminInvoicePaidEmail } from "@/lib/mail"
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,13 +23,42 @@ export async function POST(req: NextRequest) {
 
     if (isAuthentic) {
       // Signature is valid, update the invoice status
-      await prisma.invoice.update({
+      const updatedInvoice = await prisma.invoice.update({
         where: { id: invoiceId },
         data: {
           status: "PAID",
           razorpayPaymentId: razorpay_payment_id,
+        },
+        include: {
+          clientProfile: {
+            include: {
+              user: true,
+              tenant: {
+                include: {
+                  users: { where: { role: "ADMIN" } }
+                }
+              }
+            }
+          }
         }
       })
+      
+      // Send Emails
+      const clientEmail = updatedInvoice.clientProfile.user.email
+      const adminUsers = updatedInvoice.clientProfile.tenant?.users
+      const adminEmail = adminUsers && adminUsers.length > 0 ? adminUsers[0].email : null
+      const agencyName = updatedInvoice.clientProfile.tenant?.name || "Your Agency"
+      
+      const invoiceTitle = updatedInvoice.title
+      const amountStr = `${updatedInvoice.currency} ${updatedInvoice.amount.toFixed(2)}`
+      const clientName = updatedInvoice.clientProfile.clientName
+
+      await sendClientInvoiceSuccessEmail(clientEmail, invoiceTitle, amountStr, agencyName)
+      
+      if (adminEmail) {
+        await sendAdminInvoicePaidEmail(adminEmail, invoiceTitle, amountStr, clientName)
+      }
+      
       return NextResponse.json({ success: true, message: "Payment verified successfully" })
     } else {
       return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 })

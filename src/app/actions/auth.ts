@@ -36,35 +36,79 @@ async function getAuthSession() {
   return getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
 }
 
-export async function updatePasswordAction(formData: FormData) {
+import { sendPasswordResetOTP } from "@/lib/mail"
+
+export async function requestPasswordReset(formData: FormData) {
   try {
-    const token = await getAuthSession()
-    if (!token?.id) return { error: "Unauthorized" }
+    const email = formData.get("email") as string
+    if (!email) return { error: "Email is required" }
 
-    const newPassword = formData.get("newPassword") as string
-    const confirmPassword = formData.get("confirmPassword") as string
-
-    if (!newPassword || newPassword !== confirmPassword) {
-      return { error: "Passwords do not match or are missing" }
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) {
+      // Return success even if user not found to prevent email enumeration
+      return { success: true } 
     }
 
-    if (newPassword.length < 8) {
-      return { error: "Password must be at least 8 characters" }
+    if (user.role === "CLIENT") {
+      return { error: "Clients cannot reset passwords. Please contact your company administrator." }
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    
+    // Expires in 15 mins
+    const expiry = new Date(Date.now() + 15 * 60 * 1000)
+
+    await prisma.user.update({
+      where: { email },
+      data: { resetOtp: otp, resetOtpExpiry: expiry }
+    })
+
+    await sendPasswordResetOTP(email, otp)
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to request password reset:", error)
+    return { error: "Something went wrong" }
+  }
+}
+
+export async function verifyOtpAndResetPassword(formData: FormData) {
+  try {
+    const email = formData.get("email") as string
+    const otp = formData.get("otp") as string
+    const newPassword = formData.get("newPassword") as string
+    
+    if (!email || !otp || !newPassword) return { error: "Missing required fields" }
+    if (newPassword.length < 8) return { error: "Password must be at least 8 characters" }
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    
+    if (!user || !user.resetOtp || !user.resetOtpExpiry) {
+      return { error: "Invalid or expired OTP" }
+    }
+
+    if (user.resetOtp !== otp) {
+      return { error: "Incorrect OTP" }
+    }
+
+    if (new Date() > user.resetOtpExpiry) {
+      return { error: "OTP has expired" }
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 10)
 
     await prisma.user.update({
-      where: { id: token.id as string },
+      where: { email },
       data: {
         passwordHash,
-        mustChangePassword: false
+        resetOtp: null,
+        resetOtpExpiry: null
       }
     })
 
     return { success: true }
-  } catch (error: any) {
-    console.error("Failed to update password:", error)
-    return { error: "Failed to update password" }
+  } catch (error) {
+    console.error("Failed to reset password:", error)
+    return { error: "Failed to reset password" }
   }
 }

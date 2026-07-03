@@ -32,6 +32,7 @@ export async function submitWizardAction(data: any) {
     // 1. Find ClientProfile
     const clientProfile = await prisma.clientProfile.findUnique({
       where: { userId },
+      include: { user: true }
     })
 
     if (!clientProfile) {
@@ -129,8 +130,15 @@ export async function submitWizardAction(data: any) {
     revalidatePath("/client/dashboard")
     revalidatePath("/admin/dashboard")
 
+    // Find the company admin email
+    const tenantAdmin = await prisma.user.findFirst({
+      where: { tenantId: clientProfile.user.tenantId, role: "ADMIN" }
+    })
+    const adminEmail = tenantAdmin?.email || "vardhan.thadala23@gmail.com" // Fallback to superadmin
+
     // Send email notification to admin
     await sendOnboardingCompleteEmail(
+      adminEmail,
       clientProfile.clientName || "Client",
       clientProfile.companyName || "Company",
       aiSummary
@@ -180,5 +188,62 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string, des
   } catch (error: any) {
     console.error("Failed to add asset:", error)
     return { error: `Failed to add asset: ${error.message || error.toString()}` }
+  }
+}
+
+import bcrypt from "bcryptjs"
+import { sendClientPasswordResetEmail } from "@/lib/mail" 
+
+export async function adminResetClientPassword(clientId: string, newPassword: string) {
+  try {
+    const reqCookies = await cookies()
+    const reqHeaders = await headers()
+    
+    const req = {
+      cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
+      headers: Object.fromEntries(reqHeaders.entries())
+    } as any
+
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
+    
+    if (!token?.id || token.role !== "ADMIN" && token.role !== "SUPER_ADMIN") {
+      return { error: "Unauthorized. Only admins can perform this action." }
+    }
+
+    const clientProfile = await prisma.clientProfile.findUnique({
+      where: { id: clientId },
+      include: { user: true }
+    })
+
+    if (!clientProfile || !clientProfile.user) {
+      return { error: "Client not found" }
+    }
+
+    if (!newPassword || newPassword.length < 8) {
+      return { error: "Password must be at least 8 characters" }
+    }
+
+    // Hash the manually entered password
+    const passwordHash = await bcrypt.hash(newPassword, 10)
+
+    await prisma.user.update({
+      where: { id: clientProfile.user.id },
+      data: { passwordHash }
+    })
+
+    // Email the new password to the client
+    await sendClientPasswordResetEmail(clientProfile.user.email, newPassword, "Our Platform")
+
+    // Log the password for dev fallback
+    console.log(`\n==============================================`)
+    console.log(`🔑 DEV LOG: ADMIN RESET CLIENT PASSWORD`)
+    console.log(`Email: ${clientProfile.user.email}`)
+    console.log(`New Password: ${newPassword}`)
+    console.log(`==============================================\n`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to reset client password:", error)
+    return { error: "Something went wrong" }
   }
 }

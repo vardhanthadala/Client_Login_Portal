@@ -66,7 +66,7 @@ export async function createAgencyAction(formData: FormData) {
 
     return { success: true }
   } catch (error: any) {
-    console.error("Create agency error:", error)
-    return { error: "Failed to create agency. Please try again." }
+    console.error("Create company error:", error)
+    return { error: "Failed to create company. Please try again." }
   }
 }

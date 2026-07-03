@@ -17,6 +17,7 @@ declare global {
 }
 
 const checkoutSchema = z.object({
+  adminName: z.string().min(2, "Name must be at least 2 characters"),
   agencyName: z.string().min(2, "Agency name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
 })
@@ -25,7 +26,12 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 import Script from "next/script"
 
-export function CheckoutModal() {
+interface CheckoutModalProps {
+  planType?: "MONTHLY" | "YEARLY";
+  price?: string;
+}
+
+export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month" }: CheckoutModalProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -39,6 +45,7 @@ export function CheckoutModal() {
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
+      adminName: "",
       agencyName: "",
       email: "",
     },
@@ -59,7 +66,7 @@ export function CheckoutModal() {
       const res = await fetch("/api/onboarding/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, planType })
       })
       const apiData = await res.json()
 
@@ -72,7 +79,7 @@ export function CheckoutModal() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         subscription_id: apiData.subscriptionId,
         name: "Dexze Services",
-        description: "Monthly Platform Subscription",
+        description: `${planType === 'YEARLY' ? 'Yearly' : 'Monthly'} Platform Subscription`,
         handler: async function (response: any) {
           try {
             setLoading(true)
@@ -83,7 +90,9 @@ export function CheckoutModal() {
               body: JSON.stringify({
                 ...response,
                 email: data.email,
-                agencyName: data.agencyName
+                agencyName: data.agencyName,
+                adminName: data.adminName,
+                planType
               })
             })
             const verifyData = await verifyRes.json()
@@ -147,17 +156,31 @@ export function CheckoutModal() {
             <DialogHeader>
               <DialogTitle>Subscribe to Dexze</DialogTitle>
               <DialogDescription>
-                Fill out this form to purchase your subscription. For ₹2500/month, you get unlimited access to the agency dashboard and client portals.
+                Fill out this form to purchase your subscription. For {price}, you get unlimited access to the company dashboard and client portals.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="agencyName">Agency Name</Label>
+                <Label htmlFor="adminName">Your Name</Label>
+                <Input 
+                  id="adminName" 
+                  {...register("adminName")}
+                  placeholder="John Doe" 
+                  className={errors.adminName ? "border-red-500" : ""}
+                  required
+                />
+                {errors.adminName && (
+                  <p className="text-sm text-red-500">{errors.adminName.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="agencyName">Company Name</Label>
                 <Input 
                   id="agencyName" 
                   {...register("agencyName")}
                   placeholder="Acme Corp" 
                   className={errors.agencyName ? "border-red-500" : ""}
+                  required
                 />
                 {errors.agencyName && (
                   <p className="text-sm text-red-500">{errors.agencyName.message}</p>
@@ -171,6 +194,7 @@ export function CheckoutModal() {
                   {...register("email")}
                   placeholder="admin@acme.com" 
                   className={errors.email ? "border-red-500" : ""}
+                  required
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>

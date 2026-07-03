@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 
 const ADMIN_EMAIL = process.env.SMTP_USER || "vardhan.thadala23@gmail.com"
 
-export async function sendWelcomeEmail(toEmail: string, tempPassword: string, agencyName: string = "Our Platform") {
+export async function sendWelcomeEmail(toEmail: string, tempPassword: string, agencyName: string = "Our Platform", adminName: string = "Admin") {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
     console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping welcome email to ${toEmail}.`)
     return { success: false, error: "SMTP credentials not set." }
@@ -25,7 +25,8 @@ export async function sendWelcomeEmail(toEmail: string, tempPassword: string, ag
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #465fff;">Welcome to ${agencyName}!</h1>
-          <p>We are thrilled to have you on board. Your agency workspace is ready.</p>
+          <p>Hi ${adminName},</p>
+          <p>We are thrilled to have you on board. Your company workspace is ready.</p>
           <p>You can access your new admin dashboard and begin managing your clients here:</p>
           
           <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
@@ -47,7 +48,7 @@ export async function sendWelcomeEmail(toEmail: string, tempPassword: string, ag
   }
 }
 
-export async function sendOnboardingCompleteEmail(clientName: string, companyName: string, aiSummary: any) {
+export async function sendOnboardingCompleteEmail(toEmail: string, clientName: string, companyName: string, aiSummary: any) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
     console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping onboarding complete email for ${companyName}.`)
     return { success: false, error: "SMTP credentials not set." }
@@ -56,7 +57,7 @@ export async function sendOnboardingCompleteEmail(clientName: string, companyNam
   try {
     const info = await transporter.sendMail({
       from: `"Dexze Portal" <${process.env.SMTP_USER}>`,
-      to: ADMIN_EMAIL,
+      to: toEmail,
       subject: `🚨 Onboarding Complete: ${companyName}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
@@ -93,3 +94,252 @@ export async function sendOnboardingCompleteEmail(clientName: string, companyNam
     return { success: false, error: error.message }
   }
 }
+
+export async function sendPasswordResetOTP(toEmail: string, otp: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping OTP email to ${toEmail}.`)
+    console.log(`\n==============================================`)
+    console.log(`🔑 DEV LOG: OTP REQUESTED`)
+    console.log(`Email: ${toEmail}`)
+    console.log(`OTP: ${otp}`)
+    console.log(`==============================================\n`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze Security" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Your Password Reset Code: ${otp}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Password Reset Request</h2>
+          <p>We received a request to reset your password. Here is your 6-digit confirmation code:</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0; text-align: center;">
+            <span style="font-family: monospace; font-size: 2em; color: #5A52FF; font-weight: bold; letter-spacing: 4px;">${otp}</span>
+          </div>
+          
+          <p>This code will expire in 15 minutes.</p>
+          <p>If you did not request this password reset, please ignore this email.</p>
+        </div>
+      `,
+    })
+
+    console.log(`\n==============================================`)
+    console.log(`🔑 DEV LOG: OTP SENT`)
+    console.log(`Email: ${toEmail}`)
+    console.log(`OTP: ${otp}`)
+    console.log(`==============================================\n`)
+
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send OTP email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendClientPasswordResetEmail(toEmail: string, newPassword: string, agencyName: string = "Our Platform") {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping client password reset email to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${agencyName} Portal" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Your ${agencyName} password has been reset`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #465fff;">Password Updated</h1>
+          <p>Your company administrator has reset the password for your client portal.</p>
+          <p>You can access your dashboard using your new credentials below:</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Portal URL:</strong> <a href="http://localhost:3000/client-login">http://localhost:3000/client-login</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Your Email:</strong> ${toEmail}</p>
+            <p style="margin: 0;"><strong>New Password:</strong> <span style="font-family: monospace; font-size: 1.1em; color: #101828; font-weight: bold;">${newPassword}</span></p>
+          </div>
+          
+          <p>If you have any questions or if you didn't request this, please reply directly to this email to contact your company.</p>
+          <p>Best regards,<br>The ${agencyName} Team</p>
+        </div>
+      `,
+    })
+
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send client password reset email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendAdminSubscriptionSuccessEmail(toEmail: string, planName: string, amount: string, adminName: string = "Admin") {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP missing. Skipping subscription success email to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze Billing" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Payment Successful - ${planName} Plan`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #10B981;">Payment Successful! 🎉</h1>
+          <p>Hi ${adminName},</p>
+          <p>We've successfully processed your subscription payment for the Dexze platform.</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Plan:</strong> ${planName}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Amount:</strong> ${amount}</p>
+            <p style="margin: 0;"><strong>Status:</strong> <span style="color: #10B981; font-weight: bold;">Active</span></p>
+          </div>
+          
+          <p>Your workspace is fully active and ready to go.</p>
+          <p>Thank you for choosing Dexze!</p>
+        </div>
+      `,
+    })
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send subscription success email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendAdminSubscriptionFailureEmail(toEmail: string, planName: string, adminName: string = "Admin") {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP missing. Skipping subscription failure email to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze Billing" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Action Required: Payment Failed for ${planName} Plan`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #EF4444;">Payment Failed ⚠️</h1>
+          <p>Hi ${adminName},</p>
+          <p>We were unable to process the renewal payment for your Dexze workspace subscription.</p>
+          
+          <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0; color: #991b1b;"><strong>Plan:</strong> ${planName}</p>
+            <p style="margin: 0; color: #991b1b;">Please update your payment method in the Billing section to keep your workspace active and prevent any disruption for your clients.</p>
+          </div>
+          
+          <a href="http://localhost:3000/admin/billing" style="display: inline-block; background-color: #EF4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Update Payment Method</a>
+        </div>
+      `,
+    })
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send subscription failure email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendClientInvoiceSuccessEmail(toEmail: string, invoiceTitle: string, amount: string, agencyName: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP missing. Skipping client invoice success email to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${agencyName} Billing" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Payment Receipt: ${invoiceTitle}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #10B981;">Payment Received!</h1>
+          <p>Thank you for your payment. This email serves as your receipt.</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Invoice:</strong> ${invoiceTitle}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Amount Paid:</strong> ${amount}</p>
+            <p style="margin: 0;"><strong>Paid To:</strong> ${agencyName}</p>
+          </div>
+          
+          <p>You can view your full invoice history anytime in your client portal.</p>
+          <a href="http://localhost:3000/client/invoices" style="display: inline-block; background-color: #465fff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;">View Invoices</a>
+        </div>
+      `,
+    })
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send client invoice success email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendAdminInvoicePaidEmail(toEmail: string, invoiceTitle: string, amount: string, clientName: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP missing. Skipping admin invoice paid email to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze Notifications" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `💰 Invoice Paid: ${invoiceTitle}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #10B981;">You Got Paid! 💸</h1>
+          <p>Great news! <strong>${clientName}</strong> has just paid an invoice.</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Client:</strong> ${clientName}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Invoice:</strong> ${invoiceTitle}</p>
+            <p style="margin: 0;"><strong>Amount Collected:</strong> <span style="color: #10B981; font-weight: bold;">${amount}</span></p>
+          </div>
+          
+          <a href="http://localhost:3000/admin/dashboard" style="display: inline-block; background-color: #465fff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">View Dashboard</a>
+        </div>
+      `,
+    })
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send admin invoice paid email:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function sendSuperadminNewSubscriberEmail(toEmail: string, agencyName: string, adminEmail: string, planName: string, amount: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP missing. Skipping superadmin notification to ${toEmail}.`)
+    return { success: false, error: "SMTP credentials not set." }
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze System" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `🚨 New Subscription Payment: ${agencyName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #465fff;">New Platform Revenue! 📈</h1>
+          <p>A company has successfully paid their platform subscription fee.</p>
+          
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Company:</strong> ${agencyName}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Admin Email:</strong> ${adminEmail}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Plan:</strong> ${planName}</p>
+            <p style="margin: 0;"><strong>Amount Collected:</strong> <span style="color: #10B981; font-weight: bold;">${amount}</span></p>
+          </div>
+        </div>
+      `,
+    })
+    return { success: true, data: info.messageId }
+  } catch (error: any) {
+    console.error("Failed to send superadmin notification:", error)
+    return { success: false, error: error.message }
+  }
+}
+
+

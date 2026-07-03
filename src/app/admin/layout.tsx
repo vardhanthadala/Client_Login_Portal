@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="bg-white p-8 rounded-2xl shadow max-w-md text-center border border-gray-100">
           <h2 className="text-2xl font-bold text-red-600 mb-4">No Tenant Assigned</h2>
-          <p className="text-gray-600 mb-6">Your admin account is not assigned to any agency. Please contact support.</p>
+          <p className="text-gray-600 mb-6">Your admin account is not assigned to any company. Please contact support.</p>
         </div>
       </div>
     )
@@ -38,6 +38,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   
   if (!tenant) {
     redirect("/login")
+  }
+
+  if (tenant.subscriptionStatus === "EXPIRED" || tenant.subscriptionStatus === "CANCELLED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date())) {
+    redirect("/billing")
   }
   
   return (

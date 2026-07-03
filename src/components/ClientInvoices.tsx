@@ -70,7 +70,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
-        name: clientProfile.companyName || "Our Agency",
+        name: clientProfile.companyName || "Our Company",
         description: invoice.title,
         order_id: data.orderId,
         handler: async function (response: any) {
@@ -133,7 +133,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
             <p style="color: #64748b; font-size: 14px; margin-top: 8px; font-weight: 500; letter-spacing: 0.5px;">INV-${invoice.id.substring(0,8).toUpperCase()}</p>
           </div>
           <div style="text-align: right;">
-            <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Sreehisoft Agency</h2>
+            <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.5px;">Sreehisoft Company</h2>
             <p style="color: #475569; font-size: 13px; margin: 6px 0 0 0; line-height: 1.6;">
               123 Innovation Drive<br>
               Tech Park, Suite 400<br>

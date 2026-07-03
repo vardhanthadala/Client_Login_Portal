@@ -29,18 +29,18 @@ export default function AddAgencyDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="bg-[#5A52FF] hover:bg-blue-700 text-white h-9 px-4 py-2 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow">
-        Add Agency
+        Add Company
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Agency</DialogTitle>
+          <DialogTitle>Add New Company</DialogTitle>
           <DialogDescription>
             Create a new tenant workspace and admin account.
           </DialogDescription>
         </DialogHeader>
         <form action={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="agencyName">Agency Name</Label>
+            <Label htmlFor="agencyName">Company Name</Label>
             <Input id="agencyName" name="agencyName" required placeholder="Acme Corp" />
           </div>
           <div className="space-y-2">
@@ -60,7 +60,7 @@ export default function AddAgencyDialog() {
           {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
 
           <Button type="submit" className="w-full bg-[#5A52FF] hover:bg-blue-700 text-white" disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Agency"}
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Company"}
           </Button>
         </form>
       </DialogContent>

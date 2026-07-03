@@ -37,8 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email, 
             role: user.role,
             tenantId: user.tenantId,
-            tenant: user.tenant,
-            mustChangePassword: user.mustChangePassword
+            tenant: user.tenant
           }
         }
         
@@ -53,7 +52,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id
         token.tenantId = (user as any).tenantId
         token.tenant = (user as any).tenant
-        token.mustChangePassword = (user as any).mustChangePassword
         if ((user as any).tenant) {
           token.subscriptionStatus = (user as any).tenant.subscriptionStatus
         }
@@ -66,7 +64,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).id = token.id as string
         (session.user as any).tenantId = token.tenantId as string | null
         (session.user as any).tenant = token.tenant as any
-        (session.user as any).mustChangePassword = token.mustChangePassword as boolean
         (session.user as any).subscriptionStatus = token.subscriptionStatus as string | undefined
       }
       return session

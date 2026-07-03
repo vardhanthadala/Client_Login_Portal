@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const planId = process.env.RAZORPAY_PLAN_ID
+    const planId = process.env.RAZORPAY_PLAN_ID_MONTHLY
     if (!planId) {
       return NextResponse.json({ error: "Razorpay Plan ID not configured" }, { status: 500 })
     }

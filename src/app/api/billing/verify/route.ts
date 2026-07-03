@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = body
+    const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature, planType } = body
 
     if (!razorpay_payment_id || !razorpay_subscription_id || !razorpay_signature) {
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 })
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       where: { id: token.tenantId as string },
       data: {
         subscriptionStatus: "ACTIVE",
-        subscriptionPlan: "PREMIUM",
+        subscriptionPlan: planType === "YEARLY" ? "PREMIUM_YEARLY" : "PREMIUM",
         razorpaySubscriptionId: razorpay_subscription_id
       }
     })
