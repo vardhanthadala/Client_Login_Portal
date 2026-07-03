@@ -1,10 +1,11 @@
-import { prisma } from "@/lib/prisma"
+﻿import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import SignOutButton from "@/app/admin/dashboard/SignOutButton"
 import { format } from "date-fns"
 import AddAgencyDialog from "./AddAgencyDialog"
+import CancelSubscriptionButton from "./CancelSubscriptionButton"
 
 export default async function SuperAdminDashboard() {
   const tenants = await prisma.tenant.findMany({
@@ -80,6 +81,15 @@ export default async function SuperAdminDashboard() {
                     <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-100 text-blue-700">
                       {tenant.subscriptionPlan}
                     </span>
+                    {tenant.cancelAtPeriodEnd ? (
+                      <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-orange-100 text-orange-700">
+                        Cancels Soon
+                      </span>
+                    ) : (
+                      !isExpired && tenant.subscriptionStatus !== "CANCELLED" && (
+                        <CancelSubscriptionButton tenantId={tenant.id} />
+                      )
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
@@ -116,3 +126,5 @@ export default async function SuperAdminDashboard() {
     </div>
   )
 }
+
+

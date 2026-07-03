@@ -22,6 +22,7 @@ model Tenant {
   subscriptionStatus String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
   subscriptionStart  DateTime?
   subscriptionEnd    DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
   
   razorpayCustomerId      String?
   razorpaySubscriptionId  String?

@@ -39,11 +39,18 @@ export async function POST(req: NextRequest) {
 
     // Create Tenant and User transactionally
     const result = await prisma.$transaction(async (tx) => {
+      const isYearly = body.planType === "YEARLY"
+      const startDate = new Date()
+      const endDate = new Date()
+      endDate.setDate(startDate.getDate() + (isYearly ? 365 : 30))
+
       const tenant = await tx.tenant.create({
         data: {
           name: agencyName,
-          subscriptionPlan: body.planType === "YEARLY" ? "PREMIUM_YEARLY" : "PREMIUM",
+          subscriptionPlan: isYearly ? "PREMIUM_YEARLY" : "PREMIUM",
           subscriptionStatus: "ACTIVE",
+          subscriptionStart: startDate,
+          subscriptionEnd: endDate,
           razorpaySubscriptionId: razorpay_subscription_id,
         }
       })

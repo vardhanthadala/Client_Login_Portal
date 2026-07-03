@@ -70,3 +70,48 @@ export async function createAgencyAction(formData: FormData) {
     return { error: "Failed to create company. Please try again." }
   }
 }
+
+import Razorpay from "razorpay"
+
+export async function cancelSubscriptionAction(tenantId: string) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
+    if (!tenant) return { error: "Agency not found" }
+
+    if (tenant.razorpaySubscriptionId) {
+      if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+         return { error: "Superadmin Razorpay keys are not configured in environment variables." }
+      }
+      
+      const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      })
+
+      // Cancel at cycle end
+      await razorpay.subscriptions.cancel(tenant.razorpaySubscriptionId, true)
+    }
+
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: { cancelAtPeriodEnd: true }
+    })
+
+    revalidatePath("/superadmin/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Cancel subscription error:", error)
+    let errorMessage = "Failed to cancel subscription."
+    if (error?.error?.description) {
+      errorMessage = error.error.description
+    } else if (error?.message) {
+      errorMessage = error.message
+    } else if (typeof error === 'string') {
+      errorMessage = error
+    }
+    return { error: errorMessage }
+  }
+}
