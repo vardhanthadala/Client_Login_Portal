@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
 import { revalidatePath } from "next/cache"
+import { sendInvoiceReminderEmail } from "@/lib/mail"
 
 async function getAuthSession() {
   const reqCookies = await cookies()
@@ -92,6 +93,52 @@ export async function deleteInvoiceAction(invoiceId: string) {
   } catch (error: any) {
     console.error("Failed to delete invoice:", error)
     return { error: "Failed to delete invoice" }
+  }
+}
+
+export async function sendInvoiceReminderAction(invoiceId: string) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: { 
+        clientProfile: {
+          include: { user: true }
+        }
+      }
+    })
+
+    if (!invoice || invoice.clientProfile.tenantId !== token.tenantId) {
+      return { error: "Invoice not found or unauthorized" }
+    }
+    
+    if (invoice.status === "PAID" || invoice.status === "CANCELLED" || invoice.status === "DRAFT") {
+      return { error: "Cannot send reminder for this invoice status" }
+    }
+
+    const email = invoice.clientProfile.user.email
+    const clientName = invoice.clientProfile.clientName
+    const dueDateStr = invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Upon Receipt'
+
+    const emailResult = await sendInvoiceReminderEmail(
+      email,
+      clientName,
+      invoice.title,
+      invoice.amount,
+      invoice.currency,
+      dueDateStr
+    )
+
+    if (!emailResult.success) {
+      return { error: emailResult.error || "Failed to send email" }
+    }
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to send invoice reminder:", error)
+    return { error: "Failed to send invoice reminder" }
   }
 }
 

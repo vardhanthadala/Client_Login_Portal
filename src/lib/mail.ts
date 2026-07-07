@@ -350,3 +350,42 @@ export async function sendSuperadminNewSubscriberEmail(toEmail: string, agencyNa
 }
 
 
+
+export async function sendInvoiceReminderEmail(toEmail: string, clientName: string, invoiceTitle: string, amount: number, currency: string, dueDateStr: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP credentials not set. Skipping reminder for ${invoiceTitle}.`);
+    return { success: false, error: "SMTP credentials not set." };
+  }
+  
+  try {
+    const info = await transporter.sendMail({
+      from: `"Agency Portal" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `Action Required: Overdue Invoice - ${invoiceTitle}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #ef4444;">Overdue Invoice Notice</h1>
+          <p>Hi ${clientName},</p>
+          <p>This is a friendly reminder that your invoice <strong>${invoiceTitle}</strong> is currently overdue.</p>
+          
+          <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Amount Due:</strong> ${currency} ${amount.toFixed(2)}</p>
+            <p style="margin: 0;"><strong>Due Date:</strong> ${dueDateStr}</p>
+          </div>
+          
+          <p>Please log in to your portal to review and pay this invoice as soon as possible to avoid any disruption to your services.</p>
+          
+          <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e4e7ec;">
+            <a href="http://localhost:3000/login" style="display: inline-block; background-color: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">View & Pay Invoice</a>
+          </div>
+          <p style="margin-top: 24px;">If you have already paid this invoice, please disregard this notice.</p>
+        </div>
+      `
+    });
+    return { success: true, data: info.messageId };
+  } catch (error: any) {
+    console.error("Failed to send reminder email:", error);
+    return { success: false, error: error.message };
+  }
+}
+

@@ -6,6 +6,7 @@ import Link from "next/link"
 import InviteClientModal from "./InviteClientModal"
 import DeleteClientButton from "./DeleteClientButton"
 import StatusDropdown from "@/components/StatusDropdown"
+import OutstandingInvoicesWidget, { OverdueInvoice } from "@/components/admin/OutstandingInvoicesWidget"
 import { Bell } from "lucide-react"
 import SignOutButton from "./SignOutButton"
 import { GoPeople } from "react-icons/go"
@@ -42,8 +43,7 @@ export default async function AdminDashboard() {
             select: { id: true, senderId: true }
           },
           invoices: {
-            where: { status: "PAID" },
-            select: { amount: true, currency: true, createdAt: true }
+            select: { id: true, title: true, amount: true, currency: true, status: true, dueDate: true, createdAt: true }
           }
         }
       }
@@ -61,14 +61,40 @@ export default async function AdminDashboard() {
     }))
     .filter(c => c.messageCount > 0)
 
-  // Calculate total earnings grouped by currency
+  // Calculate total earnings grouped by currency (only PAID invoices)
   const earningsByCurrency: Record<string, number> = {}
   clients.forEach(client => {
-    (client.clientProfile?.invoices || []).forEach(inv => {
-      const currency = inv.currency || "USD"
-      earningsByCurrency[currency] = (earningsByCurrency[currency] || 0) + inv.amount
+    (client.clientProfile?.invoices || [])
+      .filter(inv => inv.status === "PAID")
+      .forEach(inv => {
+        const currency = inv.currency || "USD"
+        earningsByCurrency[currency] = (earningsByCurrency[currency] || 0) + inv.amount
+      })
+  })
+
+  // Calculate overdue invoices
+  const overdueInvoices: OverdueInvoice[] = []
+  const now = new Date()
+  clients.forEach(client => {
+    if (!client.clientProfile) return
+    const profileInvoices = client.clientProfile.invoices || []
+    profileInvoices.forEach(inv => {
+      const isOverdue = inv.status === "OVERDUE" || (inv.status === "SENT" && inv.dueDate && new Date(inv.dueDate) < now)
+      if (isOverdue) {
+        overdueInvoices.push({
+          id: inv.id,
+          title: inv.title,
+          amount: inv.amount,
+          currency: inv.currency,
+          dueDate: inv.dueDate ? inv.dueDate.toISOString() : null,
+          status: inv.status,
+          clientName: client.clientProfile!.companyName || client.clientProfile!.clientName || "Unknown Client",
+          clientProfileId: client.clientProfile!.id
+        })
+      }
     })
   })
+
 
   // Format currency properly
   const formatCurrency = (amount: number, currency: string) => {
@@ -96,8 +122,10 @@ export default async function AdminDashboard() {
     const clientMonth = chartData.find(m => isSameMonth(m.date, clientDate))
     if (clientMonth) clientMonth.clients += 1
 
-    // Earnings Growth
-    ;(client.clientProfile?.invoices || []).forEach(inv => {
+    // Earnings Growth (only PAID)
+    ;(client.clientProfile?.invoices || [])
+      .filter(inv => inv.status === "PAID")
+      .forEach(inv => {
       if (inv.createdAt) {
         const invDate = new Date(inv.createdAt)
         const invMonth = chartData.find(m => isSameMonth(m.date, invDate))
@@ -179,6 +207,8 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
+      <OutstandingInvoicesWidget invoices={overdueInvoices} />
+
       <AdminAnalyticsCharts data={chartData} />
 
       <div className="flex items-center justify-between mb-6">
@@ -190,7 +220,9 @@ export default async function AdminDashboard() {
           const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
           
           const clientEarningsByCurrency: Record<string, number> = {}
-          ;(client.clientProfile?.invoices || []).forEach(inv => {
+          ;(client.clientProfile?.invoices || [])
+            .filter(inv => inv.status === "PAID")
+            .forEach(inv => {
             const currency = inv.currency || "USD"
             clientEarningsByCurrency[currency] = (clientEarningsByCurrency[currency] || 0) + inv.amount
           })
