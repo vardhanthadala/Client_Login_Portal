@@ -89,7 +89,8 @@ export default async function AdminDashboard() {
           dueDate: inv.dueDate ? inv.dueDate.toISOString() : null,
           status: inv.status,
           clientName: client.clientProfile!.companyName || client.clientProfile!.clientName || "Unknown Client",
-          clientProfileId: client.clientProfile!.id
+          clientProfileId: client.clientProfile!.id,
+          userId: client.id
         })
       }
     })

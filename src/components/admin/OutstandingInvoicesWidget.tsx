@@ -17,6 +17,7 @@ export type OverdueInvoice = {
   status: string
   clientName: string
   clientProfileId: string
+  userId: string
 }
 
 export default function OutstandingInvoicesWidget({ invoices }: { invoices: OverdueInvoice[] }) {
@@ -89,7 +90,7 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
                   {sendingIds[inv.id] ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
                   Send Reminder
                 </Button>
-                <Link href={`/admin/client/${inv.clientProfileId}`}>
+                <Link href={`/admin/client/${inv.userId}`}>
                   <Button size="icon" variant="ghost" className="text-gray-400 hover:text-gray-900 hover:bg-gray-100 hidden sm:flex">
                     <ArrowRight className="w-4 h-4" />
                   </Button>
