@@ -6,6 +6,7 @@ import SignOutButton from "@/app/admin/dashboard/SignOutButton"
 import { format } from "date-fns"
 import AddAgencyDialog from "./AddAgencyDialog"
 import CancelSubscriptionButton from "./CancelSubscriptionButton"
+import ManageSubscriptionDialog from "./ManageSubscriptionDialog"
 import AnalyticsCharts from "./AnalyticsCharts"
 import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
@@ -136,7 +137,14 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
                       </span>
                     ) : (
                       !isExpired && tenant.subscriptionStatus !== "CANCELLED" && (
-                        <CancelSubscriptionButton tenantId={tenant.id} />
+                        <div className="flex gap-2 items-center">
+                          <ManageSubscriptionDialog 
+                            tenantId={tenant.id} 
+                            currentPlan={tenant.subscriptionPlan} 
+                            currentEnd={tenant.subscriptionEnd} 
+                          />
+                          <CancelSubscriptionButton tenantId={tenant.id} />
+                        </div>
                       )
                     )}
                   </div>

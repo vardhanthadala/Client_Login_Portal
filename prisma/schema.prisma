@@ -35,6 +35,9 @@ model Tenant {
   awsRegion               String?
   awsS3BucketName         String?
   
+  cancelledAt             DateTime?
+  cancellationReason      String?
+  
 
   users              User[]
   clientProfiles     ClientProfile[]

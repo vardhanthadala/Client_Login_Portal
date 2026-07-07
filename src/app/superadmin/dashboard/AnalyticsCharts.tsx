@@ -17,6 +17,7 @@ import {
   Legend
 } from "recharts"
 import { Loader2 } from "lucide-react"
+import ChurnAnalyticsWidget from "@/components/superadmin/ChurnAnalyticsWidget"
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"]
 
@@ -46,8 +47,8 @@ export default function AnalyticsCharts() {
   if (!data) return null
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-      <Card className="shadow-sm rounded-2xl border-gray-100">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+      <Card className="shadow-sm rounded-2xl border-gray-100 lg:col-span-1">
         <CardHeader>
           <CardTitle>Agency Growth</CardTitle>
           <CardDescription>New agency signups over the last 6 months</CardDescription>
@@ -74,7 +75,7 @@ export default function AnalyticsCharts() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm rounded-2xl border-gray-100">
+      <Card className="shadow-sm rounded-2xl border-gray-100 lg:col-span-1">
         <CardHeader>
           <CardTitle>Subscription Plans</CardTitle>
           <CardDescription>Distribution of active tenants across plans</CardDescription>
@@ -103,6 +104,10 @@ export default function AnalyticsCharts() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      <div className="lg:col-span-1">
+        <ChurnAnalyticsWidget />
+      </div>
     </div>
   )
 }

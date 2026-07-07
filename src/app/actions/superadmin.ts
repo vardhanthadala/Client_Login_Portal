@@ -83,7 +83,7 @@ export async function createAgencyAction(formData: FormData) {
 
 import Razorpay from "razorpay"
 
-export async function cancelSubscriptionAction(tenantId: string) {
+export async function cancelSubscriptionAction(tenantId: string, reason: string = "Other") {
   try {
     const token = await getAuthSession()
     if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
@@ -108,12 +108,16 @@ export async function cancelSubscriptionAction(tenantId: string) {
     await prisma.$transaction([
       prisma.tenant.update({
         where: { id: tenantId },
-        data: { cancelAtPeriodEnd: true }
+        data: { 
+          cancelAtPeriodEnd: true,
+          cancelledAt: new Date(),
+          cancellationReason: reason
+        }
       }),
       prisma.superAdminLog.create({
         data: {
           action: "SUBSCRIPTION_CANCELLED",
-          message: `Subscription for agency "${tenant.name}" was set to cancel at cycle end.`,
+          message: `Subscription for agency "${tenant.name}" was set to cancel at cycle end. Reason: ${reason}`,
           tenantId
         }
       })
@@ -287,5 +291,90 @@ export async function getSuperadminMrrAction() {
   } catch (error: any) {
     console.error("Failed to calculate MRR:", error)
     return { error: error.message || "Failed to calculate MRR" }
+  }
+}
+
+export async function getChurnAnalyticsAction() {
+  try {
+    const session = await auth()
+    if (!session?.user?.id || session.user.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    // Get the start of the current month
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+    // Find all tenants cancelled this month
+    const cancelledTenants = await prisma.tenant.findMany({
+      where: {
+        cancelledAt: {
+          gte: startOfMonth
+        }
+      },
+      select: {
+        cancellationReason: true
+      }
+    })
+
+    const totalChurn = cancelledTenants.length
+
+    // Group by reason
+    const reasonCounts: Record<string, number> = {}
+    cancelledTenants.forEach(t => {
+      const reason = t.cancellationReason || "Unknown"
+      reasonCounts[reason] = (reasonCounts[reason] || 0) + 1
+    })
+
+    const breakdown = Object.entries(reasonCounts).map(([reason, count]) => ({
+      name: reason,
+      value: count
+    }))
+
+    return {
+      success: true,
+      data: {
+        totalChurn,
+        breakdown
+      }
+    }
+  } catch (error) {
+    console.error("Failed to get churn analytics", error)
+    return { error: "Failed to get churn analytics" }
+  }
+}
+
+export async function overrideSubscriptionAction(tenantId: string, newPlan: string, newEndDate: Date | null) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id || session.user.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
+    if (!tenant) return { error: "Agency not found" }
+
+    await prisma.$transaction([
+      prisma.tenant.update({
+        where: { id: tenantId },
+        data: {
+          subscriptionPlan: newPlan,
+          subscriptionEnd: newEndDate,
+          subscriptionStatus: "ACTIVE", // Force active if overridden
+          cancelAtPeriodEnd: false, // Reset cancellation
+          cancelledAt: null,
+          cancellationReason: null
+        }
+      }),
+      prisma.superAdminLog.create({
+        data: {
+          action: "SUBSCRIPTION_OVERRIDDEN",
+          message: `Subscription for agency "${tenant.name}" was manually overridden to ${newPlan}.`,
+          tenantId
+        }
+      })
+    ])
+
+    revalidatePath("/superadmin/dashboard")
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to override subscription", error)
+    return { error: "Failed to override subscription" }
   }
 }
