@@ -7,6 +7,7 @@ import InviteClientModal from "./InviteClientModal"
 import DeleteClientButton from "./DeleteClientButton"
 import StatusDropdown from "@/components/StatusDropdown"
 import OutstandingInvoicesWidget, { OverdueInvoice } from "@/components/admin/OutstandingInvoicesWidget"
+import StorageUsageWidget from "@/components/admin/StorageUsageWidget"
 import { Bell } from "lucide-react"
 import SignOutButton from "./SignOutButton"
 import { GoPeople } from "react-icons/go"
@@ -208,7 +209,12 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      <OutstandingInvoicesWidget invoices={overdueInvoices} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        <StorageUsageWidget />
+        <div className="h-full">
+          <OutstandingInvoicesWidget invoices={overdueInvoices} />
+        </div>
+      </div>
 
       <AdminAnalyticsCharts data={chartData} />
 
