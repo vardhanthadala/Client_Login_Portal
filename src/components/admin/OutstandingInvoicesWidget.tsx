@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, Mail, Loader2, ArrowRight } from "lucide-react"
+import { AlertCircle, Mail, Loader2, ArrowRight, X } from "lucide-react"
 import { toast } from "sonner"
 import { sendInvoiceReminderAction } from "@/app/actions/invoices"
 import Link from "next/link"
@@ -21,6 +21,7 @@ export type OverdueInvoice = {
 
 export default function OutstandingInvoicesWidget({ invoices }: { invoices: OverdueInvoice[] }) {
   const [sendingIds, setSendingIds] = useState<Record<string, boolean>>({})
+  const [dismissedIds, setDismissedIds] = useState<Record<string, boolean>>({})
 
   const handleSendReminder = async (invoiceId: string) => {
     setSendingIds(prev => ({ ...prev, [invoiceId]: true }))
@@ -30,6 +31,7 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
         toast.error(result.error)
       } else {
         toast.success("Reminder email sent successfully")
+        setDismissedIds(prev => ({ ...prev, [invoiceId]: true }))
       }
     } catch (err) {
       toast.error("An unexpected error occurred")
@@ -42,7 +44,9 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
     return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
   }
 
-  if (invoices.length === 0) {
+  const visibleInvoices = invoices.filter(inv => !dismissedIds[inv.id])
+
+  if (visibleInvoices.length === 0) {
     return null
   }
 
@@ -59,7 +63,7 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
       </CardHeader>
       <CardContent className="pt-4 p-0">
         <div className="divide-y divide-red-100">
-          {invoices.map((inv) => (
+          {visibleInvoices.map((inv) => (
             <div key={inv.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-red-50/50 transition-colors">
               <div>
                 <h4 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -90,6 +94,15 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="text-gray-400 hover:text-red-600 hover:bg-red-100"
+                  onClick={() => setDismissedIds(prev => ({ ...prev, [inv.id]: true }))}
+                  title="Dismiss"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           ))}
