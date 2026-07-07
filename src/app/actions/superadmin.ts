@@ -236,30 +236,35 @@ export async function getSuperadminMrrAction() {
 
     // Fetch all active subscriptions
     // In production with >100 agencies, implement pagination (skip/count).
-    const subscriptions = await rzp.subscriptions.all({ status: "active", count: 100 })
+    const queryParams: any = { count: 100 }
+    const subscriptions: any = await rzp.subscriptions.all(queryParams)
     
     // Fetch all plans to map plan_id to actual amounts
-    const plansResult = await rzp.plans.all({ count: 100 })
+    const plansResult: any = await rzp.plans.all({ count: 100 })
     
     // Create a map of plan details
     const plansMap = new Map<string, { amount: number, interval: string, currency: string }>()
-    plansResult.items.forEach(p => {
-      plansMap.set(p.id, {
-        amount: Number(p.item.amount) / 100, // convert from subunits
-        interval: p.period,
-        currency: p.item.currency
+    if (plansResult.items) {
+      plansResult.items.forEach((p: any) => {
+        plansMap.set(p.id, {
+          amount: Number(p.item.amount) / 100, // convert from subunits
+          interval: p.period,
+          currency: p.item.currency
+        })
       })
-    })
+    }
 
     let totalMrrInr = 0
 
     // Typical conversion rate fallback if USD (dynamically you'd use a forex API, but static is fine for display)
     const USD_TO_INR = 83.5
 
-    for (const sub of subscriptions.items) {
-      const plan = plansMap.get(sub.plan_id)
-      if (plan) {
-        let subMrr = 0
+    if (subscriptions.items) {
+      for (const sub of subscriptions.items) {
+        if (sub.status !== "active") continue;
+        const plan = plansMap.get(sub.plan_id)
+        if (plan) {
+          let subMrr = 0
         if (plan.interval === "yearly") {
           subMrr = plan.amount / 12
         } else if (plan.interval === "monthly") {
@@ -278,6 +283,7 @@ export async function getSuperadminMrrAction() {
         }
 
         totalMrrInr += subMrr
+        }
       }
     }
 

@@ -39,15 +39,15 @@ export async function getTenantStorageUsageAction() {
 
     // Loop through all objects if there are more than 1000
     while (isTruncated) {
-      const command = new ListObjectsV2Command({
+      const command: any = new ListObjectsV2Command({
         Bucket: tenant.awsS3BucketName,
         ContinuationToken: continuationToken,
       })
       
-      const response = await s3Client.send(command)
+      const response: any = await s3Client.send(command)
       
       if (response.Contents) {
-        response.Contents.forEach((item) => {
+        response.Contents.forEach((item: any) => {
           totalBytes += item.Size || 0
           fileCount += 1
         })
