@@ -1,4 +1,6 @@
-﻿"use server"
+"use server"
+
+import { auth } from "@/auth"
 
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
@@ -214,3 +216,76 @@ export async function getSuperAdminLogs() {
   }
 }
 
+export async function getSuperadminMrrAction() {
+  try {
+    const session = await auth()
+    if (!session?.user?.id || session.user.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return { success: true, data: { mrr: 0, arr: 0, error: "Razorpay keys missing" } }
+    }
+
+    const rzp = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    })
+
+    // Fetch all active subscriptions
+    // In production with >100 agencies, implement pagination (skip/count).
+    const subscriptions = await rzp.subscriptions.all({ status: "active", count: 100 })
+    
+    // Fetch all plans to map plan_id to actual amounts
+    const plansResult = await rzp.plans.all({ count: 100 })
+    
+    // Create a map of plan details
+    const plansMap = new Map<string, { amount: number, interval: string, currency: string }>()
+    plansResult.items.forEach(p => {
+      plansMap.set(p.id, {
+        amount: Number(p.item.amount) / 100, // convert from subunits
+        interval: p.period,
+        currency: p.item.currency
+      })
+    })
+
+    let totalMrrInr = 0
+
+    // Typical conversion rate fallback if USD (dynamically you'd use a forex API, but static is fine for display)
+    const USD_TO_INR = 83.5
+
+    for (const sub of subscriptions.items) {
+      const plan = plansMap.get(sub.plan_id)
+      if (plan) {
+        let subMrr = 0
+        if (plan.interval === "yearly") {
+          subMrr = plan.amount / 12
+        } else if (plan.interval === "monthly") {
+          subMrr = plan.amount
+        } else if (plan.interval === "weekly") {
+          subMrr = plan.amount * 4.33
+        } else if (plan.interval === "daily") {
+          subMrr = plan.amount * 30
+        } else {
+          subMrr = plan.amount // fallback
+        }
+
+        // Convert to INR if it's USD
+        if (plan.currency === "USD") {
+          subMrr = subMrr * USD_TO_INR
+        }
+
+        totalMrrInr += subMrr
+      }
+    }
+
+    return { 
+      success: true, 
+      data: { 
+        mrr: totalMrrInr, 
+        arr: totalMrrInr * 12 
+      } 
+    }
+  } catch (error: any) {
+    console.error("Failed to calculate MRR:", error)
+    return { error: error.message || "Failed to calculate MRR" }
+  }
+}

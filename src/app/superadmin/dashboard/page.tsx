@@ -10,6 +10,7 @@ import AnalyticsCharts from "./AnalyticsCharts"
 import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
 import AgencySearch from "./AgencySearch"
+import MrrArrWidget from "@/components/superadmin/MrrArrWidget"
 import { ShieldCheck } from "lucide-react"
 
 export default async function SuperAdminDashboard(props: { searchParams: Promise<{ q?: string }> }) {
@@ -68,7 +69,8 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <MrrArrWidget />
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
             <p className="text-sm font-medium text-muted-foreground">Total Agencies</p>
             <h3 className="text-2xl font-bold text-[#0F172A] mt-0.5">{tenants.length}</h3>
