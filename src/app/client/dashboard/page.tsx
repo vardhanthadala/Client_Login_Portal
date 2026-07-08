@@ -63,7 +63,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
   const unreadCount = (clientProfile.messages || []).filter(m => m.senderId !== (token.id as string)).length
 
   // Build tabs based on available data
-  const tabs = [
+  const tabs: Array<{ id: string, label: React.ReactNode, content: React.ReactNode }> = [
     {
       id: "overview",
       label: "Overview",
