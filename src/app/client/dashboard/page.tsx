@@ -15,6 +15,7 @@ import ClientInvoices from "@/components/ClientInvoices"
 import SignOutButton from "./SignOutButton"
 import ClientSidebarLayout from "./ClientSidebarLayout"
 import { FadeInStagger, FadeInItem } from "@/components/animations/FadeIn"
+import ClientNotificationsTab from "@/components/ClientNotificationsTab"
 
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
@@ -304,15 +305,9 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
     id: "notifications",
     label: "Notifications",
     content: (
-      <FadeInStagger className="flex flex-col items-center justify-center h-[50vh] text-center">
+      <FadeInStagger>
         <FadeInItem>
-          <div className="w-16 h-16 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center mb-4 mx-auto">
-            <Bell className="w-8 h-8 text-[#94A3B8] dark:text-[#666]" />
-          </div>
-          <h2 className="text-xl font-bold font-sans text-[#0F172A] dark:text-white mb-2">No new notifications</h2>
-          <p className="text-[#64748B] dark:text-[#94A3B8] max-w-sm">
-            You're all caught up! We'll notify you here when there are updates on your projects.
-          </p>
+          <ClientNotificationsTab />
         </FadeInItem>
       </FadeInStagger>
     )

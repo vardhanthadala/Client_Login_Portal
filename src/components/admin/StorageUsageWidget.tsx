@@ -53,10 +53,10 @@ export default function StorageUsageWidget() {
 
   if (loading) {
     return (
-      <Card className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full">
+      <Card className="bg-[#FFF5F5] dark:bg-[#FFF5F5]/10 border-none shadow-sm bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-[#0F172A] dark:text-white text-lg flex items-center gap-2">
-            <Cloud className="w-5 h-5 text-[#5A52FF]" />
+            <Cloud className="w-5 h-5 text-[#22C55E]" />
             AWS Storage Usage
           </CardTitle>
         </CardHeader>
@@ -106,13 +106,13 @@ export default function StorageUsageWidget() {
 
   return (
     <Card className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden relative h-full flex flex-col group">
-      <div className="absolute right-0 top-0 w-32 h-32 bg-[#5A52FF]/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-[#5A52FF]/10 transition-colors"></div>
+      <div className="absolute right-0 top-0 w-32 h-32 bg-[#22C55E]/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-[#22C55E]/10 transition-colors"></div>
       <CardHeader className="pb-2 border-b border-[#F1F5F9] dark:border-[#222]">
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-2xl font-sans font-bold text-[#0F172A] dark:text-white flex items-center gap-2 tracking-tight">
-              <div className="w-8 h-8 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center">
-                <Cloud className="w-4 h-4 text-[#5A52FF]" />
+              <div className="w-8 h-8 rounded-lg bg-[#22C55E]/10 flex items-center justify-center">
+                <Cloud className="w-4 h-4 text-[#22C55E]" />
               </div>
               AWS S3 Storage
             </CardTitle>
@@ -130,13 +130,13 @@ export default function StorageUsageWidget() {
         <div className="space-y-3 relative z-10">
           <div className="flex justify-between text-[13px] font-medium mb-1">
             <span className="text-[#0F172A] dark:text-white flex items-center gap-1.5">
-              <FileIcon className="w-4 h-4 text-[#5A52FF]" /> 
+              <FileIcon className="w-4 h-4 text-[#22C55E]" /> 
               {data.fileCount} Total Files
             </span>
             <span className="text-[#64748B] dark:text-[#888]">100 GB Visual Quota</span>
           </div>
           <div className="h-2.5 w-full bg-[#F1F5F9] dark:bg-[#222] rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#5A52FF] to-[#9D97FF] rounded-full transition-all duration-1000 ease-out" style={{ width: `${usagePercentage}%` }}></div>
+            <div className="h-full bg-gradient-to-r from-[#22C55E] to-[#9D97FF] rounded-full transition-all duration-1000 ease-out" style={{ width: `${usagePercentage}%` }}></div>
           </div>
         </div>
       </CardContent>

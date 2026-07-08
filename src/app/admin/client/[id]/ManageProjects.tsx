@@ -114,7 +114,7 @@ export default function ManageProjects({
   }
 
   return (
-    <Card className="hover:border-primary/50 transition-all duration-200">
+    <Card className="bg-[#FDF4E7] dark:bg-[#FDF4E7]/10 border-none shadow-sm hover:border-primary/50 transition-all duration-200">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
         <div className="w-full sm:w-auto">
           <CardTitle className="text-lg font-sans font-bold">Active Projects</CardTitle>

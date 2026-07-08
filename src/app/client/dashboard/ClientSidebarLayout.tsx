@@ -7,6 +7,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
 import { Moon, Sun, Menu, X, Bell, ChevronDown, CheckCircle2, LayoutDashboard, FolderKanban, CheckSquare, CreditCard, MessageSquare, Clock, LogOut, Settings, LifeBuoy, Building2, Calendar } from "lucide-react"
 import SignOutButton from "./SignOutButton"
+import { useClientNotifications } from "@/store/clientNotificationsStore"
 
 export interface TabData {
   id: string;
@@ -28,6 +29,8 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
   const searchParams = useSearchParams()
   const { theme, setTheme, systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const notifs = useClientNotifications(state => state.notifications)
+  const unreadNotifsCount = notifs.filter(n => !n.isRead).length
   
   const [activeTab, setActiveTab] = useState(initialTab || tabs[0]?.id)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -115,10 +118,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
           {/* Logo & Workspace Dropdown Placeholder */}
           <div className="p-4 border-b border-[#E2E8F0] dark:border-[#222] relative">
             <div className="flex items-center justify-between mb-4">
-              <div 
-                className="flex items-center gap-2 cursor-pointer group" 
-                onClick={() => setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen)}
-              >
+              <div className="flex items-center gap-2">
                 <div className="relative w-28 h-8">
                   <Image 
                     src="/images/logo.png" 
@@ -127,7 +127,6 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                     className="object-contain object-left dark:invert dark:hue-rotate-180 dark:brightness-125 dark:drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]" 
                   />
                 </div>
-                <ChevronDown className={`w-4 h-4 text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-white transition-all ${isWorkspaceDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
               
               {/* Theme Toggle */}
@@ -139,33 +138,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
               </button>
             </div>
 
-            {/* Workspace Dropdown */}
-            <AnimatePresence>
-              {isWorkspaceDropdownOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-[60px] left-4 right-4 bg-white dark:bg-[#111] border border-[#E2E8F0] dark:border-[#222] rounded-xl shadow-lg z-50 overflow-hidden"
-                >
-                  <div className="p-2 flex flex-col gap-1">
-                    <button className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] rounded-lg transition-colors">
-                      <Building2 className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
-                      Manage Workspace
-                    </button>
-                    <button className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] rounded-lg transition-colors">
-                      <Settings className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
-                      Portal Settings
-                    </button>
-                    <div className="h-px w-full bg-[#E2E8F0] dark:bg-[#222] my-1" />
-                    <button className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] rounded-lg transition-colors">
-                      <LifeBuoy className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
-                      Help & Support
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+
           </div>
 
           {/* Navigation Links */}
@@ -188,12 +161,20 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                     <div className={`${isActive ? "text-[#10B981]" : "opacity-70"}`}>
                       {getIconForTab(tab.id)}
                     </div>
-                    <span className="flex-1 truncate relative z-10">
+                    <span className="flex-1 truncate relative z-10 flex items-center">
                       {tab.id === 'messages' && typeof tab.label !== 'string' ? (
-                        <div className="flex items-center">
+                        <>
                            Messages
-                           {/* Extract badge manually since tab.label is a ReactNode */}
-                        </div>
+                        </>
+                      ) : tab.id === 'notifications' ? (
+                        <>
+                          Notifications
+                          {unreadNotifsCount > 0 && (
+                            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-[0_2px_8px_rgba(239,68,68,0.4)]">
+                              {unreadNotifsCount}
+                            </span>
+                          )}
+                        </>
                       ) : tab.label}
                     </span>
                     
@@ -265,15 +246,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
             </button>
             </div>
 
-            {/* Premium Workspace Button */}
-            <button className="w-full flex items-center justify-between p-3 mb-4 rounded-xl border border-[#E2E8F0] dark:border-[#222] bg-[#FAFAFA] dark:bg-[#0A0A0A] hover:bg-white dark:hover:bg-[#111] transition-colors group">
-              <div className="flex items-center gap-2">
-                <span className="text-[#EAB308]">✦</span>
-                <span className="text-[13px] font-medium text-[#0F172A] dark:text-white">Premium Workspace</span>
-              </div>
-              <ChevronDown className="w-4 h-4 text-[#64748B] -rotate-90 group-hover:text-white transition-colors" />
-            </button>
-
+            {/* Premium Workspace Button Removed */}
             <div className="mt-3 px-2">
               <SignOutButton />
             </div>
@@ -310,33 +283,19 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                     </h1>
                     <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium hidden sm:flex items-center gap-2 mt-1">
                       <span>{activeTabData?.id === 'projects' ? 'Track and manage all ongoing projects.' : "Here's what's happening with your workspace today."}</span>
-                      {activeTabData?.id === 'overview' && currentTime && (
-                        <>
-                          <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333]" />
-                          <span className="text-[#0F172A] dark:text-white flex items-center gap-1.5 ml-1">
-                            <Calendar className="w-4 h-4 text-[#10B981]" />
-                            {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                            <span className="text-[#64748B] dark:text-[#888] ml-1">
-                              {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                            </span>
-                          </span>
-                        </>
-                      )}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="hidden md:flex items-center gap-2 text-[13px] text-[#0F172A] dark:text-white font-medium bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#222] shadow-sm rounded-full px-4 py-2 transition-colors">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-[pulse_4s_ease-in-out_infinite]" />
-                    <span>Workspace Healthy <span className="text-[#10B981] ml-1">✓</span></span>
-                  </div>
-                  <div className="hidden sm:flex flex-col items-start justify-center gap-0.5 text-[12px] bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#222] shadow-sm rounded-[16px] px-4 py-1.5 transition-colors">
-                    <div className="flex items-center gap-1.5 text-[#0F172A] dark:text-white">
-                      <Clock className="w-3.5 h-3.5 text-[#64748B] dark:text-[#888]" />
-                      <span className="font-medium text-[13px]">Last active</span>
+                  {currentTime && (
+                    <div className="hidden md:flex items-center gap-2 text-[13px] text-[#0F172A] dark:text-white font-medium bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#222] shadow-sm rounded-full px-4 py-2 transition-colors">
+                      <Calendar className="w-4 h-4 text-[#10B981]" />
+                      <span>{currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+                      <span className="text-[#64748B] dark:text-[#888] ml-0.5">
+                        {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                      </span>
                     </div>
-                    <span className="text-[#64748B] dark:text-[#888]">2 min ago</span>
-                  </div>
+                  )}
                 </div>
               </motion.div>
             ) : (
@@ -360,10 +319,15 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                   </h1>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="hidden sm:flex items-center gap-2 text-[13px] text-[#64748B] dark:text-[#888] font-medium mr-2">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Last active just now</span>
-                  </div>
+                  {currentTime && (
+                    <div className="hidden md:flex items-center gap-2 text-[13px] text-[#0F172A] dark:text-white font-medium bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#222] shadow-sm rounded-full px-4 py-2 transition-colors">
+                      <Calendar className="w-4 h-4 text-[#10B981]" />
+                      <span>{currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+                      <span className="text-[#64748B] dark:text-[#888] ml-0.5">
+                        {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
@@ -371,7 +335,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto hidden-scrollbar p-4 sm:p-6 md:p-8 lg:p-10 relative">
+        <div className={`flex-1 overflow-y-auto hidden-scrollbar relative ${activeTab === 'messages' ? 'p-0' : 'p-4 sm:p-6 md:p-8 lg:p-10'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -379,7 +343,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-[1200px] mx-auto pb-20"
+              className={`w-full mx-auto ${activeTab === 'messages' ? 'max-w-none h-full pb-0' : 'max-w-[1200px] pb-20'}`}
             >
               {activeTabData?.content}
             </motion.div>

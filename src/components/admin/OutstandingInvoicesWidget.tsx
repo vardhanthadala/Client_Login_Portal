@@ -52,7 +52,7 @@ export default function OutstandingInvoicesWidget({ invoices }: { invoices: Over
   }
 
   return (
-    <Card className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] min-w-0 overflow-hidden flex flex-col h-full">
+    <Card className="bg-[#FDF4E7] dark:bg-[#FDF4E7]/10 border-none shadow-sm bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] min-w-0 overflow-hidden flex flex-col h-full">
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 pb-4 px-6 sm:px-8 pt-7 gap-3 border-b border-[#F1F5F9] dark:border-[#222]">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">

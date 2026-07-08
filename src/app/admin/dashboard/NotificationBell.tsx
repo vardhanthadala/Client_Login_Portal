@@ -30,7 +30,7 @@ export default function NotificationBell({ unreadClients }: { unreadClients: Unr
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 text-[#64748B] hover:text-[#5A52FF] hover:bg-[#5A52FF]/10 rounded-full transition-all flex items-center justify-center mt-1"
+        className="relative p-2.5 text-[#64748B] hover:text-[#22C55E] hover:bg-[#22C55E]/10 rounded-full transition-all flex items-center justify-center mt-1"
         title="Notifications"
       >
         <Bell className="w-[22px] h-[22px]" strokeWidth={2.5} />
@@ -70,7 +70,7 @@ export default function NotificationBell({ unreadClients }: { unreadClients: Unr
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold text-[#0F172A] text-[15px] group-hover:text-[#5A52FF] transition-colors">{client.companyName}</p>
+                        <p className="font-semibold text-[#0F172A] text-[15px] group-hover:text-[#22C55E] transition-colors">{client.companyName}</p>
                         <p className="text-[13px] text-[#64748B] mt-1">Sent you new messages</p>
                       </div>
                       <span className="flex items-center justify-center bg-red-100 text-red-600 text-xs font-bold h-6 min-w-[24px] px-1.5 rounded-full">

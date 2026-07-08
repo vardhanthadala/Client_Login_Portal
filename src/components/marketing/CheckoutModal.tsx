@@ -128,66 +128,92 @@ export function CheckoutModal({ triggerClassName, buttonText }: { triggerClassNa
       <DialogTrigger className={triggerClassName || "bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-6 px-8 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"}>
         {buttonText || "Purchase Subscription"}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[400px] p-8 rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">
         {success ? (
-          <div className="py-12 text-center space-y-4">
-            <div className="flex justify-center">
-              <CheckCircle2 className="h-16 w-16 text-green-500" />
+          <div className="flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-6 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center relative">
+              <div className="absolute inset-0 rounded-full bg-green-400/20 blur-md animate-pulse"></div>
+              <CheckCircle2 className="w-10 h-10 text-green-500 relative z-10" strokeWidth={2.5} />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">Registration Successful!</h3>
-            <p className="text-gray-500">
+            <DialogTitle className="text-2xl font-bold font-sans text-[#0F172A] dark:text-white tracking-tight mb-3">
+              Registration Successful!
+            </DialogTitle>
+            <DialogDescription className="text-[15px] font-medium text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8 px-2">
               Your workspace has been created. We have sent an email with your temporary password.
-            </p>
-            <Button onClick={() => window.location.href = "/login"} className="w-full mt-4 bg-[#5A52FF]">
+            </DialogDescription>
+            <Button onClick={() => window.location.href = "/login"} className="w-full rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors">
               Go to Login
             </Button>
           </div>
         ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>Subscribe to Dexze</DialogTitle>
-              <DialogDescription>
-                Fill out this form to purchase your subscription. For ₹2500/month, you get unlimited access to the agency dashboard and client portals.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="agencyName">Agency Name</Label>
+          <div className="flex flex-col items-center">
+            {/* Illustrative Icon */}
+            <div className="w-24 h-24 mb-6 rounded-full bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center relative">
+              <div className="absolute inset-0 rounded-full bg-indigo-400/20 blur-md animate-pulse"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-500 relative z-10"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            </div>
+
+            <DialogTitle className="text-2xl font-bold font-sans text-[#0F172A] dark:text-white tracking-tight mb-3 text-center">
+              Subscribe to Dexze
+            </DialogTitle>
+            <DialogDescription className="text-[15px] font-medium text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-6 px-2 text-center">
+              Purchase your subscription for ₹2500/month to get unlimited access to the agency dashboard.
+            </DialogDescription>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="agencyName" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Agency Name</Label>
                 <Input 
                   id="agencyName" 
                   {...register("agencyName")}
                   placeholder="Acme Corp" 
-                  className={errors.agencyName ? "border-red-500" : ""}
+                  className={`h-12 rounded-[14px] border-[#E2E8F0] dark:border-[#333] bg-[#F8FAFC] dark:bg-[#1A1A1A] focus-visible:ring-indigo-500 ${errors.agencyName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
                 {errors.agencyName && (
-                  <p className="text-sm text-red-500">{errors.agencyName.message}</p>
+                  <p className="text-xs text-red-500 font-medium">{errors.agencyName.message}</p>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Admin Email Address</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Admin Email</Label>
                 <Input 
                   id="email" 
                   type="email" 
                   {...register("email")}
                   placeholder="admin@acme.com" 
-                  className={errors.email ? "border-red-500" : ""}
+                  className={`h-12 rounded-[14px] border-[#E2E8F0] dark:border-[#333] bg-[#F8FAFC] dark:bg-[#1A1A1A] focus-visible:ring-indigo-500 ${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                  <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>
                 )}
               </div>
 
               {error && (
-                <div className="p-3 rounded bg-red-50 text-sm text-red-500 font-medium border border-red-100">
+                <div className="p-3 mt-2 rounded-[12px] bg-red-50 dark:bg-red-500/10 text-[13px] text-red-600 dark:text-red-400 font-medium border border-red-100 dark:border-red-500/20 text-center">
                   {error}
                 </div>
               )}
 
-              <Button type="submit" className="w-full bg-[#5A52FF] hover:bg-blue-700 text-white" disabled={loading}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Pay & Register"}
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 w-full mt-4">
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                  disabled={loading}
+                  className="flex-1 rounded-[16px] h-12 text-[15px] font-semibold border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="flex-1 rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors"
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Pay & Register"}
+                </Button>
+              </div>
             </form>
-          </>
+          </div>
         )}
       </DialogContent>
     </Dialog>

@@ -87,7 +87,7 @@ const StatusDropdown = ({ invoiceId, status, onChange, config }: any) => {
                 onChange(invoiceId, option.value)
                 setIsOpen(false)
               }}
-              className={`w-full text-left px-3 py-2 text-xs font-semibold ${status === option.value ? 'bg-slate-50 text-[#5A52FF]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'} transition-colors`}
+              className={`w-full text-left px-3 py-2 text-xs font-semibold ${status === option.value ? 'bg-slate-50 text-[#22C55E]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'} transition-colors`}
             >
               {option.label}
             </button>
@@ -187,7 +187,7 @@ export default function ManageInvoices({
   }
 
   return (
-    <Card className="hover:border-primary/50 transition-all duration-200 overflow-visible">
+    <Card className="bg-[#F2F4FD] dark:bg-[#F2F4FD]/10 border-none shadow-sm hover:border-primary/50 transition-all duration-200 overflow-visible">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
         <div className="w-full sm:w-auto">
           <CardTitle className="text-lg font-sans font-bold">💳 Billing & Invoices</CardTitle>

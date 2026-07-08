@@ -12,7 +12,7 @@ export default async function NotificationsTab() {
 
   // Fetch clients to aggregate notifications
   const clients = await prisma.user.findMany({
-    where: { 
+    where: {
       role: "CLIENT",
       tenantId: tenantId
     },
@@ -126,64 +126,60 @@ export default async function NotificationsTab() {
   notifications.sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto w-full">
-      <div className="flex items-center justify-between mb-8">
+    <div className="flex flex-col w-full">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white font-sans flex items-center gap-3">
+          <h2 className="text-3xl font-extrabold tracking-tight text-[#0F172A] dark:text-white font-sans flex items-center gap-3">
             Notifications
             {notifications.length > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 text-sm font-bold">
-                {notifications.length}
+              <span className="flex items-center justify-center px-3 py-1 rounded-full bg-[#10B981]/10 text-[#10B981] dark:bg-[#10B981]/20 text-[13px] font-bold border border-[#10B981]/20">
+                {notifications.length} New
               </span>
             )}
           </h2>
-          <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 font-medium">Actionable alerts and updates across all your clients.</p>
+          <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] mt-2 font-medium">
+            Actionable alerts and updates across all your clients.
+          </p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#111111] rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="flex flex-col gap-4">
         {notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-[#1A1A1A] rounded-full flex items-center justify-center mb-4 border border-[#E2E8F0] dark:border-[#333]">
-              <Bell className="w-8 h-8 text-[#94A3B8] dark:text-[#666]" />
+          <div className="bg-white dark:bg-[#161616] rounded-[24px] border border-[#E2E8F0] dark:border-[#222] shadow-sm flex flex-col items-center justify-center py-24 px-4 text-center">
+            <div className="w-20 h-20 bg-[#F8FAFC] dark:bg-[#1A1A1A] rounded-full flex items-center justify-center mb-6 border border-[#E2E8F0] dark:border-[#333] shadow-inner">
+              <Bell className="w-10 h-10 text-[#94A3B8] dark:text-[#666]" />
             </div>
-            <h3 className="text-lg font-bold text-[#0F172A] dark:text-white mb-2">All caught up!</h3>
-            <p className="text-[#64748B] dark:text-[#888] font-medium text-sm">You have no new notifications right now.</p>
+            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-2">All caught up!</h3>
+            <p className="text-[#64748B] dark:text-[#888] font-medium">You have no new notifications right now.</p>
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-[#F1F5F9] dark:divide-[#222]">
-            {notifications.map((item) => (
-              <Link 
-                key={item.id} 
-                href={item.link}
-                className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${item.bgClass} ${item.colorClass}`}>
-                  {item.icon}
+          notifications.map((item) => (
+            <Link
+              key={item.id}
+              href={item.link}
+              className="group flex flex-col sm:flex-row sm:items-center gap-5 p-5 bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#2A2E35] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-[#10B981]/40 dark:hover:border-[#10B981]/40 transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 ${item.bgClass} ${item.colorClass} shadow-sm border border-current/10`}>
+                {item.icon}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  <span className="font-bold text-[16px] text-[#0F172A] dark:text-white truncate">{item.clientName}</span>
+                  <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#444] shrink-0" />
+                  <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate uppercase tracking-wider">{item.title}</span>
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-[14px] text-[#0F172A] dark:text-white truncate">{item.clientName}</span>
-                    <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333] shrink-0" />
-                    <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white truncate">{item.title}</span>
-                  </div>
-                  <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] truncate">{item.description}</p>
+                <p className="text-[15px] text-[#334155] dark:text-[#CBD5E1] truncate font-medium">{item.description}</p>
+              </div>
+
+              <div className="flex items-center justify-end sm:flex-col sm:items-end gap-3 shrink-0 mt-3 sm:mt-0">
+                <div className="opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 text-[13px] font-bold text-[#10B981] -translate-x-2 group-hover:translate-x-0 duration-300">
+                  View Details
+                  <ArrowRight className="w-4 h-4" />
                 </div>
-                
-                <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 shrink-0">
-                  <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#94A3B8] dark:text-[#666]">
-                    <Clock className="w-3.5 h-3.5" />
-                    {formatDistanceToNow(item.date, { addSuffix: true })}
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-[12px] font-bold text-[#5A52FF]">
-                    View Details
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </Link>
+          ))
         )}
       </div>
     </div>

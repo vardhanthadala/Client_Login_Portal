@@ -62,7 +62,7 @@ export default function BillingPage() {
           }
         },
         theme: {
-          color: "#5A52FF"
+          color: "#22C55E"
         }
       }
 
@@ -107,7 +107,7 @@ export default function BillingPage() {
 
           <Button
             onClick={handleSubscribe}
-            className="w-full flex justify-center bg-[#5A52FF] hover:bg-blue-700 text-white py-6 text-lg"
+            className="w-full flex justify-center bg-[#22C55E] hover:bg-blue-700 text-white py-6 text-lg"
             disabled={loading}
           >
             {loading ? (

@@ -16,7 +16,9 @@ import { AlertCircle, DollarSign, ArrowRight } from "lucide-react"
 import AdminAnalyticsCharts from "./AdminAnalyticsCharts"
 import { format, subMonths, isSameMonth } from "date-fns"
 import AdminSidebarLayout, { TabData } from "./AdminSidebarLayout"
+import { PremiumIcon } from "@/components/PremiumIcon"
 import NotificationsTab from "@/components/admin/NotificationsTab"
+import ClientRosterTable from "@/components/admin/ClientRosterTable"
 
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
@@ -166,18 +168,16 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
           {/* Premium KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Total Clients", value: clients.length, subtext: "Active Accounts", icon: GoPeople, color: "text-blue-500", bg: "bg-blue-500/10" },
-              { label: "Total Earnings", value: totalEarningsDisplay, subtext: "Lifetime Volume", icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
-              { label: "In Progress", value: clients.filter(c => c.clientProfile && c.clientProfile.status !== "COMPLETED").length, subtext: "Active Projects", icon: GrInProgress, color: "text-amber-500", bg: "bg-amber-500/10" },
-              { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length, 0), subtext: "Requires Attention", icon: LuMessageCircle, color: "text-purple-500", bg: "bg-purple-500/10" }
+              { label: "Total Clients", value: clients.length, subtext: "Active Accounts", icon: GoPeople, color: "text-amber-600", bg: "bg-[#FFFFFF]", cardBg: "bg-[#FDF4E7] dark:bg-[#FDF4E7]/10" },
+              { label: "Total Earnings", value: totalEarningsDisplay, subtext: "Lifetime Volume", icon: DollarSign, color: "text-emerald-600", bg: "bg-[#FFFFFF]", cardBg: "bg-[#EBF7EE] dark:bg-[#EBF7EE]/10" },
+              { label: "In Progress", value: clients.filter(c => c.clientProfile && c.clientProfile.status !== "COMPLETED").length, subtext: "Active Projects", icon: GrInProgress, color: "text-blue-600", bg: "bg-[#FFFFFF]", cardBg: "bg-[#F2F4FD] dark:bg-[#F2F4FD]/10" },
+              { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length, 0), subtext: "Requires Attention", icon: LuMessageCircle, color: "text-slate-600", bg: "bg-[#FFFFFF]", cardBg: "bg-[#F3F8F5] dark:bg-[#F3F8F5]/10" }
             ].map((stat, i) => (
-              <div key={i} className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group" style={{ animationDelay: `${i * 80}ms` }}>
-                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                  <stat.icon className={`w-4 h-4 ${stat.color}`} />
-                </div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-0.5">{stat.label}</p>
-                <h3 className="text-xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mb-0.5">{stat.value}</h3>
-                <p className="text-[11px] font-medium text-[#64748B] dark:text-[#666]">{stat.subtext}</p>
+              <div key={i} className={`${stat.cardBg} border border-[#0F172A]/5 dark:border-white/5 rounded-[24px] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] hover:-translate-y-1 transition-all duration-300 group`} style={{ animationDelay: `${i * 80}ms` }}>
+                <PremiumIcon icon={stat.icon} className="mb-4 group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1">{stat.label}</p>
+                <h3 className="text-[28px] font-sans font-[650] text-[#0F172A] dark:text-white tabular-nums tracking-tight mb-1">{stat.value}</h3>
+                <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">{stat.subtext}</p>
               </div>
             ))}
           </div>
@@ -198,82 +198,22 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       label: "Clients",
       content: (
         <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm">
+          <div className="flex items-center justify-between bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
             <div>
-              <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
-              <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
+              <h2 className="text-[28px] font-[650] text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
+              <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
             </div>
             <InviteClientModal />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {clients.map((client) => {
-              const unreadCount = (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
-              
-              const clientEarningsByCurrency: Record<string, number> = {}
-              ;(client.clientProfile?.invoices || [])
-                .filter(inv => inv.status === "PAID")
-                .forEach(inv => {
-                const currency = inv.currency || "USD"
-                clientEarningsByCurrency[currency] = (clientEarningsByCurrency[currency] || 0) + inv.amount
-              })
-              const clientEarningsDisplay = Object.entries(clientEarningsByCurrency).length > 0
-                ? Object.entries(clientEarningsByCurrency).map(([curr, amt]) => formatCurrency(amt, curr)).join(' + ')
-                : formatCurrency(0, "USD")
-
-              return (
-                <div key={client.id} className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-200 min-w-0 overflow-hidden flex flex-col group">
-                  <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 pb-4 gap-3 relative">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A] dark:text-white flex flex-wrap items-center gap-2 tracking-tight">
-                        <span className="break-words w-full sm:w-auto">{client.clientProfile?.companyName || "Unknown Company"}</span>
-                        {unreadCount > 0 && (
-                          <span className="relative flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-[11px] font-bold shrink-0" title={`${unreadCount} unread message(s)`}>
-                            <Bell className="w-3 h-3" />
-                            {unreadCount} new
-                          </span>
-                        )}
-                      </h3>
-                      <p className="mt-2 text-[14px] sm:text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium break-all sm:break-normal">{client.email}</p>
-                    </div>
-                    <div className="flex items-center shrink-0 w-full sm:w-auto justify-start sm:justify-end mt-2 sm:mt-0">
-                      {client.clientProfile ? (
-                        <StatusDropdown
-                          clientProfileId={client.clientProfile.id}
-                          currentStatus={client.clientProfile.status || "ONBOARDED"}
-                        />
-                      ) : (
-                        <span className="px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                          Pending
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="px-6 sm:px-8 pb-8 mt-auto">
-                    <div className="flex items-center justify-between mb-6 pt-4 border-t border-[#F1F5F9] dark:border-[#222]">
-                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#888] uppercase tracking-wider">Client Earnings</span>
-                      <span className="text-[14px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 rounded-lg tabular-nums tracking-tight">{clientEarningsDisplay}</span>
-                    </div>
-                    <div className="flex flex-row items-center gap-3">
-                      <Link href={`/admin/client/${client.id}`} className="w-full flex-1">
-                        <Button variant="outline" className="w-full bg-[#FAFAFA] dark:bg-[#0A0A0A] border-[#E5E7EB] dark:border-[#333] hover:bg-[#5A52FF] hover:text-white hover:border-[#5A52FF] dark:hover:bg-[#5A52FF] h-12 rounded-xl text-[15px] font-semibold transition-all group-hover:border-[#5A52FF]/30">
-                          View Details <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover:opacity-100" />
-                        </Button>
-                      </Link>
-                      <DeleteClientButton clientId={client.id} companyName={client.clientProfile?.companyName || "Unknown Company"} />
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-
-            {clients.length === 0 && (
-              <div className="col-span-full py-16 text-center text-[#64748B] dark:text-[#888] bg-white dark:bg-[#111111] rounded-[24px] border border-dashed border-[#E9EDF4] dark:border-[#2A2E35]">
-                <p className="text-lg font-bold text-[#0F172A] dark:text-white mb-2 tracking-tight">No clients found</p>
-                <p className="text-sm font-medium">Click "Invite New Client" to get started.</p>
-              </div>
-            )}
-          </div>
+          <ClientRosterTable 
+            clients={clients.map(client => ({
+              id: client.id,
+              email: client.email || "",
+              clientProfile: client.clientProfile,
+              unreadCount: (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
+            }))}
+          />
         </div>
       )
     },

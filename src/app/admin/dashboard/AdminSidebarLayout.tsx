@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { PremiumIcon } from "@/components/PremiumIcon"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
 import { Moon, Sun, Menu, ChevronDown, LayoutDashboard, Users, Settings, LifeBuoy, Clock, Building2, Calendar, ShieldCheck, Bell } from "lucide-react"
@@ -36,8 +37,6 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
   const [activeTab, setActiveTab] = useState(initialTab || tabs[0]?.id)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false)
-  const [isClientsDropdownOpen, setIsClientsDropdownOpen] = useState(pathname.includes("/admin/client"))
-  const [expandedClientId, setExpandedClientId] = useState<string | null>(activeClientId || null)
   
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
   
@@ -46,9 +45,6 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
     if (initialTab) setActiveTab(initialTab)
   }, [initialTab])
 
-  useEffect(() => {
-    if (activeClientId) setExpandedClientId(activeClientId)
-  }, [activeClientId])
   useEffect(() => {
     setMounted(true)
     setCurrentTime(new Date())
@@ -85,7 +81,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#FAFAFA] dark:bg-[#0A0A0A] text-[#0F172A] dark:text-[#F8FAFC] overflow-hidden font-sans transition-colors duration-300">
+    <div className="flex h-screen w-full bg-[#F6F7FB] dark:bg-[#0F1115] text-[#0F172A] dark:text-[#F8FAFC] overflow-hidden font-sans transition-colors duration-300">
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
@@ -102,11 +98,11 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
 
       {/* Sidebar */}
       <motion.aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] sm:w-[280px] bg-white dark:bg-[#111111] border-r border-[#E2E8F0] dark:border-[#222222] flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] sm:w-[280px] bg-[#FFFFFF] dark:bg-[#171A21] border-r border-[#0F172A]/5 dark:border-white/5 flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex flex-col h-full overflow-y-auto blend-scrollbar">
           {/* Logo & Workspace Dropdown Placeholder */}
-          <div className="p-4 border-b border-[#E2E8F0] dark:border-[#222] relative">
+          <div className="p-4 border-b border-[#0F172A]/5 dark:border-white/5 relative">
             <div className="flex items-center justify-between mb-4">
               <div 
                 className="flex items-center gap-2 cursor-pointer group" 
@@ -120,7 +116,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                     className="object-contain object-left dark:invert dark:hue-rotate-180 dark:brightness-125 dark:drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]" 
                   />
                 </div>
-                <ChevronDown className={`w-4 h-4 text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-white transition-all ${isWorkspaceDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-[#64748B] transition-transform duration-200 ${isWorkspaceDropdownOpen ? "rotate-180" : ""}`} />
               </div>
               
               {/* Theme Toggle */}
@@ -131,31 +127,41 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
             </div>
-
-            {/* Workspace Dropdown */}
-            <AnimatePresence>
-              {isWorkspaceDropdownOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-[60px] left-4 right-4 bg-white dark:bg-[#111] border border-[#E2E8F0] dark:border-[#222] rounded-xl shadow-lg z-50 overflow-hidden"
-                >
-                  <div className="p-2 flex flex-col gap-1">
-                    <Link href="/admin/settings" className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] rounded-lg transition-colors">
-                      <Settings className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
-                      Portal Settings
-                    </Link>
-                    <div className="h-px w-full bg-[#E2E8F0] dark:bg-[#222] my-1" />
-                    <button className="flex items-center gap-3 w-full p-2.5 text-[13px] font-medium text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] rounded-lg transition-colors">
-                      <LifeBuoy className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
-                      Help & Support
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
+
+          <AnimatePresence>
+            {isWorkspaceDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-[60px] left-4 right-4 bg-white dark:bg-[#171A21] border border-[#0F172A]/5 dark:border-white/5 rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] overflow-hidden z-50 p-1.5 flex flex-col gap-0.5"
+              >
+                <Link
+                  href="/admin/settings"
+                  onClick={() => {
+                    setIsWorkspaceDropdownOpen(false)
+                    setIsSidebarOpen(false)
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-semibold text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  Portal Settings
+                </Link>
+                <Link
+                  href="/admin/help"
+                  onClick={() => {
+                    setIsWorkspaceDropdownOpen(false)
+                    setIsSidebarOpen(false)
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-semibold text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
+                >
+                  <LifeBuoy className="w-4 h-4" />
+                  Help & Support
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Navigation Links */}
           <div className="px-4 py-2 flex-1">
@@ -165,15 +171,16 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                 href="/admin/dashboard?tab=overview"
                 style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif' }}
                 onClick={() => setIsSidebarOpen(false)}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
+                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
                   (activeTab === "overview" && !pathname.includes("/admin/client"))
-                    ? "text-[#10B981] bg-black/5 dark:bg-white/5" 
-                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
+                    ? "text-[#22C55E] bg-black/5 dark:bg-white/5" 
+                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#FAFBFD] dark:hover:bg-[#1C2029] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
                 }`}
               >
-                <div className={`${(activeTab === "overview" && !pathname.includes("/admin/client")) ? "text-[#10B981]" : "opacity-70"}`}>
-                  <LayoutDashboard className="w-[18px] h-[18px]" />
-                </div>
+                <PremiumIcon 
+                  icon={LayoutDashboard} 
+                  iconClassName={(activeTab === "overview" && !pathname.includes("/admin/client")) ? "text-[#22C55E]" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                />
                 <span className="flex-1 truncate relative z-10">
                   Overview
                 </span>
@@ -182,7 +189,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                 {((activeTab === "overview" && !pathname.includes("/admin/client"))) && (
                   <motion.div
                     layoutId="activeSidebar"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] bg-[#10B981] rounded-r-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] bg-[#22C55E] rounded-r-full"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -192,15 +199,16 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                 href="/admin/dashboard?tab=notifications"
                 style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif' }}
                 onClick={() => setIsSidebarOpen(false)}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
+                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
                   activeTab === "notifications" && !pathname.includes("/admin/client")
-                    ? "text-[#10B981] bg-black/5 dark:bg-white/5" 
-                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
+                    ? "text-[#22C55E] bg-black/5 dark:bg-white/5" 
+                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#FAFBFD] dark:hover:bg-[#1C2029] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
                 }`}
               >
-                <div className={`${activeTab === "notifications" && !pathname.includes("/admin/client") ? "text-[#10B981]" : "opacity-70"}`}>
-                  <Bell className="w-[18px] h-[18px]" />
-                </div>
+                <PremiumIcon 
+                  icon={Bell} 
+                  iconClassName={(activeTab === "notifications" && !pathname.includes("/admin/client")) ? "text-[#22C55E]" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                />
                 <span className="flex-1 truncate relative z-10">
                   Notifications
                 </span>
@@ -209,136 +217,46 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                 {(activeTab === "notifications" && !pathname.includes("/admin/client")) && (
                   <motion.div
                     layoutId="activeSidebar"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] bg-[#10B981] rounded-r-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] bg-[#22C55E] rounded-r-full"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
               </Link>
 
-              {/* Clients Dropdown */}
-              <div className="mt-1 flex flex-col gap-1">
-                <button
-                  onClick={() => setIsClientsDropdownOpen(!isClientsDropdownOpen)}
-                  style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif' }}
-                  className={`relative flex items-center justify-between px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
-                    isClientsDropdownOpen || pathname.includes("/admin/client")
-                      ? "text-[#0F172A] dark:text-[#F8FAFC]" 
-                      : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`${isClientsDropdownOpen || pathname.includes("/admin/client") ? "text-[#5A52FF]" : "opacity-70"}`}>
-                      <Users className="w-[18px] h-[18px]" />
-                    </div>
-                    <span className="truncate">Clients</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isClientsDropdownOpen ? "rotate-180" : ""}`} />
-                </button>
-
-                <AnimatePresence>
-                  {isClientsDropdownOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden flex flex-col gap-0.5 ml-4 border-l border-[#E2E8F0] dark:border-[#333] pl-2 mt-1"
-                    >
-                      {clients.length === 0 ? (
-                        <div className="px-3 py-2 text-[12px] text-[#64748B] dark:text-[#888]">No clients found.</div>
-                      ) : (
-                        clients.map((client) => {
-                          const isClientExpanded = expandedClientId === client.id;
-                          const clientName = client.clientProfile?.companyName || client.clientProfile?.clientName || "Unknown Client";
-                          return (
-                            <div key={client.id} className="flex flex-col gap-0.5">
-                              <button
-                                onClick={() => {
-                                  if (isClientExpanded) {
-                                    setExpandedClientId(null);
-                                  } else {
-                                    setExpandedClientId(client.id);
-                                    if (activeClientId !== client.id) {
-                                      router.push(`/admin/client/${client.id}?tab=overview`);
-                                      setIsSidebarOpen(false);
-                                    }
-                                  }
-                                }}
-                                className={`flex items-center justify-between px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
-                                  isClientExpanded || activeClientId === client.id
-                                    ? "text-[#0F172A] dark:text-white bg-[#F8FAFC] dark:bg-[#1A1A1A]"
-                                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]"
-                                }`}
-                              >
-                                <span className="truncate">{clientName}</span>
-                                <ChevronDown className={`w-3.5 h-3.5 opacity-50 transition-transform duration-200 ${isClientExpanded ? "rotate-180" : ""}`} />
-                              </button>
-
-                              <AnimatePresence>
-                                {isClientExpanded && (
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    className="overflow-hidden flex flex-col gap-0.5 ml-3 pl-2 border-l border-[#E2E8F0] dark:border-[#333] mt-1 mb-2"
-                                  >
-                                    {[
-                                      { id: "overview", label: "Overview" },
-                                      { id: "projects", label: "Projects" },
-                                      { id: "approvals", label: "Approvals" },
-                                      { id: "billing", label: "Billing & Invoices" },
-                                      { id: "messages", label: "Messages" }
-                                    ].map(subTab => {
-                                      const isSubTabActive = activeClientId === client.id && activeClientTab === subTab.id;
-                                      return (
-                                        <Link
-                                          key={subTab.id}
-                                          href={`/admin/client/${client.id}?tab=${subTab.id}`}
-                                          onClick={() => setIsSidebarOpen(false)}
-                                          className={`block px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
-                                            isSubTabActive
-                                              ? "text-[#10B981] bg-[#10B981]/10"
-                                              : "text-[#64748B] dark:text-[#888] hover:text-[#0F172A] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
-                                          }`}
-                                        >
-                                          {subTab.label}
-                                        </Link>
-                                      );
-                                    })}
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          );
-                        })
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              {/* Clients Link */}
+              <Link
+                href="/admin/dashboard?tab=clients"
+                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif' }}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-[14px] font-medium transition-all duration-200 outline-none w-full text-left tracking-tight ${
+                  activeTab === "clients"
+                    ? "text-[#22C55E] bg-black/5 dark:bg-white/5" 
+                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#FAFBFD] dark:hover:bg-[#1C2029] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
+                }`}
+              >
+                <PremiumIcon 
+                  icon={Users} 
+                  iconClassName={activeTab === "clients" ? "text-[#22C55E]" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                />
+                <span className="flex-1 truncate relative z-10">
+                  Clients
+                </span>
+                
+                {/* Active Indicator Line */}
+                {activeTab === "clients" && (
+                  <motion.div
+                    layoutId="activeSidebar"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] bg-[#22C55E] rounded-r-full"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </Link>
             </nav>
           </div>
 
           {/* Bottom Profile Widget */}
           <div className="p-4 mt-auto">
-            {/* Profile */}
-            <div className="p-4 border-t border-[#E2E8F0] dark:border-[#222]">
-            <div className="w-full flex flex-col gap-3 p-3 rounded-2xl hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors text-left group cursor-default">
-              <div className="flex items-center gap-3 w-full">
-                <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/30 overflow-hidden group-hover:scale-105 transition-transform duration-300">
-                  <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold text-[#0F172A] dark:text-white truncate tracking-tight">{adminName || "Admin"}</span>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                    <span className="text-[10px] font-bold text-blue-500 tracking-wider uppercase">Workspace Owner</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-
-            <div className="mt-3 px-2">
+            <div className="px-2 pt-4 border-t border-[#E2E8F0] dark:border-[#222]">
               <SignOutButton />
             </div>
           </div>
@@ -406,12 +324,6 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                   <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white flex items-center gap-3">
                     {activeTabData?.label}
                   </h1>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="hidden sm:flex items-center gap-2 text-[13px] text-[#64748B] dark:text-[#888] font-medium mr-2">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Last active just now</span>
-                  </div>
                 </div>
               </motion.div>
             )}

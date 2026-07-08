@@ -3,11 +3,9 @@
 import { useActionState, useState } from "react"
 import { loginAction, requestPasswordReset, verifyOtpAndResetPassword } from "@/app/actions/auth"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Loader2, Eye, EyeOff } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 type Mode = "login" | "forgot" | "reset"
 
@@ -52,7 +50,6 @@ export default function LoginPage() {
       return
     }
 
-    // append email manually
     formData.append("email", resetEmail)
     const res = await verifyOtpAndResetPassword(formData)
     
@@ -60,190 +57,186 @@ export default function LoginPage() {
     if (res.error) {
       setResetError(res.error)
     } else {
-      // Success - back to login
       setMode("login")
       setResetError("Password updated successfully! Please login.")
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Left Side - Image */}
-      <div className="hidden lg:flex w-1/2 relative bg-zinc-900">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/login-bg.png"
-          alt="Abstract Background"
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent" />
-        <div className="absolute bottom-12 left-12 right-12 text-white">
-          <h2 className="text-4xl font-bold mb-4 tracking-tight">Dexze Portal</h2>
-          <p className="text-lg text-zinc-300 max-w-md">
-            Manage your clients, track progress, and securely share deliverables all in one place.
-          </p>
-        </div>
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans overflow-hidden bg-[#F4F7FB]">
+      <div className="relative z-10 w-full max-w-[1000px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex overflow-hidden min-h-[600px]">
+        
+        {/* Left Side - Form Area */}
+        <div className="w-full lg:w-1/2 p-10 sm:p-14 flex flex-col justify-center relative">
+          
+          {/* Logo */}
+          <div className="absolute -top-2 left-10 sm:left-14 flex items-center gap-2">
+            <div className="w-32 h-32 relative">
+              <Image src="/images/logo.png" alt="Dexze" fill className="object-left object-contain" />
+            </div>
+          </div>
 
-      {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white border-none shadow-sm rounded-2xl">
-          {mode === "login" && (
-            <>
-              <CardHeader className="space-y-1 pt-12 pb-8">
-                <CardTitle className="text-3xl font-medium text-center text-gray-900">Welcome back</CardTitle>
-                {resetError === "Password updated successfully! Please login." && (
-                  <CardDescription className="text-green-600 font-medium text-center pt-2">
-                    {resetError}
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <form action={loginActionDispatch}>
-                <CardContent className="space-y-5 px-10">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-[14px] font-medium text-gray-700">E-mail</Label>
-                    <Input 
-                      id="email" 
-                      name="email"
-                      type="email" 
-                      placeholder="name@example.com" 
-                      required 
-                      className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-[14px] font-medium text-gray-700">Password</Label>
+          <div className="mt-8 max-w-[340px]">
+            {mode === "login" && (
+              <>
+                <div className="mb-8">
+                  <h1 className="text-[32px] font-bold text-[#1E293B] mb-3 leading-[1.2] tracking-tight">
+                    Hello Welcome<br/>to <span className="text-[#10B981]">Dexze</span>
+                  </h1>
+                  <p className="text-[12px] text-[#64748B] font-medium leading-relaxed max-w-[240px]">
+                    Let's manage your projects with<br/>our powerful Dexze portal
+                  </p>
+                  
+                  {resetError === "Password updated successfully! Please login." && (
+                    <p className="text-emerald-600 font-medium text-xs mt-4 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                      {resetError}
+                    </p>
+                  )}
+                </div>
+
+                <form action={loginActionDispatch} className="space-y-6">
+                  {/* Email Input */}
+                  <div className="relative">
+                    <label htmlFor="email" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">Email</label>
                     <div className="relative">
-                      <Input 
+                      <input 
+                        id="email" 
+                        name="email"
+                        type="email" 
+                        placeholder="Enter your email" 
+                        required 
+                        className="w-full bg-white border border-[#E2E8F0] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] font-semibold">
+                        @
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password Input */}
+                  <div className="relative">
+                    <label htmlFor="password" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">Password</label>
+                    <div className="relative">
+                      <input 
                         id="password" 
                         name="password"
                         type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••"
                         required 
-                        className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 pr-12 transition-colors"
+                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
                       />
                       <button
                         type="button"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1E293B] transition-colors outline-none flex items-center justify-center"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-[15px] w-[15px]" />
+                          <EyeOff className="w-[14px] h-[14px]" />
                         ) : (
-                          <Eye className="h-[15px] w-[15px]" />
+                          <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                         )}
                       </button>
                     </div>
-                    <div className="flex justify-end pt-1">
-                      <button 
-                        type="button" 
-                        onClick={() => { setMode("forgot"); setResetError(null); }}
-                        className="text-sm font-medium text-sky-600 hover:text-sky-500 transition-colors"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
                   </div>
+
+                  <div className="flex items-center justify-end pt-1 pb-1">
+                    <button 
+                      type="button" 
+                      onClick={() => { setMode("forgot"); setResetError(null); }}
+                      className="text-[11px] font-bold text-[#94A3B8] hover:text-[#10B981] transition-colors"
+                    >
+                      Forgot Password
+                    </button>
+                  </div>
+
                   {loginState?.error && (
-                    <p className="text-[14px] font-medium text-red-500 text-center pt-2">{loginState.error}</p>
+                    <p className="text-[12px] font-bold text-red-500 text-center">{loginState.error}</p>
                   )}
                   
-                  <div className="pt-4 pb-2">
+                  <div className="flex flex-col gap-3">
                     <Button 
                       type="submit" 
-                      className="w-full bg-[#2ea3f2] hover:bg-[#258bce] text-white h-12 rounded-lg text-[15px] font-medium transition-colors" 
+                      className="w-full bg-[#10B981] hover:bg-[#059669] text-white h-[46px] rounded-xl text-[13px] font-bold transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)]" 
                       disabled={isLoginPending}
                     >
                       {isLoginPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Please wait
-                        </>
+                        <Loader2 className="mr-2 h-[16px] w-[16px] animate-spin" />
                       ) : (
-                        "Continue"
+                        "Sign In"
                       )}
                     </Button>
                   </div>
-                </CardContent>
-              </form>
-            </>
-          )}
+                </form>
+              </>
+            )}
 
-          {mode === "forgot" && (
-            <>
-              <CardHeader className="space-y-2 pt-8 pb-6 px-10">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-fit mb-2 text-gray-500 hover:text-gray-700 p-0 hover:bg-transparent"
-                  onClick={() => { setMode("login"); setResetError(null); }}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to login
-                </Button>
-                <CardTitle className="text-3xl font-medium text-gray-900">Forgot Password</CardTitle>
-                <CardDescription className="text-gray-500 text-sm">
-                  Enter your email address and we'll send you a 6-digit code to reset your password.
-                </CardDescription>
-              </CardHeader>
-              <form action={handleForgotSubmit}>
-                <CardContent className="space-y-5 px-10 pb-8">
-                  <div className="space-y-2">
-                    <Label htmlFor="forgot-email" className="text-[14px] font-medium text-gray-700">E-mail</Label>
-                    <Input 
-                      id="forgot-email" 
-                      name="email"
-                      type="email" 
-                      placeholder="name@example.com" 
-                      required 
-                      disabled={isResetPending}
-                      className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors"
-                    />
+            {mode === "forgot" && (
+              <>
+                <div className="mb-8">
+                  <h1 className="text-[32px] font-bold text-[#1E293B] mb-3 leading-[1.2] tracking-tight">
+                    Forgot Password
+                  </h1>
+                  <p className="text-[12px] text-[#64748B] font-medium leading-relaxed max-w-[240px]">
+                    Enter your email to receive a code.
+                  </p>
+                </div>
+
+                <form action={handleForgotSubmit} className="space-y-6">
+                  <div className="relative">
+                    <label htmlFor="forgot-email" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">Email</label>
+                    <div className="relative">
+                      <input 
+                        id="forgot-email" 
+                        name="email"
+                        type="email" 
+                        placeholder="Enter your email" 
+                        required 
+                        disabled={isResetPending}
+                        className="w-full bg-white border border-[#E2E8F0] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] font-semibold">@</div>
+                    </div>
                   </div>
                   
                   {resetError && (
-                    <p className="text-[14px] font-medium text-red-500 text-center pt-2">{resetError}</p>
+                    <p className="text-[12px] font-bold text-red-500 text-center">{resetError}</p>
                   )}
                   
-                  <div className="pt-2">
+                  <div className="flex flex-col gap-3">
                     <Button 
                       type="submit" 
-                      className="w-full bg-[#2ea3f2] hover:bg-[#258bce] text-white h-12 rounded-lg text-[15px] font-medium transition-colors" 
+                      className="w-full bg-[#FBA94C] hover:bg-[#F97316] text-white h-[46px] rounded-xl text-[13px] font-bold transition-all shadow-[0_4px_14px_rgba(249,115,22,0.3)]" 
                       disabled={isResetPending}
                     >
-                      {isResetPending ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        "Send Code"
-                      )}
+                      {isResetPending ? <Loader2 className="h-[16px] w-[16px] animate-spin" /> : "Send Code"}
                     </Button>
+                    <button 
+                      type="button" 
+                      onClick={() => { setMode("login"); setResetError(null); }}
+                      className="text-center text-[11px] font-bold text-[#94A3B8] hover:text-[#F97316] pt-2 transition-colors"
+                    >
+                      Back to login
+                    </button>
                   </div>
-                </CardContent>
-              </form>
-            </>
-          )}
+                </form>
+              </>
+            )}
 
-          {mode === "reset" && (
-            <>
-              <CardHeader className="space-y-2 pt-8 pb-6 px-10">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-fit mb-2 text-gray-500 hover:text-gray-700 p-0 hover:bg-transparent"
-                  onClick={() => { setMode("login"); setResetError(null); }}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to login
-                </Button>
-                <CardTitle className="text-3xl font-medium text-gray-900">Reset Password</CardTitle>
-                <CardDescription className="text-gray-500 text-sm">
-                  Check your email for the 6-digit code and enter your new password.
-                </CardDescription>
-              </CardHeader>
-              <form action={handleResetSubmit}>
-                <CardContent className="space-y-5 px-10 pb-8">
-                  <div className="space-y-2">
-                    <Label htmlFor="otp" className="text-[14px] font-medium text-gray-700">6-Digit Code</Label>
-                    <Input 
+            {mode === "reset" && (
+              <>
+                <div className="mb-8">
+                  <h1 className="text-[32px] font-bold text-[#1E293B] mb-3 leading-[1.2] tracking-tight">
+                    Reset Password
+                  </h1>
+                  <p className="text-[12px] text-[#64748B] font-medium leading-relaxed max-w-[240px]">
+                    Enter your code and new password.
+                  </p>
+                </div>
+
+                <form action={handleResetSubmit} className="space-y-6">
+                  <div className="relative">
+                    <label htmlFor="otp" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">6-Digit Code</label>
+                    <input 
                       id="otp" 
                       name="otp"
                       type="text" 
@@ -251,73 +244,81 @@ export default function LoginPage() {
                       required 
                       maxLength={6}
                       disabled={isResetPending}
-                      className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors tracking-widest font-mono"
+                      className="w-full bg-white border border-[#E2E8F0] text-[16px] font-bold tracking-widest text-center placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl px-4 outline-none transition-all"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-[14px] font-medium text-gray-700">New Password</Label>
+                  <div className="relative">
+                    <label htmlFor="newPassword" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">New Password</label>
                     <div className="relative">
-                      <Input 
+                      <input 
                         id="newPassword" 
                         name="newPassword"
                         type={showPassword ? "text" : "password"} 
                         required 
                         minLength={8}
                         disabled={isResetPending}
-                        className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 pr-12 transition-colors"
+                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
                       />
                       <button
                         type="button"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1E293B] transition-colors outline-none flex items-center justify-center"
                         onClick={() => setShowPassword(!showPassword)}
                         disabled={isResetPending}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-[15px] w-[15px]" />
-                        ) : (
-                          <Eye className="h-[15px] w-[15px]" />
-                        )}
+                        {showPassword ? <EyeOff className="w-[14px] h-[14px]" /> : <svg className="w-[14px] h-[14px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>}
                       </button>
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-[14px] font-medium text-gray-700">Confirm Password</Label>
-                    <Input 
-                      id="confirmPassword" 
-                      name="confirmPassword"
-                      type={showPassword ? "text" : "password"} 
-                      required 
-                      minLength={8}
-                      disabled={isResetPending}
-                      className="bg-gray-50/50 border-gray-200 text-[15px] focus-visible:ring-1 focus-visible:ring-sky-500 focus-visible:border-sky-500 h-12 transition-colors"
-                    />
+                  <div className="relative">
+                    <label htmlFor="confirmPassword" className="absolute -top-2 left-4 px-1 bg-white text-[11px] font-bold text-[#1E293B] z-10">Confirm Password</label>
+                    <div className="relative">
+                      <input 
+                        id="confirmPassword" 
+                        name="confirmPassword"
+                        type={showPassword ? "text" : "password"} 
+                        required 
+                        minLength={8}
+                        disabled={isResetPending}
+                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
+                      />
+                    </div>
                   </div>
                   
                   {resetError && (
-                    <p className="text-[14px] font-medium text-red-500 text-center pt-2">{resetError}</p>
+                    <p className="text-[12px] font-bold text-red-500 text-center">{resetError}</p>
                   )}
                   
-                  <div className="pt-2">
+                  <div className="flex flex-col gap-3">
                     <Button 
                       type="submit" 
-                      className="w-full bg-[#2ea3f2] hover:bg-[#258bce] text-white h-12 rounded-lg text-[15px] font-medium transition-colors" 
+                      className="w-full bg-[#FBA94C] hover:bg-[#F97316] text-white h-[46px] rounded-xl text-[13px] font-bold transition-all shadow-[0_4px_14px_rgba(249,115,22,0.3)]" 
                       disabled={isResetPending}
                     >
-                      {isResetPending ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        "Reset Password"
-                      )}
+                      {isResetPending ? <Loader2 className="h-[16px] w-[16px] animate-spin" /> : "Reset Password"}
                     </Button>
+                    <button 
+                      type="button" 
+                      onClick={() => { setMode("login"); setResetError(null); }}
+                      className="text-center text-[11px] font-bold text-[#94A3B8] hover:text-[#F97316] pt-2 transition-colors"
+                    >
+                      Back to login
+                    </button>
                   </div>
-                </CardContent>
-              </form>
-            </>
-          )}
+                </form>
+              </>
+            )}
+          </div>
+        </div>
 
-        </Card>
+        {/* Right Side - Image Area */}
+        <div className="hidden lg:block w-1/2 relative bg-white">
+          <div className="absolute inset-0 z-0">
+             <Image src="/images/login-illustration.png" alt="Illustration" fill className="object-cover object-center" priority />
+          </div>
+        </div>
+        
       </div>
     </div>
   )
