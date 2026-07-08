@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface PremiumIconProps {
-  icon: React.ElementType;
+  icon: React.ComponentType<any>;
   className?: string;
   iconClassName?: string;
   size?: number;
