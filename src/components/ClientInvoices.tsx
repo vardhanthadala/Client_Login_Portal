@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, Receipt, CheckCircle2, Clock, AlertCircle, Download, FileText } from "lucide-react"
+import { Loader2, Receipt, CheckCircle2, Clock, AlertCircle, Download, FileText, Wallet, ReceiptText, ArrowUpRight, Check, TriangleAlert, HandCoins, WalletCards } from "lucide-react"
 import { toast } from "sonner"
 
 // Ensure razorpay is loaded globally
@@ -39,11 +39,11 @@ type Invoice = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string; icon: any }> = {
-  DRAFT: { label: "Draft", className: "bg-gray-100 text-gray-700", icon: FileText },
-  SENT: { label: "Pending Payment", className: "bg-amber-100 text-amber-700 border-amber-200", icon: Clock },
-  PAID: { label: "Paid", className: "bg-green-100 text-green-700 border-green-200", icon: CheckCircle2 },
-  OVERDUE: { label: "Overdue", className: "bg-red-100 text-red-700 border-red-200", icon: AlertCircle },
-  CANCELLED: { label: "Cancelled", className: "bg-gray-100 text-gray-500", icon: AlertCircle },
+  DRAFT: { label: "Draft", className: "bg-[#F1F5F9] text-[#64748B] dark:bg-[#222] dark:text-[#888]", icon: FileText },
+  SENT: { label: "Pending", className: "bg-gradient-to-r from-orange-500/10 to-amber-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20", icon: Clock },
+  PAID: { label: "Paid", className: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20", icon: Check },
+  OVERDUE: { label: "Overdue", className: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20", icon: TriangleAlert },
+  CANCELLED: { label: "Cancelled", className: "bg-[#F1F5F9] text-[#64748B] dark:bg-[#222] dark:text-[#888]", icon: AlertCircle },
 }
 
 export default function ClientInvoices({ invoices, clientProfile }: { invoices: Invoice[], clientProfile: any }) {
@@ -278,83 +278,157 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
 
   if (activeInvoices.length === 0) return null
 
+  // Calculate metrics securely ensuring numeric types and ignoring DRAFT invoices
+  const totalPaid = activeInvoices.filter(i => i.status === "PAID").reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
+  const pendingInvoices = activeInvoices.filter(i => i.status === "SENT" || i.status === "OVERDUE")
+  const totalPending = pendingInvoices.reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
+  
+  const nextDueInvoice = pendingInvoices
+    .filter(i => i.dueDate)
+    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())[0]
+  
+  const nextDueText = nextDueInvoice ? new Date(nextDueInvoice.dueDate!).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'None'
+
   return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-xl font-bold">💳 Billing & Invoices</h2>
-        {activeInvoices.some(i => i.status === "SENT" || i.status === "OVERDUE") && (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 animate-pulse">
-            Action required
-          </span>
-        )}
+    <div className="flex flex-col gap-8 w-full pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* Premium Header */}
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 bg-white dark:bg-[#111111] p-8 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm">
+        <div>
+          <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Billing & Payments</h2>
+          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage invoices, payment history, subscriptions and transactions.</p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-[pulse_4s_ease-in-out_infinite]" />
+            <span className="text-[13px] font-semibold text-[#0F172A] dark:text-[#E2E8F0]">Total Paid <span className="ml-1 text-[#64748B] dark:text-[#888]">₹{totalPaid.toLocaleString()}</span></span>
+          </div>
+          <div className="flex items-center gap-2 bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-[pulse_4s_ease-in-out_infinite_1s]" />
+            <span className="text-[13px] font-semibold text-[#0F172A] dark:text-[#E2E8F0]">Pending <span className="ml-1 text-[#64748B] dark:text-[#888]">₹{totalPending.toLocaleString()}</span></span>
+          </div>
+          {nextDueInvoice && (
+            <div className="flex items-center gap-2 bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-shadow">
+              <Clock className="w-3.5 h-3.5 text-blue-500" />
+              <span className="text-[13px] font-semibold text-[#0F172A] dark:text-[#E2E8F0]">Next Invoice <span className="ml-1 text-[#64748B] dark:text-[#888]">{nextDueText}</span></span>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="grid gap-4">
-        {activeInvoices.map((invoice) => {
+      {/* Billing Summary */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {[
+          { label: "Total Paid", value: `₹${totalPaid.toLocaleString()}`, subtext: "Lifetime", icon: Wallet, color: "text-green-500", bg: "bg-green-500/10" },
+          { label: "Pending", value: `₹${totalPending.toLocaleString()}`, subtext: `${pendingInvoices.length} invoices`, icon: HandCoins, color: "text-orange-500", bg: "bg-orange-500/10" },
+          { label: "Invoices", value: activeInvoices.length, subtext: "This Year", icon: ReceiptText, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { label: "Next Due", value: nextDueText, subtext: "Auto Reminder", icon: Clock, color: "text-purple-500", bg: "bg-purple-500/10" }
+        ].map((stat, i) => (
+          <div key={i} className={`bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group`} style={{ animationDelay: `${i * 80}ms` }}>
+            <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+              <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            </div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1">{stat.label}</p>
+            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mb-1">{stat.value}</h3>
+            <p className="text-[12px] font-medium text-[#64748B] dark:text-[#666]">{stat.subtext}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Invoice Cards */}
+      <div className="flex flex-col gap-6">
+        {activeInvoices.map((invoice, i) => {
           const config = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.SENT
           const StatusIcon = config.icon
           const isPending = invoice.status === "SENT" || invoice.status === "OVERDUE"
           const isLoading = loadingId === invoice.id
 
           return (
-            <Card key={invoice.id} className={`overflow-hidden transition-all duration-200 border ${isPending ? 'border-amber-200 shadow-md' : 'border-border/50 bg-card hover:border-primary/30'}`}>
-              <div className="p-4 flex flex-col sm:flex-row gap-4 justify-between">
+            <div 
+              key={invoice.id} 
+              className={`flex flex-col lg:flex-row gap-6 justify-between bg-white dark:bg-[#111111] p-6 sm:p-8 rounded-[24px] border transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 group ${
+                isPending 
+                  ? 'border-orange-500/30 shadow-[0_4px_24px_rgba(249,115,22,0.05)] dark:shadow-[0_4px_24px_rgba(249,115,22,0.02)] hover:border-orange-500/60 hover:shadow-[0_8px_32px_rgba(249,115,22,0.1)]' 
+                  : 'border-[#E9EDF4] dark:border-[#2A2E35] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none hover:border-[#CBD5E1] dark:hover:border-[#444] hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)]'
+              }`}
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              
+              {/* Left Info */}
+              <div className="flex items-start gap-6 flex-1">
+                <div className="w-[52px] h-[52px] rounded-2xl bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center shrink-0 shadow-inner group-hover:rotate-3 transition-transform duration-300">
+                  <WalletCards className={`w-6 h-6 ${isPending ? 'text-orange-500' : 'text-[#64748B] dark:text-[#888]'}`} />
+                </div>
                 
-                <div className="flex items-start gap-4 flex-1">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isPending ? 'bg-amber-100 text-amber-600' : invoice.status === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'}`}>
-                    <Receipt className="w-6 h-6" />
+                <div className="flex flex-col">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white tracking-tight">{invoice.title}</h3>
+                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold border backdrop-blur-md ${config.className}`}>
+                      <StatusIcon className="w-3.5 h-3.5" />
+                      {config.label}
+                    </div>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-base">{invoice.title}</h3>
-                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold border ${config.className}`}>
-                        <StatusIcon className="w-3 h-3" />{config.label}
-                      </span>
+                  
+                  <div className="flex items-center gap-4 text-[13px] font-medium text-[#64748B] dark:text-[#888] mb-3">
+                    <div className="flex items-center gap-1.5">
+                      <ReceiptText className="w-3.5 h-3.5" />
+                      <span>INV-{invoice.id.substring(0,8).toUpperCase()}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span>{new Date(invoice.createdAt).toLocaleDateString()}</span>
-                      {invoice.dueDate && (
-                        <>
-                          <span className="w-1 h-1 rounded-full bg-border" />
-                          <span className={invoice.status === "OVERDUE" ? "text-red-500 font-semibold" : ""}>
-                            Due: {new Date(invoice.dueDate).toLocaleDateString()}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    {invoice.items?.length > 0 && (
-                      <p className="text-sm mt-2 text-foreground/80 line-clamp-1">
-                        {invoice.items.length} item(s): {invoice.items.map(i => i.description).join(', ')}
-                      </p>
+                    <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333]" />
+                    <span>{new Date(invoice.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    {invoice.dueDate && (
+                      <>
+                        <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333]" />
+                        <span className={invoice.status === "OVERDUE" ? "text-red-500 font-bold" : ""}>
+                          Due: {new Date(invoice.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                      </>
                     )}
                   </div>
+                  
+                  {invoice.items?.length > 0 && (
+                    <p className="text-[13px] text-[#475569] dark:text-[#999] line-clamp-1 max-w-lg leading-relaxed">
+                      {invoice.items.length} item(s): {invoice.items.map(i => i.description).join(', ')}
+                    </p>
+                  )}
                 </div>
-
-                <div className="flex flex-col items-end gap-3 justify-center sm:pl-4 sm:border-l border-border/50">
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground mb-0.5">Total Amount</p>
-                    <p className="text-2xl font-bold">{invoice.currency} {invoice.amount.toLocaleString()}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => downloadPDF(invoice)}>
-                      <Download className="w-3.5 h-3.5" /> PDF
-                    </Button>
-                    {isPending && (
-                      <Button 
-                        size="sm" 
-                        className="h-8 text-xs gap-1 bg-primary text-primary-foreground hover:bg-primary/90" 
-                        onClick={() => handlePayment(invoice)}
-                        disabled={isLoading}
-                      >
-                        {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                        {isLoading ? 'Processing...' : 'Pay Now'}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
               </div>
-            </Card>
+
+              {/* Right Totals & Actions */}
+              <div className="flex flex-col items-start lg:items-end gap-5 justify-center lg:pl-8 lg:border-l border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 w-full lg:w-auto">
+                
+                <div className="text-left lg:text-right group-hover:scale-[1.02] transition-transform duration-300 transform-origin-right">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1.5">Invoice Total</p>
+                  <p className="text-2xl font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight">
+                    <span className="text-[15px] text-[#64748B] dark:text-[#666] mr-1">{invoice.currency}</span>
+                    {invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                  <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E2E8F0] dark:via-[#333] to-transparent mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-start lg:justify-end">
+                  <button 
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold text-[#0F172A] dark:text-white bg-transparent border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.12)] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:-translate-y-0.5 transition-all duration-300" 
+                    onClick={() => downloadPDF(invoice)}
+                  >
+                    <Download className="w-4 h-4" /> Download PDF
+                  </button>
+                  
+                  {isPending && (
+                    <button 
+                      className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(79,70,229,0.3)] transition-all duration-300 disabled:opacity-70 disabled:hover:translate-y-0"
+                      onClick={() => handlePayment(invoice)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
+                      {isLoading ? 'Processing...' : 'Pay Now'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+            </div>
           )
         })}
       </div>

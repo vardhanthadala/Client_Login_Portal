@@ -10,6 +10,7 @@ export default function ClientUploader() {
   const [isUploading, setIsUploading] = useState(false)
   const [description, setDescription] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -79,37 +80,63 @@ export default function ClientUploader() {
             id="dashboard-upload" 
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10" 
             onChange={handleFileSelect}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const file = e.dataTransfer.files?.[0];
+              if (file) setSelectedFile(file);
+            }}
             disabled={isUploading}
           />
-          <div className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-muted-foreground transition-all duration-200 w-full ${isUploading ? 'bg-muted border-border' : 'border-border hover:bg-muted/50 hover:border-primary/50 hover:text-primary'}`}>
-            <UploadCloud className="h-10 w-10 mb-3" />
-            <p className="text-sm font-medium">Click or drag to select a file</p>
+          <div 
+            className={`border-2 border-dashed rounded-[24px] p-10 flex flex-col items-center justify-center transition-all duration-300 w-full relative overflow-hidden ${
+              isUploading 
+                ? 'bg-[#F8FAFC] dark:bg-[#111] border-[#E2E8F0] dark:border-[#333]' 
+                : isDragging 
+                  ? 'bg-[#F0FDF4] dark:bg-[#10B981]/10 border-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.15)] scale-[1.02]' 
+                  : 'bg-transparent border-[#10B981] hover:bg-[#F8FAFC] dark:hover:bg-[#10B981]/5 hover:-translate-y-0.5'
+            }`}
+          >
+            <div className={`mb-3 transition-transform duration-500 ${!isDragging && !isUploading ? 'animate-[pulse_4s_ease-in-out_infinite]' : ''}`}>
+              <UploadCloud className={`h-8 w-8 ${isDragging ? 'text-[#10B981] animate-bounce' : 'text-[#10B981]'}`} />
+            </div>
+            <p className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1.5">
+              Drag & drop your files here
+            </p>
+            <p className="text-[13px] text-[#64748B] dark:text-[#888] mb-6">
+              or click to browse
+            </p>
+            <p className="text-[11px] text-[#64748B] dark:text-[#666]">
+              Supported formats: PNG, JPG, PDF, SVG, AI, DOCX
+            </p>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-muted/30 border border-border rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <UploadCloud className="w-5 h-5" />
+        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center justify-between p-4 bg-[#FAFAFA] dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#333] rounded-[16px] shadow-sm hover:border-[#10B981]/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-[12px] bg-white dark:bg-[#222] border border-[#E2E8F0] dark:border-[#333] flex items-center justify-center text-[#10B981] shadow-sm">
+                <UploadCloud className="w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">{selectedFile.name}</span>
-                <span className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</span>
+                <span className="text-[15px] font-semibold text-[#0F172A] dark:text-white">{selectedFile.name}</span>
+                <span className="text-[13px] text-[#64748B] dark:text-[#888]">{(selectedFile.size / 1024).toFixed(1)} KB</span>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setSelectedFile(null)} disabled={isUploading}>
+            <Button variant="outline" size="sm" onClick={() => setSelectedFile(null)} disabled={isUploading} className="h-8 rounded-lg text-[13px] font-medium border-[#E2E8F0] dark:border-[#333] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 dark:hover:border-rose-800 transition-all">
               Change
             </Button>
           </div>
 
           <div>
-            <label htmlFor="asset-desc" className="block text-sm font-medium text-slate-700 mb-1.5">Description (Optional)</label>
+            <label htmlFor="asset-desc" className="block text-[13px] font-semibold text-[#0F172A] dark:text-white mb-2 tracking-wide uppercase">Description (Optional)</label>
             <input 
               type="text" 
               id="asset-desc"
               placeholder="e.g. For homepage hero, New logo variant" 
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[#5A52FF] focus:ring-1 focus:ring-[#5A52FF] transition-all"
+              className="w-full px-4 py-3 border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#1A1A1A] rounded-[12px] text-[14px] text-[#0F172A] dark:text-white focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all placeholder:text-[#94A3B8] shadow-sm"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isUploading}
@@ -117,13 +144,13 @@ export default function ClientUploader() {
           </div>
 
           <Button 
-            className="w-full bg-[#5A52FF] hover:bg-[#5A52FF]/90 text-white" 
+            className="w-full bg-[#10B981] hover:bg-[#059669] text-white rounded-[12px] h-12 text-[15px] font-semibold transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5" 
             onClick={handleUpload}
             disabled={isUploading}
           >
             {isUploading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Uploading securely...
               </>
             ) : (
               "Confirm & Upload"

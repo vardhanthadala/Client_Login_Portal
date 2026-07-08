@@ -17,7 +17,6 @@ declare global {
 }
 
 const checkoutSchema = z.object({
-  adminName: z.string().min(2, "Name must be at least 2 characters"),
   agencyName: z.string().min(2, "Agency name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
 })
@@ -25,15 +24,8 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 import Script from "next/script"
-import Link from "next/link"
 
-interface CheckoutModalProps {
-  planType?: "MONTHLY" | "YEARLY";
-  price?: string;
-  currency?: "INR" | "USD";
-}
-
-export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", currency = "INR" }: CheckoutModalProps) {
+export function CheckoutModal({ triggerClassName, buttonText }: { triggerClassName?: string, buttonText?: string }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -47,7 +39,6 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      adminName: "",
       agencyName: "",
       email: "",
     },
@@ -68,7 +59,7 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
       const res = await fetch("/api/onboarding/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, planType, currency })
+        body: JSON.stringify(data)
       })
       const apiData = await res.json()
 
@@ -81,7 +72,7 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         subscription_id: apiData.subscriptionId,
         name: "Dexze Services",
-        description: `${planType === 'YEARLY' ? 'Yearly' : 'Monthly'} Platform Subscription`,
+        description: "Monthly Platform Subscription",
         handler: async function (response: any) {
           try {
             setLoading(true)
@@ -92,9 +83,7 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
               body: JSON.stringify({
                 ...response,
                 email: data.email,
-                agencyName: data.agencyName,
-                adminName: data.adminName,
-                planType
+                agencyName: data.agencyName
               })
             })
             const verifyData = await verifyRes.json()
@@ -136,8 +125,8 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-6 px-8 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-        Purchase Subscription
+      <DialogTrigger className={triggerClassName || "bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-6 px-8 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"}>
+        {buttonText || "Purchase Subscription"}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         {success ? (
@@ -158,31 +147,17 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
             <DialogHeader>
               <DialogTitle>Subscribe to Dexze</DialogTitle>
               <DialogDescription>
-                Fill out this form to purchase your subscription. For {price}, you get unlimited access to the company dashboard and client portals.
+                Fill out this form to purchase your subscription. For ₹2500/month, you get unlimited access to the agency dashboard and client portals.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="adminName">Your Name</Label>
-                <Input 
-                  id="adminName" 
-                  {...register("adminName")}
-                  placeholder="John Doe" 
-                  className={errors.adminName ? "border-red-500" : ""}
-                  required
-                />
-                {errors.adminName && (
-                  <p className="text-sm text-red-500">{errors.adminName.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="agencyName">Company Name</Label>
+                <Label htmlFor="agencyName">Agency Name</Label>
                 <Input 
                   id="agencyName" 
                   {...register("agencyName")}
                   placeholder="Acme Corp" 
                   className={errors.agencyName ? "border-red-500" : ""}
-                  required
                 />
                 {errors.agencyName && (
                   <p className="text-sm text-red-500">{errors.agencyName.message}</p>
@@ -196,7 +171,6 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
                   {...register("email")}
                   placeholder="admin@acme.com" 
                   className={errors.email ? "border-red-500" : ""}
-                  required
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -204,13 +178,8 @@ export function CheckoutModal({ planType = "MONTHLY", price = "₹2500/month", c
               </div>
 
               {error && (
-                <div className="p-4 rounded bg-red-50 text-sm text-red-600 font-medium border border-red-100 flex flex-col items-start gap-3">
-                  <p>{error}</p>
-                  {error.includes("already exists") && (
-                    <Link href="/login" className="bg-white border border-red-200 text-red-700 px-4 py-2 rounded-md hover:bg-red-50 transition-colors shadow-sm">
-                      Go to Login
-                    </Link>
-                  )}
+                <div className="p-3 rounded bg-red-50 text-sm text-red-500 font-medium border border-red-100">
+                  {error}
                 </div>
               )}
 

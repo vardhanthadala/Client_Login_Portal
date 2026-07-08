@@ -148,3 +148,25 @@
     letter-spacing: -0.015em;
   }
 }
+
+/* Modern Blend Scrollbar */
+.blend-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.blend-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.blend-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.2);
+  border-radius: 10px;
+}
+.blend-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.4);
+}
+.dark .blend-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+.dark .blend-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

@@ -1,68 +1,131 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useInView, animate } from "framer-motion"
+import { useEffect, useRef } from "react"
+import { ArrowRight } from "lucide-react"
+import Lanyard from "./Lanyard"
+
+
+function CountUp({ from, to, duration = 1.2, delay = 0, suffix = "" }: { from: number, to: number, duration?: number, delay?: number, suffix?: string }) {
+  const nodeRef = useRef<HTMLSpanElement>(null);
+  const inView = useInView(nodeRef, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    const controls = animate(from, to, {
+      duration,
+      delay,
+      onUpdate(value) {
+        if (nodeRef.current) {
+          nodeRef.current.textContent = Math.round(value) + suffix;
+        }
+      },
+    });
+    return () => controls.stop();
+  }, [from, to, duration, delay, inView, suffix]);
+
+  return <span ref={nodeRef}>{from}{suffix}</span>;
+}
 
 export function Hero() {
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
-    <div className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-8">
-            Manage your clients with <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5A52FF] to-fuchsia-500">
-              absolute clarity.
-            </span>
-          </h1>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <p className="mt-4 max-w-2xl text-xl text-gray-600 mx-auto mb-10">
-            The ultimate client portal and onboarding platform for marketing agencies. Automate data collection, track progress, and generate AI insights in seconds.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex justify-center"
-        >
-          <a 
-            href="#pricing"
-            className="inline-block bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-4 px-10 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-          >
-            Purchase Subscription
-          </a>
-        </motion.div>
+    <div className="bg-white min-h-[95vh] md:min-h-screen lg:max-h-[1000px] pt-32 lg:pt-36 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col">
+      <div className="max-w-[1400px] 2xl:max-w-[1800px] min-[2000px]:max-w-[2200px] mx-auto w-full flex-1 flex flex-col md:flex-row items-stretch">
         
-        {/* Mock App Screenshot */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-16 mx-auto max-w-5xl relative"
-        >
-          <div className="rounded-2xl border border-gray-200 bg-white/50 backdrop-blur-xl shadow-2xl p-2 sm:p-4">
-            <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 aspect-[16/9] flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </div>
-                <p className="text-gray-500 font-medium">Dashboard Interface Preview</p>
-              </div>
+        {/* Left Column */}
+        <div className="w-full md:w-[55%] flex flex-col">
+          
+          {/* Dark Top Box (Text Content) */}
+          <div className="bg-[#020611] rounded-t-[40px] md:rounded-tr-none md:rounded-bl-[40px] p-10 sm:p-12 lg:p-16 flex-1 flex flex-col justify-center">
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1] mb-6 lg:mb-8"
+            >
+              Stop Chasing<br />Clients. Start<br /><span className="text-[#27C93F]">Scaling.</span>
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-base sm:text-lg text-white/60 mb-10 leading-relaxed max-w-lg"
+            >
+              Speed up your agency workflow with our ultimate client portal. Enjoy high-quality, customizable dashboards for a seamless, stunning user experience.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <button 
+                onClick={() => scrollToSection('pricing')}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-black rounded-full font-semibold text-sm sm:text-base transition-all hover:bg-black hover:text-white hover:scale-105 active:scale-95"
+              >
+                Join now <ArrowRight className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="inline-flex items-center justify-center px-8 py-3.5 bg-[#1F232B] text-white rounded-full font-medium text-sm sm:text-base transition-transform hover:bg-[#2A2E37]"
+              >
+                Learn more
+              </button>
+            </motion.div>
+          </div>
+          
+          {/* Light Bottom Box (Stats) */}
+          <div className="relative pt-10 sm:pt-12 pb-4 sm:pb-8 pl-4 sm:pl-12 lg:pl-16 pr-4 sm:pr-8 bg-white md:bg-transparent">
+            {/* Desktop Magic Corner for inverted curve */}
+            <div className="hidden md:block absolute top-0 right-0 w-[60px] h-[60px] bg-[#020611]" />
+            <div className="hidden md:block absolute inset-0 bg-white rounded-tr-[40px]" />
+            
+            <div className="relative z-10 flex flex-wrap gap-x-8 gap-y-6 lg:gap-x-12">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={50} delay={0.4} suffix="+" /></div>
+                <div className="text-xs sm:text-sm font-medium text-gray-400">Agencies</div>
+              </motion.div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={100} delay={0.5} suffix="%" /></div>
+                <div className="text-xs sm:text-sm font-medium text-gray-400">White-label</div>
+              </motion.div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">Zero</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-400">Code Needed</div>
+              </motion.div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
+                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={24} delay={0.7} suffix="/7" /></div>
+                <div className="text-xs sm:text-sm font-medium text-gray-400">Support</div>
+              </motion.div>
             </div>
           </div>
-        </motion.div>
+
+        </div>
+
+        {/* Right Column (Lanyard Container) */}
+        <div className="w-full md:w-[45%] relative h-[400px] md:h-auto rounded-[40px] md:rounded-tl-none md:rounded-bl-[40px] md:rounded-tr-[40px] md:rounded-br-[40px] overflow-hidden mt-8 md:mt-0 flex items-center justify-center bg-[#020611]">
+          {/* Flexbox sub-pixel gap patch */}
+          <div className="hidden md:block absolute top-0 bottom-0 -left-[1px] w-[2px] bg-[#020611] z-20" />
+          <Lanyard 
+            position={[0, 0, 16]} 
+            gravity={[0, -40, 0]} 
+            frontImage="/card_front.svg" 
+            backImage="/card_back.svg"
+            lanyardImage="/lanyard_green.svg"
+            imageFit="cover" 
+          />
+        </div>
+
       </div>
     </div>
   )

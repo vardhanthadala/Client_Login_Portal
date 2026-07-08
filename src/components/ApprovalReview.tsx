@@ -34,10 +34,10 @@ type Approval = {
   createdAt: string
 }
 
-const STATUS_CONFIG: Record<string, { label: string; className: string; icon: any }> = {
-  PENDING: { label: "Awaiting Review", className: "bg-amber-100 text-amber-700 border-amber-200", icon: Clock },
-  APPROVED: { label: "Approved", className: "bg-green-100 text-green-700 border-green-200", icon: CheckCircle2 },
-  CHANGES_REQUESTED: { label: "Changes Requested", className: "bg-red-100 text-red-700 border-red-200", icon: AlertTriangle },
+const STATUS_CONFIG: Record<string, { label: string; className: string; icon: any; dotColor?: string }> = {
+  PENDING: { label: "Awaiting Review", className: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200/60 dark:border-amber-500/20", icon: Clock, dotColor: "bg-amber-500" },
+  APPROVED: { label: "Approved", className: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-500/20", icon: CheckCircle2, dotColor: "bg-emerald-500" },
+  CHANGES_REQUESTED: { label: "Changes Requested", className: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200/60 dark:border-rose-500/20", icon: AlertTriangle, dotColor: "bg-rose-500" },
 }
 
 export default function ApprovalReview({ approvals: initialApprovals }: { approvals: Approval[] }) {
@@ -96,21 +96,24 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
   const isVideo = (fileType: string) => fileType.startsWith("video/")
 
   const getBatchStatus = (items: ApprovalItem[]) => {
-    if (items.every(i => i.status === "APPROVED")) return { label: "All Approved", className: "bg-green-100 text-green-700" }
-    if (items.some(i => i.status === "CHANGES_REQUESTED")) return { label: "Changes Requested", className: "bg-red-100 text-red-700" }
+    if (items.every(i => i.status === "APPROVED")) return { label: "All Approved", className: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/20", dotColor: "bg-emerald-500" }
+    if (items.some(i => i.status === "CHANGES_REQUESTED")) return { label: "Changes Requested", className: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/20", dotColor: "bg-rose-500" }
     const pending = items.filter(i => i.status === "PENDING").length
-    return { label: `${pending} Pending`, className: "bg-amber-100 text-amber-700" }
+    return { label: `${pending} Pending`, className: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20", dotColor: "bg-amber-500", isPending: true }
   }
 
   return (
     <div className="mb-12">
-      <div className="flex items-center gap-3 mb-4">
-        <h2 className="text-xl font-bold">📋 Drafts for Your Review</h2>
-        {totalPending > 0 && (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 animate-pulse">
-            {totalPending} pending
-          </span>
-        )}
+      <div className="flex flex-col gap-1 mb-6">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold font-sans text-[#0F172A] dark:text-white">Drafts for Your Review</h2>
+          {totalPending > 0 && (
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] uppercase tracking-wider font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20">
+              {totalPending} pending
+            </span>
+          )}
+        </div>
+        <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8]">Review submitted assets and provide feedback.</p>
       </div>
 
       <div className="space-y-4">
@@ -119,29 +122,32 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
           const isExpanded = expandedBatch === approval.id
 
           return (
-            <Card key={approval.id} className="overflow-hidden transition-all duration-200">
+            <Card key={approval.id} className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[20px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden transition-all duration-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] mb-4">
               {/* Batch Header */}
               <div
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-muted/10 transition-colors"
+                className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:bg-[#FAFAFA] dark:hover:bg-[#1A1A1A] transition-colors"
                 onClick={() => setExpandedBatch(isExpanded ? null : approval.id)}
               >
-                <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <ImageIcon className="w-4 h-4 text-primary" />
+                <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+                  <div className="w-10 h-10 rounded-[12px] bg-[#F1F5F9] dark:bg-[#222] flex items-center justify-center shrink-0">
+                    <ImageIcon className="w-5 h-5 text-[#64748B] dark:text-[#888]" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-sm flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-[15px] text-[#0F172A] dark:text-white flex items-center gap-2 flex-wrap mb-0.5">
                       <span className="truncate">{approval.title}</span>
-                      <span className="text-[10px] text-muted-foreground font-normal shrink-0">{approval.items.length} file(s)</span>
+                      <span className="text-[11px] text-[#94A3B8] font-medium shrink-0 bg-[#F1F5F9] dark:bg-[#222] px-2 py-0.5 rounded-md">{approval.items.length} files</span>
                     </h3>
-                    {approval.description && <p className="text-xs text-muted-foreground truncate">{approval.description}</p>}
+                    {approval.description && <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] truncate">{approval.description}</p>}
                   </div>
                 </div>
-                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 w-full sm:w-auto pl-11 sm:pl-0">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold truncate ${batchStatus.className}`}>
+                <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 w-full sm:w-auto pl-14 sm:pl-0">
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold truncate ${batchStatus.className}`}>
+                    {batchStatus.isPending && <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${batchStatus.dotColor}`} />}
                     {batchStatus.label}
                   </span>
-                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border border-[#E5E7EB] dark:border-[#333] transition-transform duration-300 ${isExpanded ? 'rotate-180 bg-[#F1F5F9] dark:bg-[#222]' : 'hover:bg-[#F1F5F9] dark:hover:bg-[#222]'}`}>
+                    <ChevronDown className="w-4 h-4 text-[#64748B] dark:text-[#888]" />
+                  </div>
                 </div>
               </div>
 
@@ -156,66 +162,74 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
                     const isHistoryExpanded = expandedHistory === item.id
 
                     return (
-                      <div key={item.id} className={`border rounded-xl overflow-hidden ${isPending ? "border-amber-200 bg-amber-50/30" : "border-border/50 bg-muted/10"}`}>
-                        <div className="p-4">
-                          <div className="flex flex-col sm:flex-row gap-4">
-                            {/* Preview */}
-                            <div className="w-full sm:w-36 h-28 rounded-lg overflow-hidden border border-border bg-muted/30 flex items-center justify-center shrink-0">
-                              {isImage(item.fileType) ? (
-                                <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
-                              ) : isVideo(item.fileType) ? (
-                                <video src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} className="w-full h-full object-cover" muted />
-                              ) : (
-                                <div className="text-center p-3">
-                                  <p className="text-base font-bold text-muted-foreground uppercase">{item.fileType.split("/")[1]?.slice(0, 4) || "FILE"}</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1 truncate max-w-[100px]">{item.fileName}</p>
-                                </div>
-                              )}
+                      <div key={item.id} className={`group border rounded-[16px] overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] ${isPending ? "border-amber-200/50 bg-amber-50/20 dark:border-amber-500/20 dark:bg-amber-500/5" : "border-[#E5E7EB] dark:border-[#222] bg-[#FAFAFA] dark:bg-[#1A1A1A]"}`}>
+                        <div className="p-5">
+                          <div className="flex flex-col sm:flex-row gap-5">
+                            {/* Premium Thumbnail */}
+                            <div className="w-full sm:w-40 h-32 rounded-[16px] overflow-hidden border border-[#E5E7EB] dark:border-[#333] bg-[#F1F5F9] dark:bg-[#111] flex items-center justify-center shrink-0 shadow-inner group-hover:shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] transition-all duration-300 relative">
+                              <div className="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.03]">
+                                {isImage(item.fileType) ? (
+                                  <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
+                                ) : isVideo(item.fileType) ? (
+                                  <video src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} className="w-full h-full object-cover" muted />
+                                ) : (
+                                  <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gradient-to-br from-[#FAFAFA] to-[#F1F5F9] dark:from-[#1A1A1A] dark:to-[#111]">
+                                    <p className="text-xl font-bold text-[#94A3B8] dark:text-[#666] tracking-widest">{item.fileType.split("/")[1]?.slice(0, 4) || "FILE"}</p>
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2 mb-2">
-                                <p className="text-sm font-medium truncate">{item.fileName} <span className="text-xs text-muted-foreground">v{item.version}</span></p>
-                                <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold shrink-0 border ${config.className}`}>
-                                  <StatusIcon className="w-3 h-3" />{config.label}
+                            <div className="flex-1 min-w-0 flex flex-col py-1">
+                              <div className="flex items-start justify-between gap-4 mb-1">
+                                <p className="text-[18px] font-semibold text-[#0F172A] dark:text-white truncate pr-2">
+                                  {item.fileName}
+                                </p>
+                                <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold shrink-0 border ${config.className}`}>
+                                  {isPending && <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${config.dotColor}`} />}
+                                  {config.label}
                                 </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] mb-4 font-medium">
+                                <span className="bg-[#E2E8F0] dark:bg-[#333] px-2 py-0.5 rounded-md text-[#475569] dark:text-[#CBD5E1]">v{item.version}</span>
+                                <span>{item.fileType}</span>
                               </div>
 
                               {/* Actions */}
-                              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer">
-                                  <Button variant="outline" size="sm" className="gap-1 text-xs h-7 px-2">
-                                    <ExternalLink className="w-3 h-3" /> View Full
-                                  </Button>
-                                </a>
-                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}&download=true`} download>
-                                  <Button variant="outline" size="sm" className="gap-1 text-xs h-7 px-2">
-                                    <Download className="w-3 h-3" /> Download
-                                  </Button>
-                                </a>
+                              <div className="flex items-center gap-3 mt-auto flex-wrap">
                                 {isPending && (
                                   <>
                                     <Button
                                       size="sm"
-                                      className="gap-1 text-xs h-7 px-2 bg-green-600 hover:bg-green-700 text-white"
+                                      className="gap-1.5 text-[13px] h-8 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_4px_14px_rgba(16,185,129,0.4)]"
                                       onClick={() => handleApprove(item.id)}
                                       disabled={isLoading}
                                     >
-                                      {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                      {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                       Approve
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      className="gap-1 text-xs h-7 px-2 border-red-300 text-red-600 hover:bg-red-50"
+                                      className="group/btn gap-1.5 text-[13px] h-8 px-4 rounded-lg border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-800 transition-all duration-300"
                                       onClick={() => setShowFeedbackFor(showFeedbackFor === item.id ? null : item.id)}
                                       disabled={isLoading}
                                     >
-                                      <AlertTriangle className="w-3 h-3" /> Request Changes
+                                      <AlertTriangle className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5" /> Request Changes
                                     </Button>
                                   </>
                                 )}
+                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer">
+                                  <Button variant="outline" size="sm" className="group/view gap-1.5 text-[13px] h-8 px-3 rounded-lg border-[#E5E7EB] dark:border-[#333] text-[#475569] dark:text-[#94A3B8] hover:bg-white dark:hover:bg-[#222] hover:text-[#0F172A] dark:hover:text-white transition-all duration-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                                    <ExternalLink className="w-3.5 h-3.5 transition-transform duration-300 group-hover/view:translate-x-[2px] group-hover/view:-translate-y-[2px]" /> View
+                                  </Button>
+                                </a>
+                                <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}&download=true`} download>
+                                  <Button variant="outline" size="sm" className="group/dl gap-1.5 text-[13px] h-8 px-3 rounded-lg border-[#E5E7EB] dark:border-[#333] text-[#475569] dark:text-[#94A3B8] hover:bg-white dark:hover:bg-[#222] hover:text-[#0F172A] dark:hover:text-white transition-all duration-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                                    <Download className="w-3.5 h-3.5 transition-transform duration-300 group-hover/dl:translate-y-[2px]" /> Download
+                                  </Button>
+                                </a>
                               </div>
 
                               {/* Feedback Textarea */}

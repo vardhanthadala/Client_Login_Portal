@@ -29,12 +29,17 @@ export default function SignOutButton() {
 
   return (
     <>
-      <Button 
+      <button 
         onClick={() => setOpen(true)}
-        className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5"
+        className="w-full flex items-center justify-start bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-[14px] p-1 h-12 transition-all shadow-sm relative group"
       >
-        Sign Out
-      </Button>
+        <div className="w-10 h-10 rounded-full bg-[#1A1A1A] flex items-center justify-center shrink-0 border border-black/10">
+          <span className="text-[#EF4444] font-bold text-sm tracking-tight">N</span>
+        </div>
+        <span className="absolute left-1/2 -translate-x-1/2 text-[14px] font-semibold text-white tracking-wide">
+          Sign Out
+        </span>
+      </button>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className="sm:max-w-[425px]">
         <AlertDialogHeader>

@@ -13,6 +13,7 @@ import ManageApprovals from "./ManageApprovals"
 import ManageInvoices from "./ManageInvoices"
 import GenerateAiButton from "./GenerateAiButton"
 import ResetPasswordButton from "./ResetPasswordButton"
+import AdminSidebarLayout from "../../dashboard/AdminSidebarLayout"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
 type Props = {
@@ -58,6 +59,23 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
     return notFound()
   }
 
+  const allClients = await prisma.user.findMany({
+    where: { 
+      role: "CLIENT",
+      tenantId: token?.tenantId as string
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      clientProfile: {
+        select: {
+          id: true,
+          companyName: true,
+          clientName: true
+        }
+      }
+    },
+  })
+
   const { clientProfile } = client
   const aiSummary = clientProfile.aiAnalysis?.summary as any || {}
   const qna = clientProfile.questionnaire?.qna as any || {}
@@ -79,36 +97,36 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
     : formatCurrency(0, "USD")
 
   return (
-    <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32">
-      <div className="max-w-screen-2xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
-        <div className="flex items-start sm:items-center gap-4 sm:gap-6 min-w-0 w-full">
-          <Link 
-            href="/admin/dashboard" 
-            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white border border-[#E5E7EB] text-[#64748B] hover:text-[#5A52FF] hover:border-[#5A52FF]/30 rounded-full transition-all duration-200 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_14px_rgba(90,82,255,0.15)] hover:-translate-x-0.5 shrink-0 mt-1 sm:mt-0"
-            title="Back to Dashboard"
-          >
-            <RiArrowGoBackFill className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Link>
+    <AdminSidebarLayout
+      tabs={[]}
+      adminName={(token as any)?.name || "Admin"}
+      clients={allClients}
+      activeClientId={id}
+      activeClientTab={initialTab}
+    >
+      <div className="min-h-screen w-full pb-32">
+        <div className="max-w-screen-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12">
+          <div className="flex items-start sm:items-center gap-4 sm:gap-6 min-w-0 w-full">
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl text-[#0F172A] font-sans font-bold tracking-tight break-words">{clientProfile.companyName}</h1>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl text-[#0F172A] dark:text-white font-sans font-bold tracking-tight break-words">{clientProfile.companyName}</h1>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm truncate max-w-full">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#111] border border-[#E5E7EB] dark:border-[#333] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] dark:text-[#94A3B8] shadow-sm truncate max-w-full">
                 <Mail className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
                 <span className="truncate">{client.email}</span>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm truncate max-w-full">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#111] border border-[#E5E7EB] dark:border-[#333] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] dark:text-[#94A3B8] shadow-sm truncate max-w-full">
                 <User className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
                 <span className="truncate">{clientProfile.clientName}</span>
               </div>
               {clientProfile.website && (
-                <a href={clientProfile.website.startsWith('http') ? clientProfile.website : `https://${clientProfile.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#E5E7EB] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] shadow-sm hover:text-[#5A52FF] hover:border-[#5A52FF]/30 transition-colors truncate max-w-full">
+                <a href={clientProfile.website.startsWith('http') ? clientProfile.website : `https://${clientProfile.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#111] border border-[#E5E7EB] dark:border-[#333] rounded-full text-[12px] sm:text-[13px] font-semibold text-[#475569] dark:text-[#94A3B8] shadow-sm hover:text-[#5A52FF] hover:border-[#5A52FF]/30 transition-colors truncate max-w-full">
                   <GlobeIcon className="w-3.5 h-3.5 text-[#5A52FF] shrink-0" />
                   <span className="truncate">Website</span>
                 </a>
               )}
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-[12px] sm:text-[13px] font-bold text-emerald-700 shadow-sm truncate max-w-full">
-                <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-900/50 rounded-full text-[12px] sm:text-[13px] font-bold text-emerald-700 dark:text-emerald-400 shadow-sm truncate max-w-full">
+                <Receipt className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span className="truncate">Earnings: {clientEarningsDisplay}</span>
               </div>
             </div>
@@ -124,29 +142,31 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
         </div>
       </div>
 
-      <Tabs defaultValue={initialTab} className="w-full">
-        <TabsList className="w-full flex justify-start border-b border-slate-200 bg-transparent p-0 h-auto rounded-none mb-12 gap-8 overflow-x-auto hidden-scrollbar">
-          <TabsTrigger value="overview" className="relative rounded-none border-b-2 border-transparent bg-transparent px-1 py-4 text-[15px] font-sans font-semibold text-slate-500 hover:text-slate-900 data-[state=active]:border-[#5A52FF] data-[state=active]:text-[#5A52FF] data-[state=active]:bg-transparent data-[state=active]:shadow-none focus-visible:outline-none focus-visible:ring-0 transition-all">Overview</TabsTrigger>
-          <TabsTrigger value="projects" className="relative rounded-none border-b-2 border-transparent bg-transparent px-1 py-4 text-[15px] font-sans font-semibold text-slate-500 hover:text-slate-900 data-[state=active]:border-[#5A52FF] data-[state=active]:text-[#5A52FF] data-[state=active]:bg-transparent data-[state=active]:shadow-none focus-visible:outline-none focus-visible:ring-0 transition-all">Projects</TabsTrigger>
-          <TabsTrigger value="approvals" className="relative rounded-none border-b-2 border-transparent bg-transparent px-1 py-4 text-[15px] font-sans font-semibold text-slate-500 hover:text-slate-900 data-[state=active]:border-[#5A52FF] data-[state=active]:text-[#5A52FF] data-[state=active]:bg-transparent data-[state=active]:shadow-none focus-visible:outline-none focus-visible:ring-0 transition-all">Approvals</TabsTrigger>
-          <TabsTrigger value="billing" className="relative rounded-none border-b-2 border-transparent bg-transparent px-1 py-4 text-[15px] font-sans font-semibold text-slate-500 hover:text-slate-900 data-[state=active]:border-[#5A52FF] data-[state=active]:text-[#5A52FF] data-[state=active]:bg-transparent data-[state=active]:shadow-none focus-visible:outline-none focus-visible:ring-0 transition-all">Billing & Invoices</TabsTrigger>
-          <TabsTrigger value="messages" className="relative rounded-none border-b-2 border-transparent bg-transparent px-1 py-4 text-[15px] font-sans font-semibold text-slate-500 hover:text-slate-900 data-[state=active]:border-[#5A52FF] data-[state=active]:text-[#5A52FF] data-[state=active]:bg-transparent data-[state=active]:shadow-none focus-visible:outline-none focus-visible:ring-0 transition-all">Messages</TabsTrigger>
+      <Tabs key={initialTab} defaultValue={initialTab} className="w-full">
+        <TabsList className="hidden">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="approvals">Approvals</TabsTrigger>
+          <TabsTrigger value="billing">Billing</TabsTrigger>
+          <TabsTrigger value="messages">Messages</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-0 outline-none">
           <div className="grid gap-6 md:grid-cols-2">
         {/* Business Details */}
-        <Card className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] overflow-hidden flex flex-col">
-          <CardHeader className="pb-4 px-8 pt-7 bg-white border-b border-[#F1F5F9]">
-            <CardTitle className="text-xl font-sans font-bold text-[#0F172A]">Business Information</CardTitle>
+        <Card className="bg-white dark:bg-[#111111] border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col group">
+          <CardHeader className="pb-4 px-8 pt-7 border-b border-[#F1F5F9] dark:border-[#222]">
+            <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white tracking-tight">Business Information</CardTitle>
           </CardHeader>
           <CardContent className="p-6 grid gap-4 flex-1">
-            <div className="group p-4 rounded-xl border border-transparent hover:border-[#E5E7EB] hover:bg-[#FAFAFA] transition-all duration-200">
+            <div className="group/item p-4 rounded-xl border border-transparent hover:border-[#E9EDF4] dark:hover:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-all duration-200">
               <div className="flex items-center gap-2 mb-2">
-                <PiGlobeDuotone className="w-5 h-5 text-[#5A52FF]" />
-                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Website</p>
+                <div className="w-8 h-8 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center">
+                  <PiGlobeDuotone className="w-4 h-4 text-[#5A52FF]" />
+                </div>
+                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase">Website</p>
               </div>
-              <p className="text-[15px] font-medium text-[#0F172A] pl-6 group-hover:text-[#5A52FF] transition-colors">
+              <p className="text-[15px] font-medium text-[#0F172A] dark:text-white pl-10 group-hover/item:text-[#5A52FF] transition-colors">
                 {clientProfile.website ? (
                   <a href={clientProfile.website.startsWith('http') ? clientProfile.website : `https://${clientProfile.website}`} target="_blank" rel="noreferrer" className="hover:underline">
                     {clientProfile.website}
@@ -155,61 +175,67 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
               </p>
             </div>
             
-            <div className="group p-4 rounded-xl border border-transparent hover:border-[#E5E7EB] hover:bg-[#FAFAFA] transition-all duration-200">
+            <div className="group/item p-4 rounded-xl border border-transparent hover:border-[#E9EDF4] dark:hover:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-all duration-200">
               <div className="flex items-center gap-2 mb-2">
-                <PiFileTextDuotone className="w-5 h-5 text-[#5A52FF]" />
-                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Description</p>
+                <div className="w-8 h-8 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center">
+                  <PiFileTextDuotone className="w-4 h-4 text-[#5A52FF]" />
+                </div>
+                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase">Description</p>
               </div>
-              <p className="text-[14px] text-[#334155] leading-relaxed pl-6">{clientProfile.description || "N/A"}</p>
+              <p className="text-[14px] text-[#334155] dark:text-[#CBD5E1] leading-relaxed pl-10">{clientProfile.description || "N/A"}</p>
             </div>
             
-            <div className="group p-4 rounded-xl border border-transparent hover:border-[#E5E7EB] hover:bg-[#FAFAFA] transition-all duration-200">
+            <div className="group/item p-4 rounded-xl border border-transparent hover:border-[#E9EDF4] dark:hover:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-all duration-200">
               <div className="flex items-center gap-2 mb-2">
-                <PiUsersDuotone className="w-5 h-5 text-[#5A52FF]" />
-                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Target Audience (Raw)</p>
+                <div className="w-8 h-8 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center">
+                  <PiUsersDuotone className="w-4 h-4 text-[#5A52FF]" />
+                </div>
+                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase">Target Audience</p>
               </div>
-              <p className="text-[14px] text-[#334155] leading-relaxed pl-6">{clientProfile.audience || qna?.audience || "N/A"}</p>
+              <p className="text-[14px] text-[#334155] dark:text-[#CBD5E1] leading-relaxed pl-10">{clientProfile.audience || qna?.audience || "N/A"}</p>
             </div>
             
-            <div className="group p-4 rounded-xl border border-transparent hover:border-[#E5E7EB] hover:bg-[#FAFAFA] transition-all duration-200">
+            <div className="group/item p-4 rounded-xl border border-transparent hover:border-[#E9EDF4] dark:hover:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-all duration-200">
               <div className="flex items-center gap-2 mb-2">
-                <PiRocketLaunchDuotone className="w-5 h-5 text-[#5A52FF]" />
-                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Business Goals (Raw)</p>
+                <div className="w-8 h-8 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center">
+                  <PiRocketLaunchDuotone className="w-4 h-4 text-[#5A52FF]" />
+                </div>
+                <p className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase">Business Goals</p>
               </div>
-              <p className="text-[14px] text-[#334155] leading-relaxed pl-6">{clientProfile.goals || qna?.goals || "N/A"}</p>
+              <p className="text-[14px] text-[#334155] dark:text-[#CBD5E1] leading-relaxed pl-10">{clientProfile.goals || qna?.goals || "N/A"}</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Brand Assets */}
-        <Card className="bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] flex flex-col overflow-hidden min-w-0">
-          <CardHeader className="pb-4 px-8 pt-7 bg-white border-b border-[#F1F5F9]">
-            <CardTitle className="text-xl font-sans font-bold text-[#0F172A]">Uploaded Brand Assets</CardTitle>
-            <CardDescription className="mt-2 text-[#64748B]">Files uploaded by the client during onboarding.</CardDescription>
+        <Card className="bg-white dark:bg-[#111111] border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col overflow-hidden min-w-0 group">
+          <CardHeader className="pb-4 px-8 pt-7 border-b border-[#F1F5F9] dark:border-[#222]">
+            <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white tracking-tight">Brand Assets</CardTitle>
+            <CardDescription className="mt-1 text-[#64748B] dark:text-[#94A3B8] font-medium text-[14px]">Files uploaded by the client during onboarding.</CardDescription>
           </CardHeader>
           <CardContent className="p-6 flex-1 flex flex-col">
             {clientProfile.brandAssets.length > 0 ? (
               <ul className="grid gap-3">
                 {clientProfile.brandAssets.map((asset: any) => (
-                  <li key={asset.id} className="group flex items-center justify-between p-4 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#5A52FF] hover:shadow-md transition-all duration-200 overflow-hidden min-w-0">
+                  <li key={asset.id} className="group/item flex items-center justify-between p-4 bg-white dark:bg-[#1A1A1A] border border-[#E5E7EB] dark:border-[#333] rounded-xl hover:border-[#5A52FF]/50 transition-all duration-200 overflow-hidden min-w-0">
                     <div className="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
-                      <div className="shrink-0 w-10 h-10 rounded-lg bg-[#F3F5FF] flex items-center justify-center text-[#5A52FF]">
+                      <div className="shrink-0 w-10 h-10 rounded-lg bg-[#5A52FF]/10 flex items-center justify-center text-[#5A52FF]">
                         <ImageIcon className="w-5 h-5" />
                       </div>
                       <div className="flex flex-col flex-1 min-w-0 w-full">
-                        <span className="break-all text-sm font-semibold text-[#0F172A]">{asset.type}</span>
+                        <span className="break-all text-[14px] font-bold text-[#0F172A] dark:text-white">{asset.type}</span>
                         {asset.description && (
-                          <span className="break-words text-xs text-[#64748B] mt-1">
+                          <span className="break-words text-[13px] font-medium text-[#64748B] dark:text-[#888] mt-0.5">
                             {asset.description}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <a href={asset.fileUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FAFAFA] text-[#64748B] hover:bg-[#5A52FF] hover:text-white transition-colors" title="View">
+                    <div className="flex gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <a href={asset.fileUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FAFAFA] dark:bg-[#222] text-[#64748B] dark:text-[#888] hover:bg-[#5A52FF] hover:text-white dark:hover:bg-[#5A52FF] dark:hover:text-white transition-colors" title="View">
                         <ExternalLink className="w-4 h-4" />
                       </a>
-                      <a href={`/api/download?url=${encodeURIComponent(asset.fileUrl)}`} download className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FAFAFA] text-[#64748B] hover:bg-[#5A52FF] hover:text-white transition-colors" title="Download">
+                      <a href={`/api/download?url=${encodeURIComponent(asset.fileUrl)}`} download className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FAFAFA] dark:bg-[#222] text-[#64748B] dark:text-[#888] hover:bg-[#5A52FF] hover:text-white dark:hover:bg-[#5A52FF] dark:hover:text-white transition-colors" title="Download">
                         <Download className="w-4 h-4" />
                       </a>
                     </div>
@@ -217,25 +243,25 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
                 ))}
               </ul>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] rounded-2xl border-2 border-dashed border-[#E5E7EB] group hover:border-[#5A52FF]/40 hover:bg-[#F8FAFC] transition-all duration-300">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <ImageIcon className="w-8 h-8 text-[#cbd5e1]" />
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#1A1A1A] rounded-2xl border-2 border-dashed border-[#E5E7EB] dark:border-[#333] transition-all duration-300">
+                <div className="w-16 h-16 bg-white dark:bg-[#111] rounded-full flex items-center justify-center shadow-sm mb-4">
+                  <ImageIcon className="w-8 h-8 text-[#cbd5e1] dark:text-[#444]" />
                 </div>
-                <h3 className="text-[15px] font-bold text-[#334155] mb-1">No assets uploaded</h3>
-                <p className="text-sm text-[#64748B] max-w-[200px]">The client hasn't uploaded any logos or brand files yet.</p>
+                <h3 className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1">No assets uploaded</h3>
+                <p className="text-sm text-[#64748B] dark:text-[#888] max-w-[200px]">The client hasn't uploaded any logos or brand files yet.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* AI Summary */}
-        <Card className="md:col-span-2 bg-white border-[#E5E7EB] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
-          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 px-6 sm:px-8 pt-7 pb-4">
+        <Card className="md:col-span-2 bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 px-6 sm:px-8 pt-7 pb-4 border-b border-[#F1F5F9] dark:border-[#222]">
             <div className="min-w-0 flex-1 w-full sm:w-auto">
               <CardTitle className="text-[#5A52FF] flex items-center gap-2 text-xl sm:text-2xl font-sans font-bold truncate">
-                ✨ AI Summary
+                <span className="text-2xl">✨</span> AI Summary
               </CardTitle>
-              <CardDescription className="mt-2 text-[#64748B] break-words">
+              <CardDescription className="mt-1 text-[#64748B] dark:text-[#94A3B8] font-medium text-[14px] break-words">
                 Automated brand extraction based on the client's questionnaire.
               </CardDescription>
             </div>
@@ -243,25 +269,25 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
               <GenerateAiButton clientProfileId={clientProfile.id} />
             </div>
           </CardHeader>
-          <CardContent className="px-6 sm:px-8">
+          <CardContent className="px-6 sm:px-8 py-6">
             {clientProfile.aiAnalysis ? (
               <div className="grid gap-6 md:grid-cols-3">
-                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Target Audience</h3>
-                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.targetAudience || "Not analyzed yet."}</p>
+                <div className="bg-[#5A52FF]/5 p-5 sm:p-6 rounded-2xl border border-[#5A52FF]/10 overflow-hidden min-w-0">
+                  <h3 className="text-[11px] uppercase tracking-[0.15em] text-[#5A52FF] font-bold mb-3 truncate">Target Audience</h3>
+                  <p className="text-[13px] sm:text-[14px] text-[#0F172A] dark:text-white leading-relaxed break-words font-medium">{aiSummary?.targetAudience || "Not analyzed yet."}</p>
                 </div>
-                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Brand Voice</h3>
-                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.brandVoice || "Not analyzed yet."}</p>
+                <div className="bg-[#5A52FF]/5 p-5 sm:p-6 rounded-2xl border border-[#5A52FF]/10 overflow-hidden min-w-0">
+                  <h3 className="text-[11px] uppercase tracking-[0.15em] text-[#5A52FF] font-bold mb-3 truncate">Brand Voice</h3>
+                  <p className="text-[13px] sm:text-[14px] text-[#0F172A] dark:text-white leading-relaxed break-words font-medium">{aiSummary?.brandVoice || "Not analyzed yet."}</p>
                 </div>
-                <div className="bg-primary/5 p-5 sm:p-6 rounded-2xl border border-primary/10 overflow-hidden min-w-0">
-                  <h3 className="text-xs uppercase tracking-[0.12em] text-primary font-bold mb-3 truncate">Marketing Angle</h3>
-                  <p className="text-[13px] sm:text-sm text-foreground leading-relaxed break-words">{aiSummary?.marketingAngle || "Not analyzed yet."}</p>
+                <div className="bg-[#5A52FF]/5 p-5 sm:p-6 rounded-2xl border border-[#5A52FF]/10 overflow-hidden min-w-0">
+                  <h3 className="text-[11px] uppercase tracking-[0.15em] text-[#5A52FF] font-bold mb-3 truncate">Marketing Angle</h3>
+                  <p className="text-[13px] sm:text-[14px] text-[#0F172A] dark:text-white leading-relaxed break-words font-medium">{aiSummary?.marketingAngle || "Not analyzed yet."}</p>
                 </div>
               </div>
             ) : (
-              <div className="py-12 text-center text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border">
-                <p className="text-sm">AI Analysis has not been generated for this client yet.</p>
+              <div className="py-12 text-center text-[#64748B] dark:text-[#888] bg-[#FAFAFA] dark:bg-[#1A1A1A] rounded-2xl border border-dashed border-[#E5E7EB] dark:border-[#333]">
+                <p className="text-sm font-medium">AI Analysis has not been generated for this client yet.</p>
               </div>
             )}
           </CardContent>
@@ -287,6 +313,7 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
         </TabsContent>
       </Tabs>
       </div>
-    </div>
+      </div>
+    </AdminSidebarLayout>
   )
 }

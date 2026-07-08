@@ -1,41 +1,120 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
+import { Menu, X } from "lucide-react"
+import { CheckoutModal } from "./CheckoutModal"
+import { useState, useEffect } from "react"
 
 export function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <motion.nav 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0 flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#5A52FF] rounded-lg shadow-sm flex items-center justify-center">
-              <span className="text-white font-bold text-lg">D</span>
-            </div>
-            <span className="font-bold text-xl tracking-tight text-gray-900">Dexze</span>
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pointer-events-none">
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
+        className={`
+          w-full max-w-[1400px] 2xl:max-w-[1800px] min-[2000px]:max-w-[2200px] h-[64px] sm:h-[72px] rounded-[16px] sm:rounded-[20px]
+          px-4 sm:px-6 lg:px-8 pointer-events-auto
+          border border-gray-200 transition-all duration-300
+          ${scrolled
+            ? "bg-white shadow-sm -translate-y-1"
+            : "bg-white shadow-sm"
+          }
+        `}
+      >
+        <div className="flex items-center justify-between h-full w-full">
+          {/* Logo */}
+          <Link href="/" className="flex items-center group">
+            <img 
+              src="/images/logo.png" 
+              alt="Dexze Logo" 
+              className="w-auto h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
+
+          {/* Center Nav Links */}
+          <div className="hidden md:flex items-center gap-8">
+            <a
+              href="#features"
+              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+            >
+              Features
+            </a>
+            <a
+              href="#pricing"
+              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+            >
+              Pricing
+            </a>
+            <a
+              href="#faq"
+              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+            >
+              FAQ
+            </a>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Pricing</a>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="scale-90 sm:scale-100 origin-right">
-              <a 
-                href="#pricing"
-                className="inline-block bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-3 px-6 text-base sm:py-4 sm:px-8 sm:text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-3">
+              <Link
+                href="/login"
+                className="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-white text-black text-sm font-black flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm hover:translate-y-[3px]"
               >
-                Purchase Subscription
-              </a>
+                Login
+              </Link>
+              <CheckoutModal
+                buttonText="Purchase"
+                triggerClassName="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-black text-white hover:text-black text-sm font-black flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm hover:translate-y-[3px]"
+              />
             </div>
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-100 transition-colors"
+            >
+              {mobileOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
+            </button>
           </div>
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          className="fixed top-[88px] sm:top-[96px] left-4 right-4 bg-white border border-gray-200 rounded-2xl p-6 pointer-events-auto md:hidden z-50 shadow-sm"
+        >
+          <div className="flex flex-col gap-4">
+            <a href="#features" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">Features</a>
+            <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">Pricing</a>
+            <a href="#faq" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">FAQ</a>
+            <div className="pt-4 border-t-[3px] border-gray-100 flex flex-col gap-3">
+              <Link
+                href="/login"
+                className="w-full h-[48px] px-6 rounded-xl bg-white text-black text-sm font-black flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm"
+              >
+                Login
+              </Link>
+              <CheckoutModal
+                buttonText="Purchase"
+                triggerClassName="w-full h-[48px] px-6 rounded-xl bg-black text-white hover:text-black text-sm font-black flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm"
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
   )
 }

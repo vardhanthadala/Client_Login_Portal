@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Calistoga, JetBrains_Mono } from "next/font/google";
+import { Geist, Calistoga, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({ 
+const geist = Geist({ 
   variable: "--font-sans", 
   subsets: ["latin"], 
   display: "swap" 
@@ -26,6 +27,7 @@ export const metadata: Metadata = {
 
 import { Toaster } from "@/components/ui/sonner";
 import SessionGuard from "@/components/SessionGuard";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -35,22 +37,39 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${geist.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head />
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <SessionGuard />
-        {children}
-        <Toaster 
-          position="top-center" 
-          toastOptions={{
-            classNames: {
-              error: 'bg-red-50 text-red-900 border border-red-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
-              success: 'bg-emerald-50 text-emerald-900 border border-emerald-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
-              warning: 'bg-amber-50 text-amber-900 border border-amber-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
-              info: 'bg-blue-50 text-blue-900 border border-blue-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
-            }
-          }}
-        />
+        <Script id="theme-script" strategy="beforeInteractive">
+          {`
+            try {
+              var theme = localStorage.getItem('theme');
+              var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              if (theme === 'dark' || (!theme && systemDark)) {
+                document.documentElement.classList.add('dark');
+              } else {
+                document.documentElement.classList.remove('dark');
+              }
+            } catch (e) {}
+          `}
+        </Script>
+        <ThemeProvider>
+          <SessionGuard />
+          {children}
+          <Toaster 
+            position="top-center" 
+            toastOptions={{
+              classNames: {
+                error: 'bg-red-50 text-red-900 border border-red-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+                success: 'bg-emerald-50 text-emerald-900 border border-emerald-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+                warning: 'bg-amber-50 text-amber-900 border border-amber-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+                info: 'bg-blue-50 text-blue-900 border border-blue-100 shadow-xl rounded-2xl p-4 font-sans font-bold flex items-center gap-2 text-sm',
+              }
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,0 +1,12 @@
+.lanyard-wrapper {
+  position: relative;
+  z-index: 10; /* changed from 0 to ensure it sits above background elements */
+  width: 100%;
+  height: 100%; /* changed from 100vh to fit within container */
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(1);
+  transform-origin: center;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "mouse-tracking-on-viewport",
+  "version": "1.0.0",
+  "description": "Using @rive-app/canvas and a Rive state machine to track the mouse across the viewport",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "parcel-bundler": "^1.6.1",
+    "@rive-app/webgl2": "latest"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "typescript": "4.4.4"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
+}
