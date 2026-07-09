@@ -23,8 +23,7 @@ export default function SignOutButton() {
   const handleSignOut = async () => {
     setIsLoading(true)
     toast.success("Signing out...", { duration: 2000 })
-    await signOut({ redirect: false })
-    window.location.replace("/client-login")
+    await signOut({ callbackUrl: "/client-login" })
   }
 
   return (
