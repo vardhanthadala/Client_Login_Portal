@@ -6,6 +6,12 @@ import bcrypt from "bcryptjs"
 // Force AUTH_SECRET so we don't need to restart the Next.js dev server
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn"
 
+// Fix for production redirecting to localhost if NEXTAUTH_URL is misconfigured in Vercel
+if (process.env.VERCEL_URL) {
+  process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`
+  process.env.AUTH_URL = `https://${process.env.VERCEL_URL}`
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     CredentialsProvider({
@@ -76,4 +82,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
 })
