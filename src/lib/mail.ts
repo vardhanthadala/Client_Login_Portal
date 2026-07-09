@@ -164,7 +164,7 @@ export async function sendClientPasswordResetEmail(toEmail: string, newPassword:
           <p>You can access your dashboard using your new credentials below:</p>
           
           <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; margin: 24px 0;">
-            <p style="margin: 0 0 8px 0;"><strong>Portal URL:</strong> <a href="http://localhost:3000/client-login">http://localhost:3000/client-login</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Portal URL:</strong> <a href="http://localhost:3000/login">http://localhost:3000/login</a></p>
             <p style="margin: 0 0 8px 0;"><strong>Your Email:</strong> ${toEmail}</p>
             <p style="margin: 0;"><strong>New Password:</strong> <span style="font-family: monospace; font-size: 1.1em; color: #101828; font-weight: bold;">${newPassword}</span></p>
           </div>

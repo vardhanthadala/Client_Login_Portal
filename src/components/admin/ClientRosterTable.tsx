@@ -49,8 +49,8 @@ export default function ClientRosterTable({ clients }: { clients: ClientData[] }
 
   return (
     <div className="bg-[#FFFFFF] dark:bg-[#171A21] border border-[#0F172A]/5 dark:border-white/5 rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] w-full">
-      <div className="w-full">
-        <table className="w-full text-left border-collapse">
+      <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <table className="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
           <thead>
             <tr className="border-b border-[#0F172A]/5 dark:border-white/5">
               <th className="py-4 px-6 text-[12px] font-bold text-[#64748B] dark:text-[#888] uppercase tracking-wider w-16">#</th>
@@ -167,7 +167,7 @@ export default function ClientRosterTable({ clients }: { clients: ClientData[] }
                             <motion.div 
                               initial={{ y: -10 }}
                               animate={{ y: 0 }}
-                              className="flex items-center gap-3 pb-1"
+                              className="flex flex-wrap items-center gap-3 pb-1"
                             >
                               <span className="text-[12px] font-bold text-[#64748B] dark:text-[#666] uppercase tracking-wider mr-2 shrink-0">
                                 Quick Navigation:

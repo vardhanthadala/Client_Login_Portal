@@ -19,7 +19,7 @@ export default function AgencyCard({ tenant, isExpired }: { tenant: any, isExpir
     }}>
       <DialogTrigger
         render={
-          <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <button className="w-full bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 gap-3 relative transition-all duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
               <div className="min-w-0 flex-1 relative z-10 flex items-center gap-4">
@@ -43,7 +43,7 @@ export default function AgencyCard({ tenant, isExpired }: { tenant: any, isExpir
                 </span>
               </div>
             </div>
-          </div>
+          </button>
         }
       />
 

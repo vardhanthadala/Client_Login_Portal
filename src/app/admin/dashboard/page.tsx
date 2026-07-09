@@ -198,12 +198,14 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       label: "Clients",
       content: (
         <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
             <div>
               <h2 className="text-[28px] font-[650] text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
               <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
             </div>
-            <InviteClientModal />
+            <div className="w-full sm:w-auto shrink-0 flex justify-end">
+              <InviteClientModal />
+            </div>
           </div>
 
           <ClientRosterTable 
