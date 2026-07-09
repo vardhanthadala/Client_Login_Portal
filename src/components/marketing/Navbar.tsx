@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, X } from "lucide-react"
 import { CheckoutModal } from "./CheckoutModal"
 import { useState, useEffect } from "react"
@@ -35,9 +36,12 @@ export function Navbar() {
         <div className="flex items-center justify-between h-full w-full">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
-            <img 
+            <Image 
               src="/images/logo.png" 
               alt="Dexze Logo" 
+              width={140}
+              height={36}
+              priority
               className="w-auto h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform duration-300"
             />
           </Link>

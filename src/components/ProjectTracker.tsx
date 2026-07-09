@@ -15,10 +15,16 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
   const stages = Array.isArray(project.stages) ? project.stages : []
   const currentStage = Math.max(0, Math.min(project.currentStageIdx, stages.length - 1))
   
-  // Calculate the width of the active progress line
-  const progressPercentage = stages.length > 1 
+  // Calculate the width of the active progress line (timeline)
+  const timelineProgress = stages.length > 1 
     ? Math.round((currentStage / (stages.length - 1)) * 100)
     : 0
+
+  // Strict production stages logic for the stat card
+  const rawProgress = stages.length > 0 
+    ? Math.round(((project.currentStageIdx ?? 0) / stages.length) * 100)
+    : 0
+  const overallProgress = Math.min(100, Math.max(0, rawProgress))
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -68,14 +74,17 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
 
         {/* Timeline */}
         <div className="relative min-w-[600px] overflow-x-auto pb-4 hidden-scrollbar">
-          {/* Base Background Line */}
-          <div className="absolute top-5 left-12 right-12 h-[2px] bg-[#E9EDF4] dark:bg-[#2A2E35]" />
-          
-          {/* Active Progress Line */}
-          <div 
-            className="absolute top-5 left-12 h-[2px] bg-gradient-to-r from-[#9D4EDD] to-[#7B2CBF] dark:from-[#B14EFF] dark:to-[#8F00FF] transition-all duration-1000 ease-out"
-            style={{ width: `calc(${progressPercentage}% - 6rem)` }}
-          />
+          {/* Lines Container */}
+          <div className="absolute top-5 left-14 right-14 h-[2px]">
+            {/* Base Background Line */}
+            <div className="absolute inset-0 bg-[#E9EDF4] dark:bg-[#2A2E35]" />
+            
+            {/* Active Progress Line */}
+            <div 
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#9D4EDD] to-[#7B2CBF] dark:from-[#B14EFF] dark:to-[#8F00FF] transition-all duration-1000 ease-out"
+              style={{ width: `${timelineProgress}%` }}
+            />
+          </div>
           
           <div className="relative flex justify-between w-full">
             {stages.map((stage: string, idx: number) => {
@@ -155,7 +164,7 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
             <FolderKanban className="w-5 h-5 text-[#9D4EDD] dark:text-[#B14EFF]" />
           </div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1">Overall Progress</p>
-          <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">{progressPercentage}%</h3>
+          <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">{overallProgress}%</h3>
         </div>
 
         <div className="bg-white dark:bg-[#17191D] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[20px] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">

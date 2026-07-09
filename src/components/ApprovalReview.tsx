@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { respondToApprovalItemAction } from "@/app/actions/approvals"
 import { Loader2, Check, AlertTriangle, Download, MoreVertical, LayoutGrid, List, ChevronDown, Clock, Search, FileText, CheckCircle2, User, ImageIcon, Database } from "lucide-react"
 import { toast } from "sonner"
+import Image from "next/image"
 
 type ApprovalFeedback = {
   id: string
@@ -208,10 +209,6 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
           const isApproved = item.status === "APPROVED"
           const isLoading = loadingId === item.id
           
-          // Generate mock priority based on index just to match the visual variety in screenshot
-          const priority = index % 3 === 0 ? "High" : index % 3 === 1 ? "Medium" : "Low"
-          const priorityColor = priority === "High" ? "text-rose-500 bg-rose-50 border-rose-100" : priority === "Medium" ? "text-amber-500 bg-amber-50 border-amber-100" : "text-emerald-500 bg-emerald-50 border-emerald-100"
-
           return (
             <Card 
               key={item.id} 
@@ -223,9 +220,9 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
             >
               <div className={`flex ${viewMode === "list" ? "flex-col sm:flex-row sm:items-center" : "flex-col"} gap-5 items-start flex-1 min-w-0`}>
                 {/* Thumbnail */}
-                <div className={`${viewMode === "list" ? "w-32 h-24" : "w-full h-40"} rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-slate-50 dark:bg-[#222] ${isImage(item.fileType) ? '' : 'border border-[#E2E8F0]'}`}>
+                <div className={`${viewMode === "list" ? "w-32 h-24" : "w-full h-40"} relative rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-slate-50 dark:bg-[#222] ${isImage(item.fileType) ? '' : 'border border-[#E2E8F0]'}`}>
                   {isImage(item.fileType) ? (
-                     <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
+                     <Image src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" unoptimized={true} />
                   ) : (
                      <FileText className="w-8 h-8 text-[#94A3B8]" />
                   )}
@@ -248,12 +245,6 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
                       <User className="w-3.5 h-3.5" />
                       By Agency Team
                     </div>
-                  </div>
-
-                  <div>
-                    <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold border ${priorityColor}`}>
-                      {priority} Priority
-                    </span>
                   </div>
                 </div>
               </div>

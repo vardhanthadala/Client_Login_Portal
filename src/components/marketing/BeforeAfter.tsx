@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import Image from "next/image"
 
 export function BeforeAfter() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -72,7 +73,7 @@ export function BeforeAfter() {
              <div className="relative z-10 w-full lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
                 <div className="w-full h-full bg-[#141414] rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center relative group">
                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-                   <img src="/chaos.png.jpg" alt="Messy Workspace" className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" />
+                   <Image src="/chaos.png.jpg" alt="Messy Workspace" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" />
                 </div>
              </div>
 
@@ -123,7 +124,7 @@ export function BeforeAfter() {
              <div className="relative z-10 w-full lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
                 <div className="w-full h-full bg-[#1A1820] rounded-2xl border border-[#5A52FF]/20 overflow-hidden flex items-center justify-center relative group">
                    <div className="absolute inset-0 bg-gradient-to-t from-[#5A52FF]/20 to-transparent z-10" />
-                   <img src="/clarity.png.jpg" alt="Clean Dashboard" className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" />
+                   <Image src="/clarity.png.jpg" alt="Clean Dashboard" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" />
                 </div>
              </div>
 

@@ -105,7 +105,7 @@ export default function LoginPage() {
                         type="email" 
                         placeholder="Enter your email" 
                         required 
-                        className="w-full bg-white border border-[#E2E8F0] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
+                        className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
                       />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] font-semibold">
                         @
@@ -123,7 +123,7 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"} 
                         placeholder="••••••••"
                         required 
-                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
+                        className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#10B981] focus-visible:border-[#10B981] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
                       />
                       <button
                         type="button"
@@ -192,7 +192,7 @@ export default function LoginPage() {
                         placeholder="Enter your email" 
                         required 
                         disabled={isResetPending}
-                        className="w-full bg-white border border-[#E2E8F0] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
+                        className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[13px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all"
                       />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8] text-[14px] font-semibold">@</div>
                     </div>
@@ -244,7 +244,7 @@ export default function LoginPage() {
                       required 
                       maxLength={6}
                       disabled={isResetPending}
-                      className="w-full bg-white border border-[#E2E8F0] text-[16px] font-bold tracking-widest text-center placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl px-4 outline-none transition-all"
+                      className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[16px] font-bold tracking-widest text-center placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl px-4 outline-none transition-all"
                     />
                   </div>
 
@@ -258,7 +258,7 @@ export default function LoginPage() {
                         required 
                         minLength={8}
                         disabled={isResetPending}
-                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
+                        className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
                       />
                       <button
                         type="button"
@@ -281,7 +281,7 @@ export default function LoginPage() {
                         required 
                         minLength={8}
                         disabled={isResetPending}
-                        className="w-full bg-white border border-[#E2E8F0] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
+                        className="w-full bg-white border border-[#E2E8F0] text-[#1E293B] text-[16px] font-medium placeholder:text-[#CBD5E1] placeholder:font-normal focus-visible:ring-1 focus-visible:ring-[#F97316] focus-visible:border-[#F97316] h-[46px] rounded-xl pl-4 pr-10 outline-none transition-all tracking-[0.2em]"
                       />
                     </div>
                   </div>
@@ -315,7 +315,7 @@ export default function LoginPage() {
         {/* Right Side - Image Area */}
         <div className="hidden lg:block w-1/2 relative bg-white">
           <div className="absolute inset-0 z-0">
-             <Image src="/images/login-illustration.png" alt="Illustration" fill className="object-cover object-center" priority />
+             <Image src="/images/login-illustration-v3.png" alt="Illustration" fill className="object-cover object-center" priority />
           </div>
         </div>
         

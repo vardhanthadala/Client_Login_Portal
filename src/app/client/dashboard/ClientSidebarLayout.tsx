@@ -65,9 +65,13 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
     const project = clientProfile.projects[0];
     const stages = Array.isArray(project.stages) ? project.stages : [];
     const currentStageIdx = project.currentStageIdx ?? 0;
-    const currentStage = Math.max(0, Math.min(currentStageIdx, stages.length - 1));
-    progressPercent = stages.length > 1 ? Math.round((currentStage / (stages.length - 1)) * 100) : 0;
-    currentStageName = stages[currentStage] || "No Active Stage";
+    
+    // Strict production stages logic: Progress = (Completed Stages / Total Stages) * 100
+    const rawProgress = stages.length > 0 ? Math.round((currentStageIdx / stages.length) * 100) : 0;
+    progressPercent = Math.min(100, Math.max(0, rawProgress));
+    
+    const activeStageIndex = Math.max(0, Math.min(currentStageIdx, stages.length - 1));
+    currentStageName = stages[activeStageIndex] || "No Active Stage";
   }
 
   const currentTheme = mounted ? (theme === 'system' ? systemTheme : theme) : 'light'

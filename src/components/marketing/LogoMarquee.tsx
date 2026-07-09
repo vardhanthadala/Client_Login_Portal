@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Zap } from "lucide-react"
+import Image from "next/image"
 
 const baseLogos = [
   { name: "Shopify", src: "/images/logos/shopify.svg", color: "#95BF47" },
@@ -93,9 +94,12 @@ export function LogoMarquee() {
             <div className="absolute w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0)_60%)] rounded-full -z-10" />
             <div className="absolute w-[150%] h-[150%] bg-[radial-gradient(circle,rgba(90,82,255,0.06)_0%,rgba(90,82,255,0)_60%)] rounded-full -z-10 animate-pulse" style={{ animationDuration: '4s' }} />
             
-            <img 
+            <Image 
               src="/images/logo.png" 
               alt="Dexze Logo" 
+              width={320}
+              height={320}
+              priority
               className="w-40 h-40 md:w-56 md:h-56 lg:w-[320px] lg:h-[320px] object-contain relative z-10 animate-sun pointer-events-auto hover:scale-110 transition-transform duration-700"
               style={{
                 filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.12)) drop-shadow(0 0 60px rgba(255,255,255,1))'

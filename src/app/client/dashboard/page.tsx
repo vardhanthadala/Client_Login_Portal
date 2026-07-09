@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 import { Download, ExternalLink, Bell, CheckCircle2, Activity, Clock, ShieldCheck, Mail, Upload, Folder, MessageSquare, Calendar, ChevronRight, MoreVertical, Building2, Check } from "lucide-react"
 import { PiGlobeDuotone, PiFileTextDuotone, PiUsersDuotone, PiRocketLaunchDuotone, PiImageDuotone, PiChecksDuotone, PiChatCircleDuotone } from "react-icons/pi"
 import ClientUploader from "./ClientUploader"
@@ -192,7 +193,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                         {/* Mock Image Thumbnail */}
                         <div className="flex items-center justify-center shrink-0 w-16 h-12 rounded-md bg-[#1A1A1A] border border-[#333] overflow-hidden relative">
                            {asset.type?.includes("image") ? (
-                             <img src={asset.fileUrl} alt={asset.description} className="object-cover w-full h-full opacity-80 group-hover:opacity-100 transition-opacity" />
+                             <Image src={asset.fileUrl} alt={asset.description || "Asset"} fill sizes="64px" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                            ) : (
                              <span className="text-[10px] font-bold text-[#888] uppercase">{asset.fileUrl.split('.').pop()?.substring(0,3)}</span>
                            )}
