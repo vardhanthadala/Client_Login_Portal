@@ -23,7 +23,11 @@ export default function SignOutButton() {
   const handleSignOut = async () => {
     setIsLoading(true)
     toast.success("Signing out...", { duration: 2000 })
-    await signOut({ redirect: false })
+    try {
+      await signOut({ redirect: false })
+    } catch (e) {
+      // Ignore - session cookie will be cleared regardless
+    }
     window.location.href = "/login"
   }
 
