@@ -2,12 +2,14 @@
 
 import { signIn } from "@/auth"
 import { AuthError } from "next-auth"
-import { redirect } from "next/navigation"
 
 export async function loginAction(prevState: any, formData: FormData) {
-  let isSuccess = false
   try {
-    await signIn("credentials", Object.fromEntries(formData))
+    await signIn("credentials", {
+      ...Object.fromEntries(formData),
+      redirect: false,
+    })
+    return { success: true }
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -17,19 +19,18 @@ export async function loginAction(prevState: any, formData: FormData) {
           return { error: "Something went wrong." }
       }
     }
-    
-    // Check if the error is a Next.js redirect error thrown by Auth.js
-    if (error && typeof error === 'object' && 'digest' in error && typeof (error as any).digest === 'string' && (error as any).digest.startsWith('NEXT_REDIRECT')) {
-      isSuccess = true
-    } else {
-      throw error
+    // NextAuth v5 throws a NEXT_REDIRECT even with redirect:false on server actions.
+    // If it's a redirect "error", the sign-in actually succeeded.
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      typeof (error as any).digest === "string" &&
+      (error as any).digest.startsWith("NEXT_REDIRECT")
+    ) {
+      return { success: true }
     }
-  }
-
-  if (isSuccess) {
-    // Force a native relative redirect. Since the user is now logged in,
-    // proxy.ts will intercept this and route them to the correct dashboard.
-    redirect("/login")
+    throw error
   }
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useState, useEffect } from "react"
 import { loginAction, requestPasswordReset, verifyOtpAndResetPassword } from "@/app/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Loader2, Eye, EyeOff } from "lucide-react"
@@ -15,6 +15,13 @@ export default function LoginPage() {
   // Login State
   const [loginState, loginActionDispatch, isLoginPending] = useActionState(loginAction, undefined)
   const [showPassword, setShowPassword] = useState(false)
+
+  // On successful login, redirect client-side (avoids NextAuth's broken NEXTAUTH_URL redirect)
+  useEffect(() => {
+    if (loginState?.success) {
+      window.location.href = "/login"
+    }
+  }, [loginState])
   
   // Forgot / Reset State
   const [resetEmail, setResetEmail] = useState("")

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useState, useEffect } from "react"
 import { loginAction } from "@/app/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Loader2, Eye, EyeOff } from "lucide-react"
@@ -9,6 +9,13 @@ import Image from "next/image"
 export default function ClientLoginPage() {
   const [loginState, loginActionDispatch, isLoginPending] = useActionState(loginAction, undefined)
   const [showPassword, setShowPassword] = useState(false)
+
+  // On successful login, redirect client-side (avoids NextAuth's broken NEXTAUTH_URL redirect)
+  useEffect(() => {
+    if (loginState?.success) {
+      window.location.href = "/client-login"
+    }
+  }, [loginState])
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans overflow-hidden bg-[#F4F7FB]">
