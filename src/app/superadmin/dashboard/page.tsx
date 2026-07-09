@@ -129,7 +129,7 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 2xl:gap-8">
             {filteredTenants.map((tenant) => {
-              const isExpired = tenant.subscriptionStatus === "EXPIRED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date());
+              const isExpired = tenant.subscriptionStatus === "EXPIRED" || !!(tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date());
               return (
                 <AgencyCard key={tenant.id} tenant={tenant} isExpired={isExpired} />
               )
