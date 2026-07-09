@@ -1,6 +1,5 @@
 "use client"
 
-import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useState } from "react"
@@ -24,9 +23,17 @@ export default function SignOutButton() {
     setIsLoading(true)
     toast.success("Signing out...", { duration: 2000 })
     try {
-      await signOut({ redirect: false })
+      // Get CSRF token first
+      const csrfRes = await fetch("/api/auth/csrf")
+      const { csrfToken } = await csrfRes.json()
+      // Post to signout endpoint
+      await fetch("/api/auth/signout", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `csrfToken=${encodeURIComponent(csrfToken)}`,
+      })
     } catch (e) {
-      // Ignore - session cookie will be cleared regardless
+      // Ignore errors - redirect regardless
     }
     window.location.href = "/client-login"
   }
