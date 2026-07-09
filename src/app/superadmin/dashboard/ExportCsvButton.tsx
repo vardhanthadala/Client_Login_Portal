@@ -22,14 +22,14 @@ export default function ExportCsvButton({ tenants }: { tenants: any[] }) {
     const link = document.createElement("a")
     const url = URL.createObjectURL(blob)
     link.setAttribute("href", url)
-    link.setAttribute("download", `agencies_export_${new Date().toISOString().split('T')[0]}.csv`)
+    link.setAttribute("download", `companies_export_${new Date().toISOString().split('T')[0]}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
 
   return (
-    <Button variant="outline" onClick={exportToCsv} className="flex items-center gap-2 h-10">
+    <Button variant="outline" onClick={exportToCsv} className="flex items-center justify-center gap-2 h-10 w-full sm:w-auto">
       <Download className="w-4 h-4" />
       Export CSV
     </Button>

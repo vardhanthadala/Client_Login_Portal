@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma"
+import { auth } from "@/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import SignOutButton from "@/app/admin/dashboard/SignOutButton"
 import { format } from "date-fns"
 import AddAgencyDialog from "./AddAgencyDialog"
 import CancelSubscriptionButton from "./CancelSubscriptionButton"
@@ -12,11 +12,17 @@ import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
 import AgencySearch from "./AgencySearch"
 import MrrArrWidget from "@/components/superadmin/MrrArrWidget"
-import { ShieldCheck } from "lucide-react"
+import { ShieldCheck, Search, Download, Building2, Zap, AlertCircle } from "lucide-react"
+import SuperAdminSidebarLayout, { TabData } from "./SuperAdminSidebarLayout"
+import AgencyCard from "./AgencyCard"
 
-export default async function SuperAdminDashboard(props: { searchParams: Promise<{ q?: string }> }) {
+export default async function SuperAdminDashboard(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams
-  const q = searchParams?.q?.toLowerCase() || ""
+  const q = (searchParams?.q as string)?.toLowerCase() || ""
+  const initialTab = (searchParams?.tab as string) || "overview"
+
+  const session = await auth()
+  const adminName = session?.user?.name || "Super Admin"
 
   const tenants = await prisma.tenant.findMany({
     orderBy: { createdAt: "desc" },
@@ -29,158 +35,125 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   })
 
   // Basic check for Webhook Health
-  // If razorpay environment keys are set, we assume Webhook is configured (or we can just show a green dot for now)
   const webhookHealthy = !!process.env.RAZORPAY_KEY_ID
 
   const filteredTenants = tenants.filter(t => 
     t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q)
   )
 
-  return (
-    <div className="min-h-screen w-full px-4 md:px-8 lg:px-12 xl:px-24 pt-12 pb-32 bg-[#FAFAFA] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100/40 via-[#FAFAFA] to-[#FAFAFA]">
-      <div className="max-w-screen-2xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-4xl sm:text-5xl text-[#0F172A] font-sans font-bold tracking-tight">
-                Super Admin
-              </h1>
-              <span className="px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 mt-2">
-                <ShieldCheck className="w-3.5 h-3.5" /> Enterprise
-              </span>
-            </div>
-            <p className="text-muted-foreground mt-4 text-base leading-relaxed max-w-2xl">
-              Manage agencies, subscriptions, and platform access.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
-            {webhookHealthy ? (
-              <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium border border-green-200">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Webhooks Healthy
+  const tabs: TabData[] = [
+    {
+      id: "overview",
+      label: "Overview",
+      content: (
+        <div className="flex flex-col gap-10">
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 2xl:gap-6">
+            <MrrArrWidget />
+            
+            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/5 flex items-center justify-center shadow-inner border border-indigo-100 dark:border-indigo-500/20 relative">
+                  <div className="absolute inset-0 bg-indigo-500 blur-md opacity-20 rounded-[16px]"></div>
+                  <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 relative z-10" />
+                </div>
               </div>
-            ) : (
-              <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1.5 rounded-full text-sm font-medium border border-red-200">
-                <div className="w-2 h-2 rounded-full bg-red-500" />
-                Webhooks Offline
+              <h3 className="text-3xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mt-1">{tenants.length}</h3>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Total Companies</p>
+              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Registered Platforms</p>
+            </div>
+            
+            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-500/20 dark:to-emerald-500/5 flex items-center justify-center shadow-inner border border-emerald-100 dark:border-emerald-500/20 relative">
+                  <div className="absolute inset-0 bg-emerald-500 blur-md opacity-20 rounded-[16px]"></div>
+                  <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400 relative z-10" />
+                </div>
               </div>
-            )}
-            <SignOutButton />
+              <h3 className="text-3xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mt-1">
+                {tenants.filter(t => t.subscriptionStatus === "ACTIVE").length}
+              </h3>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Active Subs</p>
+              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Paying Customers</p>
+            </div>
+            
+            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-rose-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 dark:bg-rose-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-rose-500/20 dark:to-rose-500/5 flex items-center justify-center shadow-inner border border-rose-100 dark:border-rose-500/20 relative">
+                  <div className="absolute inset-0 bg-rose-500 blur-md opacity-20 rounded-[16px]"></div>
+                  <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 relative z-10" />
+                </div>
+              </div>
+              <h3 className="text-3xl font-sans font-bold text-rose-600 dark:text-rose-500 tabular-nums tracking-tight mt-1">
+                {tenants.filter(t => t.subscriptionStatus === "EXPIRED").length}
+              </h3>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Expired Subs</p>
+              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Needs Action</p>
+            </div>
           </div>
-        </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <MrrArrWidget />
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground">Total Agencies</p>
-            <h3 className="text-2xl font-bold text-[#0F172A] mt-0.5">{tenants.length}</h3>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground">Active Subscriptions</p>
-            <h3 className="text-2xl font-bold text-[#0F172A] mt-0.5">
-              {tenants.filter(t => t.subscriptionStatus === "ACTIVE").length}
-            </h3>
-          </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground">Expired Subscriptions</p>
-            <h3 className="text-2xl font-bold text-red-600 mt-0.5">
-              {tenants.filter(t => t.subscriptionStatus === "EXPIRED").length}
-            </h3>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
-          <div className="xl:col-span-2">
-            <AnalyticsCharts />
-          </div>
-          <div className="xl:col-span-1">
-            <ActivityFeed />
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-          <h2 className="text-xl font-bold text-[#0F172A]">Agencies Directory</h2>
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-            <AgencySearch />
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <ExportCsvButton tenants={tenants} />
-              <AddAgencyDialog />
+          <div className="flex flex-col gap-6 mb-10">
+            <div className="w-full">
+              <AnalyticsCharts />
+            </div>
+            <div className="w-full h-[500px]">
+              <ActivityFeed />
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 gap-6">
-          {filteredTenants.map((tenant) => {
-            const isExpired = tenant.subscriptionStatus === "EXPIRED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date());
-            return (
-              <Card key={tenant.id} id={`tenant-${tenant.id}`} className="bg-white border-[#E5E7EB] rounded-2xl shadow-sm hover:shadow-md scroll-m-24 transition-all">
-                <CardHeader className="flex flex-col sm:flex-row justify-between items-start pb-4">
-                  <div>
-                    <CardTitle className="text-xl font-bold text-[#0F172A]">
-                      {tenant.name}
-                    </CardTitle>
-                    <CardDescription className="mt-2 text-sm text-gray-500 font-mono">
-                      ID: {tenant.id}
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center mt-2 sm:mt-0 gap-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${isExpired ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                      {isExpired ? "Expired" : "Active"}
-                    </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-100 text-blue-700">
-                      {tenant.subscriptionPlan.replace('_', ' ')}
-                    </span>
-                    {tenant.cancelAtPeriodEnd ? (
-                      <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-orange-100 text-orange-700">
-                        Cancels Soon
-                      </span>
-                    ) : (
-                      !isExpired && tenant.subscriptionStatus !== "CANCELLED" && (
-                        <div className="flex gap-2 items-center">
-                          <ManageSubscriptionDialog 
-                            tenantId={tenant.id} 
-                            currentPlan={tenant.subscriptionPlan} 
-                            currentEnd={tenant.subscriptionEnd} 
-                          />
-                          <CancelSubscriptionButton tenantId={tenant.id} />
-                        </div>
-                      )
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="px-6 pb-6">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-[#F1F5F9]">
-                    <div>
-                      <p className="text-xs text-gray-400">Total Clients</p>
-                      <p className="font-medium">{tenant._count.clientProfiles}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Admin Email</p>
-                      <p className="font-medium truncate">{tenant.users[0]?.email || "None"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Sub Starts</p>
-                      <p className="font-medium">{tenant.subscriptionStart ? format(new Date(tenant.subscriptionStart), "MMM d, yyyy") : "-"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Sub Ends</p>
-                      <p className="font-medium">{tenant.subscriptionEnd ? format(new Date(tenant.subscriptionEnd), "MMM d, yyyy") : "-"}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
-
-          {filteredTenants.length === 0 && (
-            <div className="py-16 text-center text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border">
-              <p className="text-lg font-medium text-foreground mb-2">No agencies found.</p>
-            </div>
-          )}
+      )
+    },
+    {
+      id: "agencies",
+      label: "Companies",
+      content: (
+        <div className="flex flex-col gap-6">
+    <div className="flex flex-col xl:flex-row xl:items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm gap-4 xl:gap-6">
+      <div className="w-full xl:w-auto">
+        <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Companies Directory</h2>
+        <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all registered companies, their subscriptions, and limits.</p>
+      </div>
+      <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto mt-2 xl:mt-0">
+        <div className="w-full sm:w-auto">
+          <AgencySearch />
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <ExportCsvButton tenants={tenants} />
+          <AddAgencyDialog />
         </div>
       </div>
     </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 2xl:gap-8">
+            {filteredTenants.map((tenant) => {
+              const isExpired = tenant.subscriptionStatus === "EXPIRED" || (tenant.subscriptionEnd && new Date(tenant.subscriptionEnd) < new Date());
+              return (
+                <AgencyCard key={tenant.id} tenant={tenant} isExpired={isExpired} />
+              )
+            })}
+
+            {filteredTenants.length === 0 && (
+              <div className="col-span-1 xl:col-span-2 flex flex-col items-center justify-center p-16 text-center bg-white dark:bg-[#111111] rounded-[24px] border border-dashed border-[#E9EDF4] dark:border-[#2A2E35]">
+                <p className="text-lg font-bold text-[#0F172A] dark:text-white mb-2 tracking-tight">No companies found.</p>
+                <p className="text-sm font-medium">Try adjusting your search or add a new company.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    }
+  ]
+
+  return (
+    <SuperAdminSidebarLayout 
+      tabs={tabs} 
+      initialTab={initialTab} 
+      adminName={adminName} 
+      webhookHealthy={webhookHealthy} 
+    />
   )
 }
 

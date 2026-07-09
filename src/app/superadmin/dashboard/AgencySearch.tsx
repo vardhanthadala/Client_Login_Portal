@@ -24,7 +24,7 @@ export default function AgencySearch() {
     <div className="relative w-full sm:w-64">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
       <Input 
-        placeholder="Search agencies..." 
+        placeholder="Search companies..." 
         className="pl-9 h-10 bg-white border-gray-200 shadow-sm rounded-lg"
         defaultValue={searchParams.get("q") || ""}
         onChange={handleSearch}

@@ -8,9 +8,12 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
-
     dangerouslyAllowSVG: true,
   },
+  experimental: {
+    turbopack: {
+      root: ".",
+    },
+  },
 };
-
 export default nextConfig;
