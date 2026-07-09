@@ -6,7 +6,11 @@ import bcrypt from "bcryptjs"
 // Force AUTH_SECRET so we don't need to restart the Next.js dev server
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn"
 
-
+if (process.env.VERCEL_URL) {
+  const host = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  process.env.NEXTAUTH_URL = `https://${host}`;
+  process.env.AUTH_URL = `https://${host}`;
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
