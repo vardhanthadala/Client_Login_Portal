@@ -10,10 +10,5 @@ const nextConfig: NextConfig = {
     ],
     dangerouslyAllowSVG: true,
   },
-  experimental: {
-    turbopack: {
-      root: ".",
-    },
-  },
 };
 export default nextConfig;
