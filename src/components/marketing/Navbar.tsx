@@ -50,19 +50,19 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             <a
               href="#features"
-              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+              className="text-[13px] font-medium text-black/60 uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
             >
               Features
             </a>
             <a
               href="#pricing"
-              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+              className="text-[13px] font-medium text-black/60 uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
             >
               Pricing
             </a>
             <a
               href="#faq"
-              className="text-[13px] font-black text-black uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
+              className="text-[13px] font-medium text-black/60 uppercase tracking-widest hover:text-[#27C93F] transition-colors duration-300"
             >
               FAQ
             </a>
@@ -101,9 +101,9 @@ export function Navbar() {
           className="fixed top-[88px] sm:top-[96px] left-4 right-4 bg-white border border-gray-200 rounded-2xl p-6 pointer-events-auto md:hidden z-50 shadow-sm"
         >
           <div className="flex flex-col gap-4">
-            <a href="#features" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">Features</a>
-            <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">Pricing</a>
-            <a href="#faq" onClick={() => setMobileOpen(false)} className="text-black hover:text-[#27C93F] text-lg font-black uppercase tracking-widest py-2">FAQ</a>
+            <a href="#features" onClick={() => setMobileOpen(false)} className="text-black/60 hover:text-[#27C93F] text-lg font-medium uppercase tracking-widest py-2">Features</a>
+            <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-black/60 hover:text-[#27C93F] text-lg font-medium uppercase tracking-widest py-2">Pricing</a>
+            <a href="#faq" onClick={() => setMobileOpen(false)} className="text-black/60 hover:text-[#27C93F] text-lg font-medium uppercase tracking-widest py-2">FAQ</a>
             <div className="pt-4 border-t-[3px] border-gray-100 flex flex-col gap-3">
               <Link
                 href="/login"
