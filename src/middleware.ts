@@ -2,8 +2,15 @@ import { getToken } from "next-auth/jwt"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
+  const useSecureCookies = process.env.NODE_ENV === "production" || process.env.VERCEL === "1" || req.url.startsWith("https://")
   
+  const token = await getToken({ 
+    req, 
+    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn",
+    secureCookie: useSecureCookies,
+    // In NextAuth v5, the cookie name was changed to authjs.session-token
+    cookieName: useSecureCookies ? "__Secure-authjs.session-token" : "authjs.session-token"
+  })
   const { nextUrl } = req
   const isLoggedIn = !!token
   const userRole = token?.role
