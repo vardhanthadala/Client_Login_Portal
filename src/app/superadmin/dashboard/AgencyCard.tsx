@@ -17,33 +17,35 @@ export default function AgencyCard({ tenant, isExpired }: { tenant: any, isExpir
       setOpen(val)
       if (!val) setTimeout(() => setActiveView('details'), 300)
     }}>
-      <DialogTrigger asChild>
-        <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 gap-3 relative transition-all duration-300">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
-            <div className="min-w-0 flex-1 relative z-10 flex items-center gap-4">
-              <div className="min-w-0">
-                <h3 className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A] dark:text-white truncate tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                  {tenant.name}
-                </h3>
-                <div className="mt-2 flex items-center">
-                  <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-mono bg-[#F8FAFC] dark:bg-[#1A1E24] border border-[#E2E8F0] dark:border-[#333] px-2 py-0.5 rounded-md">
-                    ID: {tenant.id.slice(0, 8)}...{tenant.id.slice(-6)}
-                  </p>
+      <DialogTrigger
+        render={
+          <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 gap-3 relative transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
+              <div className="min-w-0 flex-1 relative z-10 flex items-center gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A] dark:text-white truncate tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    {tenant.name}
+                  </h3>
+                  <div className="mt-2 flex items-center">
+                    <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-mono bg-[#F8FAFC] dark:bg-[#1A1E24] border border-[#E2E8F0] dark:border-[#333] px-2 py-0.5 rounded-md">
+                      ID: {tenant.id.slice(0, 8)}...{tenant.id.slice(-6)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-wrap items-center shrink-0 w-full sm:w-auto justify-start sm:justify-end gap-2 mt-2 sm:mt-0 relative z-10">
-              <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm ${isExpired ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'}`}>
-                {isExpired ? "Expired" : "Active"}
-              </span>
-              <span className="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 shadow-sm">
-                {tenant.subscriptionPlan.replace('_', ' ')}
-              </span>
+              <div className="flex flex-wrap items-center shrink-0 w-full sm:w-auto justify-start sm:justify-end gap-2 mt-2 sm:mt-0 relative z-10">
+                <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm ${isExpired ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'}`}>
+                  {isExpired ? "Expired" : "Active"}
+                </span>
+                <span className="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 shadow-sm">
+                  {tenant.subscriptionPlan.replace('_', ' ')}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </DialogTrigger>
+        }
+      />
 
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] bg-white dark:bg-[#111111] shadow-[0_20px_60px_rgba(0,0,0,0.12)] p-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="p-6 sm:p-8 border-b border-[#F1F5F9] dark:border-[#222] bg-slate-50/50 dark:bg-[#161B22]/50 relative overflow-hidden rounded-t-[24px]">
