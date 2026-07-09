@@ -70,31 +70,31 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
       id: "overview",
       label: "Overview",
       content: (
-        <FadeInStagger className="flex flex-col gap-6">
+        <FadeInStagger className="flex flex-col gap-4 sm:gap-6 overflow-hidden">
           {/* Quick Actions Row */}
-          <FadeInItem className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="flex items-center justify-between p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group">
+          <FadeInItem className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
               <div className="flex items-center gap-3">
                 <Upload className="w-[18px] h-[18px] text-[#10B981]" />
                 <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Upload Assets</span>
               </div>
               <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
             </button>
-            <button className="flex items-center justify-between p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group">
+            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
               <div className="flex items-center gap-3">
                 <Folder className="w-[18px] h-[18px] text-[#10B981]" />
                 <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">View Projects</span>
               </div>
               <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
             </button>
-            <button className="flex items-center justify-between p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group">
+            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
               <div className="flex items-center gap-3">
                 <MessageSquare className="w-[18px] h-[18px] text-[#10B981]" />
                 <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Contact Agency</span>
               </div>
               <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
             </button>
-            <button className="flex items-center justify-between p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group">
+            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
               <div className="flex items-center gap-3">
                 <Calendar className="w-[18px] h-[18px] text-[#10B981]" />
                 <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Schedule Call</span>
@@ -107,40 +107,40 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
             {/* Business Profile Card */}
             <FadeInItem>
             <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-sm flex flex-col h-full">
-              <CardHeader className="pb-4 px-8 pt-7 flex flex-row items-center justify-between border-b border-[#F1F5F9] dark:border-[#222]">
+              <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 flex flex-row items-center justify-between border-b border-[#F1F5F9] dark:border-[#222]">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#10B981]/10 flex items-center justify-center shrink-0">
                     <Building2 className="w-6 h-6 text-[#10B981]" />
                   </div>
-                  <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white">Your Business Profile</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-sans font-bold text-[#0F172A] dark:text-white">Your Business Profile</CardTitle>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#10B981]/10 text-[#10B981] text-[12px] font-bold tracking-wide">
                   <Check className="w-3.5 h-3.5" /> Verified
                 </div>
               </CardHeader>
               <CardContent className="p-0 flex-1 flex flex-col">
-                <div className="p-6 sm:p-8 border-b border-[#F1F5F9] dark:border-[#222]">
+                <div className="p-4 sm:p-6 md:p-8 border-b border-[#F1F5F9] dark:border-[#222] min-w-0">
                   <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">COMPANY NAME</p>
-                  <p className="text-xl font-sans font-bold text-[#0F172A] dark:text-white">{clientProfile.companyName}</p>
+                  <p className="text-xl font-sans font-bold text-[#0F172A] dark:text-white truncate">{clientProfile.companyName}</p>
                 </div>
-                <div className="grid grid-cols-2 flex-1">
-                  <div className="p-6 sm:p-8 border-r border-b border-[#F1F5F9] dark:border-[#222]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 flex-1">
+                  <div className="p-4 sm:p-6 md:p-8 sm:border-r border-b border-[#F1F5F9] dark:border-[#222] min-w-0">
                     <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">INDUSTRY</p>
-                    <p className="text-[14px] font-medium text-[#0F172A] dark:text-white">{clientProfile.industry || "Technology"}</p>
+                    <p className="text-[14px] font-medium text-[#0F172A] dark:text-white truncate">{clientProfile.industry || "Technology"}</p>
                   </div>
-                  <div className="p-6 sm:p-8 border-b border-[#F1F5F9] dark:border-[#222]">
+                  <div className="p-4 sm:p-6 md:p-8 border-b border-[#F1F5F9] dark:border-[#222] min-w-0 flex flex-col">
                     <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">WEBSITE</p>
-                    <a href={clientProfile.website || "#"} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-[#10B981] hover:underline">
+                    <a href={clientProfile.website || "#"} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-[#10B981] hover:underline truncate block">
                       {clientProfile.website?.replace(/^https?:\/\//, '') || "vardhanit.com"}
                     </a>
                   </div>
-                  <div className="p-6 sm:p-8 border-r border-[#F1F5F9] dark:border-[#222]">
+                  <div className="p-4 sm:p-6 md:p-8 sm:border-r border-[#F1F5F9] dark:border-[#222]">
                     <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">MEMBER SINCE</p>
                     <p className="text-[14px] font-medium text-[#0F172A] dark:text-white">
                       {new Date(clientProfile.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  <div className="p-6 sm:p-8">
+                  <div className="p-4 sm:p-6 md:p-8">
                     <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">STATUS</p>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
@@ -155,13 +155,13 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
           {/* Upload Assets Card */}
           <FadeInItem>
             <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 dark:hover:border-[#10B981]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] overflow-hidden flex flex-col h-full">
-            <CardHeader className="pb-4 px-8 pt-7 bg-white dark:bg-[#111111] border-b border-[#F1F5F9] dark:border-[#222]">
+            <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 bg-white dark:bg-[#111111] border-b border-[#F1F5F9] dark:border-[#222]">
               <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white">Upload New Assets</CardTitle>
               <CardDescription className="mt-2 text-[#64748B] dark:text-[#94A3B8]">
                 Need to send us a new logo, document, or brand guideline? Upload it here anytime.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <ClientUploader />
               </CardContent>
             </Card>
@@ -170,7 +170,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
           {/* Uploaded Files Card */}
           <FadeInItem className="md:col-span-2">
             <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-sm flex flex-col overflow-hidden min-w-0">
-            <CardHeader className="pb-4 px-8 pt-7 border-b border-[#F1F5F9] dark:border-[#222] flex flex-row items-center justify-between">
+            <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 border-b border-[#F1F5F9] dark:border-[#222] flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-[#10B981]/10 flex items-center justify-center shrink-0">
@@ -184,7 +184,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                 View All Files <ChevronRight className="w-4 h-4" />
               </button>
             </CardHeader>
-            <CardContent className="p-6 flex-1 flex flex-col">
+            <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
               {clientProfile.brandAssets.length > 0 ? (
                 <ul className="flex flex-col gap-0">
                   {clientProfile.brandAssets.map((asset: any, i: number) => (
@@ -217,7 +217,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                         <span className="text-[14px] font-medium text-[#0F172A] dark:text-white">{new Date(asset.createdAt).toLocaleDateString()}</span>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                         <a href={asset.fileUrl} target="_blank" rel="noreferrer">
                           <Button variant="outline" size="sm" className="h-9 px-4 rounded-lg border-[#E2E8F0] dark:border-[#333] bg-transparent hover:bg-white dark:hover:bg-[#222] text-[#0F172A] dark:text-white transition-colors text-[13px] font-semibold">
                             <ExternalLink className="w-3.5 h-3.5 mr-2" /> View

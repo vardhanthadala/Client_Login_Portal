@@ -114,9 +114,9 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
           <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8]">Review and approve files shared by your agency.</p>
         </div>
         
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:flex-wrap gap-4 w-full xl:w-auto">
           {/* Total Files */}
-          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-8">
+          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-4 sm:pr-8 w-full sm:w-auto">
             <div className="bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-xl p-2.5">
               <FileText className="w-5 h-5" />
             </div>
@@ -129,7 +129,7 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
             </div>
           </div>
           {/* Pending Review */}
-          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-8">
+          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-4 sm:pr-8 w-full sm:w-auto">
             <div className="bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-xl p-2.5">
               <AlertTriangle className="w-5 h-5" />
             </div>
@@ -142,7 +142,7 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
             </div>
           </div>
           {/* Approved */}
-          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-8">
+          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-4 sm:pr-8 w-full sm:w-auto">
             <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 rounded-xl p-2.5">
               <CheckCircle2 className="w-5 h-5" />
             </div>
@@ -155,7 +155,7 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
             </div>
           </div>
           {/* Avg Turnaround */}
-          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-8">
+          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-[#E2E8F0] dark:border-[#222] p-3 flex items-center gap-3 pr-4 sm:pr-8 w-full sm:w-auto">
             <div className="bg-slate-50 dark:bg-slate-800 text-slate-500 rounded-xl p-2.5">
               <Clock className="w-5 h-5" />
             </div>
@@ -168,8 +168,8 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-        <button className="flex items-center gap-2 bg-white dark:bg-[#111] border border-[#E2E8F0] dark:border-[#222] rounded-full px-4 py-2 shadow-sm text-[#0F172A] dark:text-white text-[13px] font-bold transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 overflow-hidden">
+        <button className="flex items-center gap-2 bg-white dark:bg-[#111] border border-[#E2E8F0] dark:border-[#222] rounded-full px-4 py-2 shadow-sm text-[#0F172A] dark:text-white text-[13px] font-bold transition-colors w-max">
           <LayoutGrid className="w-4 h-4 text-emerald-500" />
           All Files
           <span className="bg-slate-100 dark:bg-[#333] text-[#64748B] dark:text-[#888] px-2 py-0.5 rounded-full text-[11px]">{totalFiles}</span>

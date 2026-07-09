@@ -28,7 +28,7 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="bg-white dark:bg-[#17191D] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[20px] p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-none transition-all duration-250 hover:-translate-y-1 hover:border-[#E2E8F0] dark:hover:border-[#333] group overflow-hidden">
+      <div className="bg-white dark:bg-[#17191D] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[20px] p-4 sm:p-6 md:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-none transition-all duration-250 hover:-translate-y-1 hover:border-[#E2E8F0] dark:hover:border-[#333] group">
         
         {/* Top Row */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-12">
@@ -73,7 +73,8 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
         </div>
 
         {/* Timeline */}
-        <div className="relative min-w-[600px] overflow-x-auto pb-4 hidden-scrollbar">
+        <div className="relative overflow-x-auto pb-4 hidden-scrollbar">
+        <div className="relative min-w-[600px]">
           {/* Lines Container */}
           <div className="absolute top-5 left-14 right-14 h-[2px]">
             {/* Base Background Line */}
@@ -139,10 +140,11 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
             })}
           </div>
         </div>
+        </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         <div className="bg-white dark:bg-[#17191D] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[20px] p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
           <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <ImageIcon className="w-5 h-5 text-blue-500" />

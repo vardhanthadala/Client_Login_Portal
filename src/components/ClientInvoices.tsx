@@ -318,7 +318,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
       </div>
 
       {/* Billing Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[
           { label: "Total Paid", value: `₹${totalPaid.toLocaleString()}`, subtext: "Lifetime", icon: Wallet, color: "text-green-500", bg: "bg-green-500/10" },
           { label: "Pending", value: `₹${totalPending.toLocaleString()}`, subtext: `${pendingInvoices.length} invoices`, icon: HandCoins, color: "text-orange-500", bg: "bg-orange-500/10" },
@@ -356,21 +356,21 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
             >
               
               {/* Left Info */}
-              <div className="flex items-start gap-6 flex-1">
-                <div className="w-[52px] h-[52px] rounded-2xl bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center shrink-0 shadow-inner group-hover:rotate-3 transition-transform duration-300">
-                  <WalletCards className={`w-6 h-6 ${isPending ? 'text-orange-500' : 'text-[#64748B] dark:text-[#888]'}`} />
+              <div className="flex items-start gap-4 sm:gap-6 flex-1 min-w-0">
+                <div className="w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-2xl bg-[#F8FAFC] dark:bg-[#171717] border border-[#E2E8F0] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center shrink-0 shadow-inner group-hover:rotate-3 transition-transform duration-300">
+                  <WalletCards className={`w-5 h-5 sm:w-6 sm:h-6 ${isPending ? 'text-orange-500' : 'text-[#64748B] dark:text-[#888]'}`} />
                 </div>
                 
-                <div className="flex flex-col">
-                  <div className="flex flex-wrap items-center gap-3 mb-2">
-                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white tracking-tight">{invoice.title}</h3>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                    <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white tracking-tight truncate max-w-full">{invoice.title}</h3>
                     <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold border backdrop-blur-md ${config.className}`}>
                       <StatusIcon className="w-3.5 h-3.5" />
                       {config.label}
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-4 text-[13px] font-medium text-[#64748B] dark:text-[#888] mb-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] sm:text-[13px] font-medium text-[#64748B] dark:text-[#888] mb-3">
                     <div className="flex items-center gap-1.5">
                       <ReceiptText className="w-3.5 h-3.5" />
                       <span>INV-{invoice.id.substring(0,8).toUpperCase()}</span>
@@ -379,7 +379,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
                     <span>{new Date(invoice.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                     {invoice.dueDate && (
                       <>
-                        <span className="w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333]" />
+                        <span className="hidden sm:block w-1 h-1 rounded-full bg-[#CBD5E1] dark:bg-[#333]" />
                         <span className={invoice.status === "OVERDUE" ? "text-red-500 font-bold" : ""}>
                           Due: {new Date(invoice.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>

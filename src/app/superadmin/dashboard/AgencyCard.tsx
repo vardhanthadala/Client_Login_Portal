@@ -18,6 +18,7 @@ export default function AgencyCard({ tenant, isExpired }: { tenant: any, isExpir
       if (!val) setTimeout(() => setActiveView('details'), 300)
     }}>
       <DialogTrigger
+        nativeButton={false}
         render={
           <button className="w-full bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 gap-3 relative transition-all duration-300">

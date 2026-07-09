@@ -64,7 +64,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans overflow-hidden bg-[#F4F7FB]">
-      <div className="relative z-10 w-full max-w-[1000px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex overflow-hidden min-h-[600px]">
+      <div className="relative z-10 w-full max-w-[480px] lg:max-w-[1000px] bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex overflow-hidden min-h-[600px]">
         
         {/* Left Side - Form Area */}
         <div className="w-full lg:w-1/2 p-10 sm:p-14 flex flex-col justify-center relative">

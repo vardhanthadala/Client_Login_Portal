@@ -91,7 +91,7 @@ export default function ClientUploader() {
             disabled={isUploading}
           />
           <div 
-            className={`border-2 border-dashed rounded-[24px] p-10 flex flex-col items-center justify-center transition-all duration-300 w-full relative overflow-hidden ${
+            className={`border-2 border-dashed rounded-[24px] p-6 sm:p-10 flex flex-col items-center justify-center transition-all duration-300 w-full relative overflow-hidden text-center ${
               isUploading 
                 ? 'bg-[#F8FAFC] dark:bg-[#111] border-[#E2E8F0] dark:border-[#333]' 
                 : isDragging 
@@ -102,13 +102,13 @@ export default function ClientUploader() {
             <div className={`mb-3 transition-transform duration-500 ${!isDragging && !isUploading ? 'animate-[pulse_4s_ease-in-out_infinite]' : ''}`}>
               <UploadCloud className={`h-8 w-8 ${isDragging ? 'text-[#10B981] animate-bounce' : 'text-[#10B981]'}`} />
             </div>
-            <p className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1.5">
+            <p className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1.5 break-words max-w-full">
               Drag & drop your files here
             </p>
-            <p className="text-[13px] text-[#64748B] dark:text-[#888] mb-6">
+            <p className="text-[13px] text-[#64748B] dark:text-[#888] mb-6 break-words max-w-full">
               or click to browse
             </p>
-            <p className="text-[11px] text-[#64748B] dark:text-[#666]">
+            <p className="text-[11px] text-[#64748B] dark:text-[#666] break-words max-w-full">
               Supported formats: PNG, JPG, PDF, SVG, AI, DOCX
             </p>
           </div>

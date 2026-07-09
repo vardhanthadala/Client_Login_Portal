@@ -102,7 +102,7 @@ export default function ChatInterface({
       </div>
 
       {/* Chat Header */}
-      <div className="h-[88px] shrink-0 px-8 flex items-center bg-transparent z-10 border-b border-[#CBD5E1] dark:border-[#333]">
+      <div className="h-[72px] sm:h-[88px] shrink-0 px-4 sm:px-8 flex items-center bg-transparent z-10 border-b border-[#CBD5E1] dark:border-[#333]">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 font-bold text-xl">
             D
@@ -114,7 +114,7 @@ export default function ChatInterface({
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto hidden-scrollbar px-8 py-6 space-y-6 z-10 bg-transparent">
+      <div className="flex-1 overflow-y-auto hidden-scrollbar px-4 sm:px-8 py-4 sm:py-6 space-y-6 z-10 bg-transparent">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-500/50" />
@@ -164,7 +164,7 @@ export default function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="p-6 bg-transparent z-10 shrink-0 relative">
+      <div className="p-3 sm:p-6 bg-transparent z-10 shrink-0 relative">
         
         {/* Attachment Pill Preview */}
         {attachedFile && (
@@ -184,7 +184,7 @@ export default function ChatInterface({
 
         {/* Emoji Picker */}
         {showEmojiPicker && (
-          <div className="absolute bottom-[80px] right-24 z-20 shadow-xl rounded-xl animate-in fade-in slide-in-from-bottom-2">
+          <div className="absolute bottom-[80px] right-4 sm:right-24 z-20 shadow-xl rounded-xl animate-in fade-in slide-in-from-bottom-2">
             <EmojiPicker onEmojiClick={onEmojiClick} />
           </div>
         )}
@@ -199,12 +199,12 @@ export default function ChatInterface({
           <button 
             type="button" 
             onClick={() => fileInputRef.current?.click()}
-            className="w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-[#94A3B8] hover:bg-slate-50 transition-colors"
+            className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-full flex items-center justify-center text-[#94A3B8] hover:bg-slate-50 transition-colors"
           >
             <Paperclip className="w-5 h-5" />
           </button>
           
-          <div className="flex-1 flex items-center bg-white dark:bg-[#111] border border-[#CBD5E1] dark:border-[#475569] rounded-full pr-2 pl-6 h-14 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500/30 transition-all">
+          <div className="flex-1 flex items-center bg-white dark:bg-[#111] border border-[#CBD5E1] dark:border-[#475569] rounded-full pr-2 pl-4 sm:pl-6 h-12 sm:h-14 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500/30 transition-all">
             <input
               type="text"
               value={content}
@@ -225,7 +225,7 @@ export default function ChatInterface({
           <Button
             type="submit"
             size="icon"
-            className={`rounded-full shrink-0 w-14 h-14 transition-all duration-300 ${!content.trim() && !attachedFile ? 'bg-[#E2E8F0] text-[#94A3B8]' : 'bg-[#0F172A] hover:bg-[#1E293B] text-white shadow-md'}`}
+            className={`rounded-full shrink-0 w-12 h-12 sm:w-14 sm:h-14 transition-all duration-300 ${!content.trim() && !attachedFile ? 'bg-[#E2E8F0] text-[#94A3B8]' : 'bg-[#0F172A] hover:bg-[#1E293B] text-white shadow-md'}`}
             disabled={(!content.trim() && !attachedFile) || isSending}
           >
             {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 text-emerald-400 -ml-0.5 mt-0.5" />}
