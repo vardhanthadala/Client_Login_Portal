@@ -38,7 +38,7 @@ export function Pricing() {
             Premium Subscriptions
           </span>
         </div>
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111111] mb-6 whitespace-nowrap">
+        <h2 className="text-[clamp(2rem,6vw,3.75rem)] sm:whitespace-nowrap font-black tracking-tight text-[#111111] mb-6">
           World-Class Design, <span className="text-[#27C93F]">Flexible Terms</span>
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -78,7 +78,7 @@ export function Pricing() {
         {/* Monthly Plan (Sticky) */}
         <motion.div 
           style={{ scale: standardScale, opacity: standardOpacity }}
-          className="sticky top-[100px] sm:top-[120px] z-0 w-full transform-gpu"
+          className="md:sticky md:top-[120px] z-0 w-full transform-gpu"
         >
           <div className="w-full bg-[#F5F5F5] rounded-[24px] sm:rounded-[32px] p-8 sm:p-12 flex flex-col md:flex-row gap-12 md:gap-8 shadow-2xl border border-white/50">
             
@@ -108,7 +108,7 @@ export function Pricing() {
             <div className="flex-[0.8] flex flex-col items-center justify-center">
               <span className="text-gray-600 font-medium mb-4 text-center">Pay monthly, cancel anytime</span>
               <div className="flex items-baseline gap-x-2 mb-8">
-                <span className="text-5xl sm:text-6xl font-black tracking-tight text-black">
+                <span className="text-[clamp(2.5rem,8vw,3.75rem)] font-black tracking-tight text-black">
                   {currency === 'INR' ? '₹2500' : '$99'}
                 </span>
                 <span className="text-sm font-bold text-gray-500">/month</span>
@@ -125,8 +125,8 @@ export function Pricing() {
           </div>
         </motion.div>
 
-        {/* Yearly Plan (Also Sticky so it perfectly locks on top of the standard plan) */}
-        <div className="sticky top-[100px] sm:top-[120px] z-10 w-full mt-[30vh] sm:mt-[40vh]">
+        {/* Yearly Plan (Also Sticky on md+ so it perfectly locks on top of the standard plan) */}
+        <div className="md:sticky md:top-[120px] z-10 w-full mt-12 md:mt-[40vh]">
           <div className="w-full rounded-[24px] sm:rounded-[32px] p-8 sm:p-12 flex flex-col md:flex-row gap-12 md:gap-8 shadow-[0_-20px_40px_rgba(0,0,0,0.3)] relative overflow-hidden border border-gray-800 bg-black">
             
             {/* Vertical Blue Aurora / Ribbed Curtain Backdrop */}
@@ -178,7 +178,7 @@ export function Pricing() {
             <div className="flex-[0.8] flex flex-col items-center justify-center relative z-10">
               <span className="text-gray-400 font-medium mb-4 text-center">Pay yearly, cancel anytime</span>
               <div className="flex items-baseline gap-x-2 mb-8">
-                <span className="text-5xl sm:text-6xl font-black tracking-tight text-white">
+                <span className="text-[clamp(2.5rem,8vw,3.75rem)] font-black tracking-tight text-white">
                   {currency === 'INR' ? '₹21000' : '$990'}
                 </span>
                 <span className="text-sm font-bold text-gray-400">/year</span>

@@ -51,7 +51,7 @@ export function FooterCTA() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl sm:text-4xl md:text-5xl leading-[1.1] font-serif tracking-tight text-white mb-8 sm:mb-10"
+            className="text-[clamp(2rem,6vw,3rem)] leading-[1.1] font-serif tracking-tight text-white mb-8 sm:mb-10"
           >
           Bring clarity, structure, and speed to your client portals
         </motion.h2>

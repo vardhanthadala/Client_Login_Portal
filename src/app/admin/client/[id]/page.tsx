@@ -14,6 +14,7 @@ import ManageApprovals from "./ManageApprovals"
 import ManageInvoices from "./ManageInvoices"
 import GenerateAiButton from "./GenerateAiButton"
 import ResetPasswordButton from "./ResetPasswordButton"
+import AdminMessagesTabBadge from "@/components/admin/AdminMessagesTabBadge"
 import AdminSidebarLayout from "../../dashboard/AdminSidebarLayout"
 import { getToken } from "next-auth/jwt"
 import { cookies, headers } from "next/headers"
@@ -165,13 +166,14 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
               <Link
                 key={tab.id}
                 href={`/admin/client/${id}?tab=${tab.id}`}
-                className={`px-4 py-3 text-[14px] font-semibold transition-all relative whitespace-nowrap ${
+                className={`px-4 py-3 text-[14px] font-semibold transition-all relative whitespace-nowrap flex items-center ${
                   isActive
                     ? "text-[#22C55E]"
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-black/5 dark:hover:bg-white/5 rounded-t-lg"
                 }`}
               >
                 {tab.label}
+                {tab.id === "messages" && <AdminMessagesTabBadge clientId={id} />}
                 {isActive && (
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#22C55E] rounded-t-full" />
                 )}

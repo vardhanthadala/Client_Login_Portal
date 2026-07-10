@@ -9,6 +9,7 @@ import { useTheme } from "@/components/ThemeProvider"
 import { Moon, Sun, Menu, ChevronDown, LayoutDashboard, Users, Settings, LifeBuoy, Clock, Building2, Calendar, ShieldCheck, Bell } from "lucide-react"
 import SignOutButton from "./SignOutButton"
 import Link from "next/link"
+import { useNotificationsStore } from "@/store/notificationsStore"
 
 export interface TabData {
   id: string;
@@ -39,6 +40,11 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false)
   
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
+
+  // Use global notifications store for the bell icon
+  const notifications = useNotificationsStore(state => state.notifications)
+  const unreadCount = notifications.filter(n => !n.isRead).length
+
   
   // Sync state with props to handle Next.js navigations (e.g. clicking Links)
   useEffect(() => {
@@ -209,8 +215,13 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
                   icon={Bell} 
                   iconClassName={(activeTab === "notifications" && !pathname.includes("/admin/client")) ? "text-[#22C55E]" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
                 />
-                <span className="flex-1 truncate relative z-10">
-                  Notifications
+                <span className="flex-1 truncate relative z-10 flex items-center justify-between pr-2">
+                  <span>Notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#171A21]">
+                      {unreadCount}
+                    </span>
+                  )}
                 </span>
                 
                 {/* Active Indicator Line */}
@@ -344,6 +355,17 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, childr
               {children || activeTabData?.content}
             </motion.div>
           </AnimatePresence>
+          
+          {/* Render hidden tabs to ensure their Client Components (like NotificationSync) are mounted and receive RSC updates */}
+          {!children && (
+            <div style={{ display: 'none' }}>
+              {tabs.map(tab => (
+                <div key={tab.id}>
+                  {tab.id !== activeTab && tab.content}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

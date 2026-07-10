@@ -57,9 +57,9 @@ export default function Home() {
                 
                 {/* Contact Info */}
                 <div className="text-gray-300 space-y-4 text-[14px] font-medium tracking-wide mt-2">
-                  <p>9 Pearse Street. Kinsale<br/>York, China</p>
-                  <p>info@dexze.com</p>
-                  <p>(+12) 808 130 1190</p>
+                  <p>Hyderabad, Telangana<br/>India</p>
+                  <p>hello@dexze.com</p>
+                  <p>+91 8886669630</p>
                 </div>
               </div>
   
@@ -116,7 +116,7 @@ export default function Home() {
   
           {/* Massive Typography - Scaled down for boxed format */}
           <div className="w-full overflow-hidden select-none relative mt-4">
-            <h1 className="text-[clamp(6rem,16vw,20rem)] font-bold text-[#2A2A2A] whitespace-nowrap leading-[0.75] tracking-tighter text-center ml-[-2%] mr-[-2%]">
+            <h1 className="text-[clamp(3.5rem,14vw,20rem)] font-bold text-[#2A2A2A] whitespace-nowrap leading-[0.75] tracking-tighter text-center ml-[-2%] mr-[-2%]">
               dexze.-dexze
             </h1>
           </div>

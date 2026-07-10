@@ -128,7 +128,7 @@ export function CheckoutModal({ triggerClassName, buttonText }: { triggerClassNa
       <DialogTrigger className={triggerClassName || "bg-[#5A52FF] hover:bg-blue-700 text-white font-bold py-6 px-8 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"}>
         {buttonText || "Purchase Subscription"}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] p-8 rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">
+      <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[400px] p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">
         {success ? (
           <div className="flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-6 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center relative">
@@ -194,20 +194,20 @@ export function CheckoutModal({ triggerClassName, buttonText }: { triggerClassNa
               )}
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 w-full mt-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full mt-4">
                 <Button 
                   type="button"
                   variant="outline"
                   onClick={() => setOpen(false)}
                   disabled={loading}
-                  className="flex-1 rounded-[16px] h-12 text-[15px] font-semibold border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]"
+                  className="w-full sm:flex-1 rounded-[16px] h-12 text-[15px] font-semibold border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A]"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="flex-1 rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors"
+                  className="w-full sm:flex-1 rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors"
                 >
                   {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Pay & Register"}
                 </Button>

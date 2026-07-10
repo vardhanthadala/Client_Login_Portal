@@ -110,7 +110,7 @@ export default function StorageUsageWidget() {
       <CardHeader className="pb-2 border-b border-[#F1F5F9] dark:border-[#222]">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-2xl font-sans font-bold text-[#0F172A] dark:text-white flex items-center gap-2 tracking-tight">
+            <CardTitle className="text-lg font-sans font-bold text-[#0F172A] dark:text-white flex items-center gap-2 tracking-tight">
               <div className="w-8 h-8 rounded-lg bg-[#22C55E]/10 flex items-center justify-center">
                 <Cloud className="w-4 h-4 text-[#22C55E]" />
               </div>
@@ -121,7 +121,7 @@ export default function StorageUsageWidget() {
             </CardDescription>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight">{formatBytes(data.totalBytes)}</div>
+            <div className="text-2xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight">{formatBytes(data.totalBytes)}</div>
             <div className="text-[12px] text-[#64748B] dark:text-[#888] font-bold uppercase tracking-wider mt-0.5">Space Used</div>
           </div>
         </div>

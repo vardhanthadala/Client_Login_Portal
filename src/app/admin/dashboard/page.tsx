@@ -176,7 +176,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
               <div key={i} className={`${stat.cardBg} border border-[#0F172A]/5 dark:border-white/5 rounded-[24px] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] hover:-translate-y-1 transition-all duration-300 group`} style={{ animationDelay: `${i * 80}ms` }}>
                 <PremiumIcon icon={stat.icon} className="mb-4 group-hover:scale-110 transition-transform duration-300" />
                 <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1">{stat.label}</p>
-                <h3 className="text-[28px] font-sans font-[650] text-[#0F172A] dark:text-white tabular-nums tracking-tight mb-1">{stat.value}</h3>
+                <h3 className="text-xl font-sans font-[650] text-[#0F172A] dark:text-white tabular-nums tracking-tight mb-1">{stat.value}</h3>
                 <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">{stat.subtext}</p>
               </div>
             ))}
@@ -200,7 +200,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
             <div>
-              <h2 className="text-[28px] font-[650] text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
+              <h2 className="text-2xl font-[650] text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
               <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
             </div>
             <div className="w-full sm:w-auto shrink-0 flex justify-end">

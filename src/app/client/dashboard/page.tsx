@@ -50,7 +50,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
       projects: { orderBy: { createdAt: 'asc' } },
       messages: {
         where: { isRead: false },
-        select: { id: true, senderId: true }
+        orderBy: { createdAt: 'desc' }
       },
       approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } },
       invoices: { include: { items: true }, orderBy: { createdAt: "desc" } }
@@ -153,8 +153,8 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
           </FadeInItem>
 
           {/* Upload Assets Card */}
-          <FadeInItem>
-            <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 dark:hover:border-[#10B981]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] overflow-hidden flex flex-col h-full">
+          <FadeInItem className="min-w-0">
+            <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 dark:hover:border-[#10B981]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] overflow-hidden flex flex-col h-full min-w-0">
             <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 bg-white dark:bg-[#111111] border-b border-[#F1F5F9] dark:border-[#222]">
               <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white">Upload New Assets</CardTitle>
               <CardDescription className="mt-2 text-[#64748B] dark:text-[#94A3B8]">

@@ -41,7 +41,7 @@ export function FAQ() {
         {/* Header Section */}
         <div className="text-center mb-16 sm:mb-20">
           <p className="text-sm font-semibold text-gray-500 mb-4 uppercase tracking-wider">(FAQs)</p>
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-black mb-4">
+          <h2 className="text-[clamp(2.5rem,8vw,4.5rem)] font-black tracking-tight text-black mb-4">
             Why <span className="text-[#27C93F]">Dexze</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 font-medium">

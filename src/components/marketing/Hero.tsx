@@ -49,7 +49,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1] mb-6 lg:mb-8"
+              className="text-[clamp(2.25rem,6vw,3rem)] font-bold tracking-tight text-white leading-[1.1] mb-6 lg:mb-8"
             >
               Stop Chasing<br />Clients. Start<br /><span className="text-[#27C93F]">Scaling.</span>
             </motion.h1>
@@ -58,7 +58,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-base sm:text-lg text-white/60 mb-10 leading-relaxed max-w-lg"
+              className="text-[clamp(1rem,2.5vw,1.125rem)] text-white/60 mb-10 leading-relaxed max-w-lg"
             >
               Speed up your agency workflow with our ultimate client portal. Enjoy high-quality, customizable dashboards for a seamless, stunning user experience.
             </motion.p>
@@ -92,19 +92,19 @@ export function Hero() {
             
             <div className="relative z-10 flex flex-wrap gap-x-8 gap-y-6 lg:gap-x-12">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={50} delay={0.4} suffix="+" /></div>
+                <div className="text-[clamp(1.875rem,5vw,2.25rem)] font-bold text-gray-900 mb-1"><CountUp from={0} to={50} delay={0.4} suffix="+" /></div>
                 <div className="text-xs sm:text-sm font-medium text-gray-400">Agencies</div>
               </motion.div>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={100} delay={0.5} suffix="%" /></div>
+                <div className="text-[clamp(1.875rem,5vw,2.25rem)] font-bold text-gray-900 mb-1"><CountUp from={0} to={100} delay={0.5} suffix="%" /></div>
                 <div className="text-xs sm:text-sm font-medium text-gray-400">White-label</div>
               </motion.div>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">Zero</div>
+                <div className="text-[clamp(1.875rem,5vw,2.25rem)] font-bold text-gray-900 mb-1">Zero</div>
                 <div className="text-xs sm:text-sm font-medium text-gray-400">Code Needed</div>
               </motion.div>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1"><CountUp from={0} to={24} delay={0.7} suffix="/7" /></div>
+                <div className="text-[clamp(1.875rem,5vw,2.25rem)] font-bold text-gray-900 mb-1"><CountUp from={0} to={24} delay={0.7} suffix="/7" /></div>
                 <div className="text-xs sm:text-sm font-medium text-gray-400">Support</div>
               </motion.div>
             </div>
@@ -113,7 +113,7 @@ export function Hero() {
         </div>
 
         {/* Right Column (Lanyard Container) */}
-        <div className="w-full md:w-[45%] relative h-[400px] md:h-auto rounded-[40px] md:rounded-tl-none md:rounded-bl-[40px] md:rounded-tr-[40px] md:rounded-br-[40px] overflow-hidden mt-8 md:mt-0 flex items-center justify-center bg-[#020611]">
+        <div className="hidden md:flex w-full md:w-[45%] relative h-[400px] md:h-auto rounded-[40px] md:rounded-tl-none md:rounded-bl-[40px] md:rounded-tr-[40px] md:rounded-br-[40px] overflow-hidden mt-8 md:mt-0 items-center justify-center bg-[#020611]">
           {/* Flexbox sub-pixel gap patch */}
           <div className="hidden md:block absolute top-0 bottom-0 -left-[1px] w-[2px] bg-[#020611] z-20" />
           <Lanyard 

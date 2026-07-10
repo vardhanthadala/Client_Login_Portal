@@ -79,7 +79,7 @@ export default function AdminAnalyticsCharts({ data }: { data: ChartData[] }) {
       {/* Premium Earnings Bar Chart */}
       <Card className="bg-[#2B9883] dark:bg-[#2B9883] border-none rounded-[24px] shadow-[0_20px_60px_rgba(43,152,131,0.25)] min-w-0">
         <CardHeader className="pb-0 px-6 pt-6 sm:px-8 sm:pt-8 border-b-0">
-          <CardTitle className="text-[28px] font-sans font-[650] text-white tracking-tight">Earnings Over Time</CardTitle>
+          <CardTitle className="text-2xl font-sans font-[650] text-white tracking-tight">Earnings Over Time</CardTitle>
           <CardDescription className="text-[15px] text-white/80 font-medium mt-1 mb-2">Monthly revenue breakdown.</CardDescription>
         </CardHeader>
         <CardContent className="p-6 sm:p-8 pt-6">
@@ -137,7 +137,7 @@ export default function AdminAnalyticsCharts({ data }: { data: ChartData[] }) {
       {/* Premium Client Growth Area Chart */}
       <Card className="bg-[#FFFFFF] dark:bg-[#171A21] border border-[#0F172A]/5 dark:border-white/5 rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] min-w-0">
         <CardHeader className="pb-0 px-6 pt-6 sm:px-8 sm:pt-8 border-b-0">
-          <CardTitle className="text-[28px] font-sans font-[650] text-[#0F172A] dark:text-white tracking-tight">Client Growth</CardTitle>
+          <CardTitle className="text-2xl font-sans font-[650] text-[#0F172A] dark:text-white tracking-tight">Client Growth</CardTitle>
           <CardDescription className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1 mb-2">New onboarded clients over time.</CardDescription>
         </CardHeader>
         <CardContent className="p-6 sm:p-8 pt-6">

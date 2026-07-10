@@ -51,7 +51,7 @@ export function LogoMarquee() {
   }, [])
 
   return (
-    <section className="relative py-24 sm:py-32 bg-[#FAFAFA] overflow-hidden border-y border-gray-100">
+    <section className="hidden md:block relative py-24 sm:py-32 bg-[#FAFAFA] overflow-hidden border-y border-gray-100">
       
       {/* Subtle background particles */}
       <div className="absolute inset-0 pointer-events-none opacity-60">
@@ -78,7 +78,7 @@ export function LogoMarquee() {
         </div>
         
         {/* Main Heading */}
-        <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-center text-black tracking-tight max-w-[900px] leading-[1.05] mb-20 md:mb-32">
+        <h2 className="text-[clamp(1.5rem,4.5vw,3rem)] font-black text-center text-black tracking-tight max-w-[900px] leading-[1.05] mb-20 md:mb-32">
           Trusted by the teams building the <span className="text-[#27C93F]">world&apos;s best brands.</span>
         </h2>
 
@@ -100,7 +100,7 @@ export function LogoMarquee() {
               width={320}
               height={320}
               priority
-              className="w-40 h-40 md:w-56 md:h-56 lg:w-[320px] lg:h-[320px] object-contain relative z-10 animate-sun pointer-events-auto hover:scale-110 transition-transform duration-700"
+              className="w-32 h-32 md:w-56 md:h-56 lg:w-[320px] lg:h-[320px] object-contain relative z-10 animate-sun pointer-events-auto hover:scale-110 transition-transform duration-700"
               style={{
                 filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.12)) drop-shadow(0 0 60px rgba(255,255,255,1))'
               }}
@@ -141,8 +141,8 @@ export function LogoMarquee() {
       <style dangerouslySetInnerHTML={{ __html: `
         :root {
           /* Mobile: Circular Orbit */
-          --orbit-rx: 130px;
-          --orbit-ry: 130px;
+          --orbit-rx: clamp(90px, 28vw, 130px);
+          --orbit-ry: clamp(90px, 28vw, 130px);
         }
         @media (min-width: 640px) {
           :root {

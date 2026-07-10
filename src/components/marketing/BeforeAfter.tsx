@@ -38,7 +38,7 @@ export function BeforeAfter() {
         <div className="absolute top-2 lg:-top-12 left-0 right-0 flex flex-col items-center pointer-events-none z-0 hidden md:flex overflow-hidden">
           <p className="font-sans text-lg sm:text-xl font-bold text-black mb-4 tracking-wide">(Before Vs <span className="text-[#27C93F]">After</span>)</p>
           <h2 
-            className="text-[80px] sm:text-[100px] lg:text-[130px] font-bold text-gray-200 tracking-tighter leading-none select-none whitespace-nowrap"
+            className="text-[clamp(2.5rem,12vw,80px)] sm:text-[100px] lg:text-[130px] font-bold text-gray-200 tracking-tighter leading-none select-none whitespace-nowrap"
             style={{ WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%)' }}
           >
             Old Way vs Dexze Way
@@ -58,7 +58,7 @@ export function BeforeAfter() {
              
              {/* Left Column */}
              <div className="relative z-10 w-full lg:w-[35%] flex flex-col justify-between mb-8 lg:mb-0">
-                <div className="hidden lg:block">
+                <div className="mb-6 lg:mb-0">
                   <p className="text-white/70 text-lg leading-relaxed max-w-sm font-medium">
                     Before Dexze, agencies drown in endless email threads, scattered files, and delayed client approvals. It's a logistical nightmare.
                   </p>
@@ -70,7 +70,7 @@ export function BeforeAfter() {
              </div>
 
              {/* Center Column (Image) */}
-             <div className="relative z-10 w-full lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
+             <div className="relative z-10 hidden lg:block lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
                 <div className="w-full h-full bg-[#141414] rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center relative group">
                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
                    <Image src="/chaos.png.jpg" alt="Messy Workspace" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700" />
@@ -78,7 +78,7 @@ export function BeforeAfter() {
              </div>
 
              {/* Right Column */}
-             <div className="relative z-10 hidden lg:flex w-[25%] flex-col gap-12 pl-12 xl:pl-16">
+             <div className="relative z-10 flex w-full lg:w-[25%] flex-col gap-6 lg:gap-12 mt-6 lg:mt-0 lg:pl-12 xl:pl-16">
                 <div>
                   <p className="text-white/40 text-sm font-medium mb-3">Status</p>
                   <p className="text-white text-3xl font-bold tracking-tight">Lost Files</p>
@@ -109,7 +109,7 @@ export function BeforeAfter() {
              
              {/* Left Column */}
              <div className="relative z-10 w-full lg:w-[35%] flex flex-col justify-between mb-8 lg:mb-0">
-                <div className="hidden lg:block">
+                <div className="mb-6 lg:mb-0">
                   <p className="text-white/70 text-lg leading-relaxed max-w-sm font-medium">
                     With Dexze, your clients get a white-labeled, premium portal. Everything is organized, approvals are instant, and you look like a million bucks.
                   </p>
@@ -121,7 +121,7 @@ export function BeforeAfter() {
              </div>
 
              {/* Center Column (Image) */}
-             <div className="relative z-10 w-full lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
+             <div className="relative z-10 hidden lg:block lg:w-[40%] lg:px-4 flex-1 lg:flex-none">
                 <div className="w-full h-full bg-[#1A1820] rounded-2xl border border-[#5A52FF]/20 overflow-hidden flex items-center justify-center relative group">
                    <div className="absolute inset-0 bg-gradient-to-t from-[#5A52FF]/20 to-transparent z-10" />
                    <Image src="/clarity.png.jpg" alt="Clean Dashboard" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" />
@@ -129,7 +129,7 @@ export function BeforeAfter() {
              </div>
 
              {/* Right Column */}
-             <div className="relative z-10 hidden lg:flex w-[25%] flex-col gap-12 pl-12 xl:pl-16">
+             <div className="relative z-10 flex w-full lg:w-[25%] flex-col gap-6 lg:gap-12 mt-6 lg:mt-0 lg:pl-12 xl:pl-16">
                 <div>
                   <p className="text-white/40 text-sm font-medium mb-3">Status</p>
                   <p className="text-white text-3xl font-bold tracking-tight">Centralized Hub</p>

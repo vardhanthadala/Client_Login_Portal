@@ -91,7 +91,7 @@ export default function ClientUploader() {
             disabled={isUploading}
           />
           <div 
-            className={`border-2 border-dashed rounded-[24px] p-6 sm:p-10 flex flex-col items-center justify-center transition-all duration-300 w-full relative overflow-hidden text-center ${
+            className={`border-2 border-dashed rounded-[24px] p-4 sm:p-10 flex flex-col items-center justify-center transition-all duration-300 w-full max-w-full relative overflow-hidden text-center min-w-0 ${
               isUploading 
                 ? 'bg-[#F8FAFC] dark:bg-[#111] border-[#E2E8F0] dark:border-[#333]' 
                 : isDragging 
@@ -99,7 +99,7 @@ export default function ClientUploader() {
                   : 'bg-transparent border-[#10B981] hover:bg-[#F8FAFC] dark:hover:bg-[#10B981]/5 hover:-translate-y-0.5'
             }`}
           >
-            <div className={`mb-3 transition-transform duration-500 ${!isDragging && !isUploading ? 'animate-[pulse_4s_ease-in-out_infinite]' : ''}`}>
+            <div className={`mb-3 transition-transform duration-500 max-w-full ${!isDragging && !isUploading ? 'animate-[pulse_4s_ease-in-out_infinite]' : ''}`}>
               <UploadCloud className={`h-8 w-8 ${isDragging ? 'text-[#10B981] animate-bounce' : 'text-[#10B981]'}`} />
             </div>
             <p className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1.5 break-words max-w-full">

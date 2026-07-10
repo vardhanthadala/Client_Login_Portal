@@ -167,7 +167,7 @@ export default function ClientRosterTable({ clients }: { clients: ClientData[] }
                             <motion.div 
                               initial={{ y: -10 }}
                               animate={{ y: 0 }}
-                              className="flex flex-wrap items-center gap-3 pb-1"
+                              className="flex items-center gap-3 pb-1 overflow-x-auto hide-scrollbar w-full"
                             >
                               <span className="text-[12px] font-bold text-[#64748B] dark:text-[#666] uppercase tracking-wider mr-2 shrink-0">
                                 Quick Navigation:

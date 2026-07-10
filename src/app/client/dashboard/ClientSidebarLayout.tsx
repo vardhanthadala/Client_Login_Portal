@@ -7,7 +7,8 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
 import { Moon, Sun, Menu, X, Bell, ChevronDown, CheckCircle2, LayoutDashboard, FolderKanban, CheckSquare, CreditCard, MessageSquare, Clock, LogOut, Settings, LifeBuoy, Building2, Calendar } from "lucide-react"
 import SignOutButton from "./SignOutButton"
-import { useClientNotifications } from "@/store/clientNotificationsStore"
+import NotificationSync from "@/components/NotificationSync"
+import { useNotificationsStore } from "@/store/notificationsStore"
 
 export interface TabData {
   id: string;
@@ -29,7 +30,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
   const searchParams = useSearchParams()
   const { theme, setTheme, systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const notifs = useClientNotifications(state => state.notifications)
+  const notifs = useNotificationsStore(state => state.notifications)
   const unreadNotifsCount = notifs.filter(n => !n.isRead).length
   
   const [activeTab, setActiveTab] = useState(initialTab || tabs[0]?.id)
@@ -37,6 +38,10 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false)
   
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
+  
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab)
+  }, [initialTab])
   
   useEffect(() => {
     setMounted(true)
@@ -165,16 +170,21 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                     <div className={`${isActive ? "text-[#10B981]" : "opacity-70"}`}>
                       {getIconForTab(tab.id)}
                     </div>
-                    <span className="flex-1 truncate relative z-10 flex items-center">
+                    <span className="flex-1 truncate relative z-10 flex items-center justify-between pr-2">
                       {tab.id === 'messages' && typeof tab.label !== 'string' ? (
                         <>
                            Messages
+                           {notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length > 0 && (
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#171A21]">
+                              {notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length}
+                            </span>
+                          )}
                         </>
                       ) : tab.id === 'notifications' ? (
                         <>
                           Notifications
                           {unreadNotifsCount > 0 && (
-                            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#EF4444] text-[10px] font-bold text-white shadow-[0_2px_8px_rgba(239,68,68,0.4)]">
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#171A21]">
                               {unreadNotifsCount}
                             </span>
                           )}
@@ -260,6 +270,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <NotificationSync role="CLIENT" data={clientProfile} />
         {/* Top Header */}
         <header className="h-[72px] shrink-0 border-b border-[#E2E8F0] dark:border-[#222] bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 lg:px-10 z-10 sticky top-0">
           <AnimatePresence mode="popLayout">
