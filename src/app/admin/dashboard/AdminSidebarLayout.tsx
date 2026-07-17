@@ -658,13 +658,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                       <hr className="my-1 border-[#F1F5F9] dark:border-white/5" />
 
                       {/* Sign Out Action */}
-                      <button 
-                        onClick={handleDropdownSignOut}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-normal text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/5 text-left transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Logout</span>
-                      </button>
+                      <SignOutButton variant="dropdown" />
                     </div>
                   </div>
                 </>
