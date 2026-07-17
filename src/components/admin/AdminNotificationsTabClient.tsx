@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Bell, MessageSquare, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react"
 import { useNotificationsStore } from "@/store/notificationsStore"
 import { formatDistanceToNow } from "date-fns"
-import { markAllAdminMessagesAsReadAction } from "@/app/actions/admin"
+// Read-state is now persisted via notification API
 
 import { useSearchParams } from "next/navigation"
 
@@ -18,7 +18,6 @@ export default function AdminNotificationsTabClient() {
     // Automatically mark all notifications as read ONLY when this tab is actually viewed by the user
     if (activeTab === "notifications" && notifications.some(n => !n.isRead)) {
       markAllAsRead()
-      markAllAdminMessagesAsReadAction().catch(console.error)
     }
   }, [notifications, markAllAsRead, activeTab])
 

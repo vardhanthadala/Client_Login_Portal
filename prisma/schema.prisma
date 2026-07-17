@@ -65,6 +65,29 @@ model User {
   
   clientProfile ClientProfile?
   messages      Message[]
+  notifications Notification[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      String   // MESSAGE, APPROVAL, INVOICE, PROJECT, SYSTEM
+  title     String
+  message   String
+  link      String?
+  sourceId  String?  // Original entity ID to prevent duplicates
+  isRead    Boolean  @default(false)
+
+  clientName String?
+  clientId   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@unique([userId, sourceId]) // Prevent duplicate notifications for same event
 }
 
 model SuperAdminLog {
