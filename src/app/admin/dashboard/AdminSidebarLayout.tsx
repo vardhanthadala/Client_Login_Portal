@@ -13,6 +13,7 @@ import { useNotificationsStore } from "@/store/notificationsStore"
 import { format, startOfMonth, endOfMonth } from "date-fns"
 import { toast } from "sonner"
 import { updateAdminProfileAction, cancelAdminSubscriptionAction } from "@/app/actions/admin"
+import ThemeSettingsWidget from "@/components/admin/ThemeSettingsWidget"
 
 export interface TabData {
   id: string;
@@ -297,6 +298,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
 
   return (
     <div className="flex h-screen w-full bg-[#F0F2F8] dark:bg-[#0F1115] text-[#0F172A] dark:text-[#F8FAFC] overflow-hidden font-sans transition-colors duration-300">
+      <ThemeSettingsWidget />
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
