@@ -54,6 +54,7 @@ export function Navbar() {
               height={36}
               priority
               className="w-auto h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform duration-300"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </Link>
 

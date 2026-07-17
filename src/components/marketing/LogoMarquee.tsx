@@ -102,6 +102,8 @@ export function LogoMarquee() {
               priority
               className="w-32 h-32 md:w-56 md:h-56 lg:w-[320px] lg:h-[320px] object-contain relative z-10 animate-sun pointer-events-auto hover:scale-110 transition-transform duration-700"
               style={{
+                width: 'auto',
+                height: 'auto',
                 filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.12)) drop-shadow(0 0 60px rgba(255,255,255,1))'
               }}
             />
