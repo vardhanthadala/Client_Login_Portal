@@ -94,7 +94,6 @@ model ClientProfile {
   hours       String?
   phone       String?
   status      String   @default("ONBOARDED") // "ONBOARDED", "IN PROGRESS", "IN REVIEW", "COMPLETED", "ON HOLD"
-  profileImageUrl String?
   
   slaAgreed   Boolean  @default(false)
   signature   String?

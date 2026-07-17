@@ -178,3 +178,35 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Duralux Dashboard Scoped Styles */
+.duralux-sidebar-active-item {
+  background-color: #eff1f6 !important;
+  color: #0f172a !important;
+}
+.dark .duralux-sidebar-active-item {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+.duralux-progress-blue {
+  background-color: #3454d1 !important;
+}
+.duralux-progress-orange {
+  background-color: #ffa21d !important;
+}
+.duralux-progress-green {
+  background-color: #25b865 !important;
+}
+.duralux-progress-red {
+  background-color: #ea4d4d !important;
+}
+
+/* Custom transitions and sizes for collapsible sidebar */
+.minimenu-sidebar {
+  width: 80px !important;
+}
+.minimenu-main-content {
+  margin-left: 0px !important;
+}
+

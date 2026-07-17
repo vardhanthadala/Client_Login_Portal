@@ -48,7 +48,7 @@ export default function NotificationSync({ role, data, adminUserId }: Notificati
               title: "New Message",
               message: msg.content ? (msg.content.length > 60 ? msg.content.substring(0, 60) + "..." : msg.content) : "New message received",
               createdAt: msg.createdAt,
-              isRead: false,
+              isRead: msg.isRead ?? false,
               clientName,
               clientId: client.id,
               link: `/admin/client/${client.id}?tab=messages`
@@ -103,7 +103,7 @@ export default function NotificationSync({ role, data, adminUserId }: Notificati
               title: "New Message",
               message: "Agency sent you a message",
               createdAt: msg.createdAt,
-              isRead: false,
+              isRead: msg.isRead ?? false,
               link: "?tab=messages"
             })
           }

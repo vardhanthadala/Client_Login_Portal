@@ -21,6 +21,29 @@ async function getAuthSession() {
   return getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
 }
 
+export async function markAllAdminMessagesAsReadAction() {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }
+
+    await prisma.message.updateMany({
+      where: {
+        clientProfile: {
+          user: { tenantId: token.tenantId }
+        },
+        senderId: { not: token.id },
+        isRead: false
+      },
+      data: { isRead: true }
+    })
+    
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+  } catch (error) {
+    return { error: "Failed to mark as read" }
+  }
+}
+
 export async function inviteClientAction(formData: FormData) {
   try {
     const token = await getAuthSession()
@@ -191,5 +214,57 @@ export async function generateAiSummaryAction(clientProfileId: string) {
   } catch (error: any) {
     console.error("Failed to generate AI summary:", error)
     return { error: error.message || "Failed to generate AI summary" }
+  }
+}
+
+export async function updateAdminProfileAction(formData: FormData) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN") {
+      return { error: "Unauthorized" }
+    }
+
+    const name = formData.get("name") as string
+    const imageUrl = formData.get("imageUrl") as string | null
+
+    if (!name) {
+      return { error: "Name is required" }
+    }
+
+    await prisma.user.update({
+      where: { id: token.id as string },
+      data: {
+        name,
+        image: imageUrl || undefined
+      }
+    })
+
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to update profile:", error)
+    return { error: "Failed to update profile" }
+  }
+}
+
+export async function cancelAdminSubscriptionAction() {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN" || !token.tenantId) {
+      return { error: "Unauthorized" }
+    }
+
+    await prisma.tenant.update({
+      where: { id: token.tenantId as string },
+      data: {
+        cancelAtPeriodEnd: true
+      }
+    })
+
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to cancel subscription:", error)
+    return { error: "Failed to cancel subscription" }
   }
 }

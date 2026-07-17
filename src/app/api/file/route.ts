@@ -1,5 +1,4 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { NextRequest, NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { prisma } from "@/lib/prisma"
@@ -46,11 +45,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Parse the S3 URL to extract the key
-    // URL format: https://bucket-name.s3.region.amazonaws.com/path/to/key.jpg
     let key = ""
     try {
       const parsedUrl = new URL(urlParam)
-      // pathname has a leading slash, we need to remove it for S3 key
       key = parsedUrl.pathname.substring(1)
     } catch (e) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
@@ -81,12 +78,38 @@ export async function GET(req: NextRequest) {
     }
 
     const command = new GetObjectCommand(commandOptions)
+    const s3Response = await s3Client.send(command)
 
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+    if (!s3Response.Body) {
+      return NextResponse.json({ error: "Empty response from S3" }, { status: 500 })
+    }
 
-    return NextResponse.redirect(signedUrl)
+    // Stream the S3 object body directly as the response
+    const responseHeaders: Record<string, string> = {
+      "Cache-Control": "private, max-age=3600",
+    }
+
+    if (s3Response.ContentType) {
+      responseHeaders["Content-Type"] = s3Response.ContentType
+    }
+    if (s3Response.ContentLength) {
+      responseHeaders["Content-Length"] = String(s3Response.ContentLength)
+    }
+    if (download) {
+      let filename = key.split("/").pop() || "download"
+      try { filename = decodeURIComponent(filename) } catch(e) {}
+      responseHeaders["Content-Disposition"] = `attachment; filename="${filename}"`
+    }
+
+    // Convert the readable stream from AWS SDK to a web ReadableStream
+    const bodyStream = s3Response.Body.transformToWebStream()
+
+    return new NextResponse(bodyStream as any, {
+      status: 200,
+      headers: responseHeaders,
+    })
   } catch (error) {
-    console.error("Presigned URL generation error:", error)
+    console.error("S3 file proxy error:", error)
     return NextResponse.json({ error: "Failed to access file" }, { status: 500 })
   }
 }

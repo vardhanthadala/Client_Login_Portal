@@ -1,12 +1,26 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import Link from "next/link"
 import { Bell, MessageSquare, CheckCircle, AlertTriangle, ArrowRight } from "lucide-react"
 import { useNotificationsStore } from "@/store/notificationsStore"
+import { formatDistanceToNow } from "date-fns"
+import { markAllAdminMessagesAsReadAction } from "@/app/actions/admin"
+
+import { useSearchParams } from "next/navigation"
 
 export default function AdminNotificationsTabClient() {
-  const { notifications, markAsRead } = useNotificationsStore()
+  const { notifications, markAsRead, markAllAsRead } = useNotificationsStore()
+  const searchParams = useSearchParams()
+  const activeTab = searchParams.get("tab") || "overview"
+
+  useEffect(() => {
+    // Automatically mark all notifications as read ONLY when this tab is actually viewed by the user
+    if (activeTab === "notifications" && notifications.some(n => !n.isRead)) {
+      markAllAsRead()
+      markAllAdminMessagesAsReadAction().catch(console.error)
+    }
+  }, [notifications, markAllAsRead, activeTab])
 
   const unreadCount = notifications.filter(n => !n.isRead).length
 
@@ -67,7 +81,10 @@ export default function AdminNotificationsTabClient() {
                   <p className={`text-[15px] truncate font-medium ${item.isRead ? 'text-[#94A3B8] dark:text-[#666]' : 'text-[#334155] dark:text-[#CBD5E1]'}`}>{item.message}</p>
                 </div>
 
-                <div className="flex items-center justify-end sm:flex-col sm:items-end gap-3 shrink-0 mt-3 sm:mt-0">
+                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-2 shrink-0 mt-3 sm:mt-0 min-w-[100px]">
+                  <div className="text-[12px] font-medium text-[#94A3B8] dark:text-[#666]">
+                    {item.createdAt ? formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) : ''}
+                  </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 text-[13px] font-bold text-[#10B981] -translate-x-2 group-hover:translate-x-0 duration-300">
                     View Details
                     <ArrowRight className="w-4 h-4" />

@@ -18,7 +18,14 @@ export default async function NotificationsTab() {
       role: "CLIENT",
       tenantId: tenantId
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      tenantId: true,
+      createdAt: true,
+      updatedAt: true,
       clientProfile: {
         include: {
           messages: {
@@ -126,7 +133,6 @@ export default async function NotificationsTab() {
 
   return (
     <>
-      <NotificationSync role="ADMIN" data={clients} adminUserId={adminUserId} />
       <AdminNotificationsTabClient />
     </>
   )

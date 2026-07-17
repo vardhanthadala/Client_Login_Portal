@@ -38,7 +38,14 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
 
   const client = await prisma.user.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      tenantId: true,
+      createdAt: true,
+      updatedAt: true,
       clientProfile: {
         include: {
           brandAssets: true,
@@ -67,7 +74,14 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
       tenantId: token?.tenantId as string
     },
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      tenantId: true,
+      createdAt: true,
+      updatedAt: true,
       clientProfile: {
         select: {
           id: true,

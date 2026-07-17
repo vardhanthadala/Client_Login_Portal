@@ -15,7 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export default function SignOutButton() {
+export default function SignOutButton({ isMini = false }: { isMini?: boolean }) {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -42,9 +42,12 @@ export default function SignOutButton() {
     <>
       <Button 
         onClick={() => setOpen(true)}
-        className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5"
+        className={isMini 
+          ? "w-10 h-10 p-0 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)]"
+          : "w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5"
+        }
       >
-        Sign Out
+        {isMini ? <LogOut className="w-4 h-4" /> : "Sign Out"}
       </Button>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className="sm:max-w-[400px] p-8 rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">

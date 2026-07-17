@@ -40,11 +40,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geist.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        <Script 
-          id="theme-script" 
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: `
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <Script id="theme-script" strategy="afterInteractive">
+          {`
             try {
               var theme = localStorage.getItem('theme');
               var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -54,10 +52,8 @@ export default function RootLayout({
                 document.documentElement.classList.remove('dark');
               }
             } catch (e) {}
-          `}} 
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+          `}
+        </Script>
         <ThemeProvider>
           <SessionGuard />
           {children}
