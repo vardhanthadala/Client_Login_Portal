@@ -74,7 +74,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                   <DollarSign size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                  <span className="text-[24px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">
                     {clientProfile.invoices?.length || 0}/{clientProfile.invoices?.length || 0}
                   </span>
                   <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Invoices Awaiting Payment</span>
@@ -99,7 +99,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                   <Briefcase size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                  <span className="text-[24px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">
                     {clientProfile.projects?.length || 0}/{clientProfile.projects?.length || 0}
                   </span>
                   <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Projects In Progress</span>
@@ -124,7 +124,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                   <Monitor size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                  <span className="text-[24px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">
                     {clientProfile.approvals?.length || 0}
                   </span>
                   <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Pending Approvals</span>
@@ -149,7 +149,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                   <Activity size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                  <span className="text-[24px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">
                     {clientProfile.brandAssets?.length || 0}
                   </span>
                   <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Total Assets</span>
@@ -173,14 +173,14 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
             <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col h-full overflow-hidden">
               <div className="pb-4 px-6 pt-6 flex flex-row items-center justify-between border-b border-[#E2E8F0] dark:border-[#222]">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white">Your Business Profile</h2>
+                  <h2 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Your Business Profile</h2>
                 </div>
 
               </div>
               <div className="p-0 flex-1 flex flex-col">
                 <div className="p-[25px] border-b border-[#E2E8F0] dark:border-[#222]">
                   <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">COMPANY NAME</p>
-                  <p className="text-[18px] font-bold text-[#0F172A] dark:text-white">{clientProfile.companyName}</p>
+                  <p className="text-[18px] font-semibold text-[#0F172A] dark:text-white">{clientProfile.companyName}</p>
                 </div>
                 <div className="grid grid-cols-2 flex-1">
                   <div className="p-[25px] border-r border-b border-[#E2E8F0] dark:border-[#222]">
@@ -201,7 +201,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                   </div>
                   <div className="p-[25px]">
                     <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">STATUS</p>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10B981]/10 text-[#10B981] text-[12px] font-bold">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10B981]/10 text-[#10B981] text-[12px] font-semibold">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
                       Active Account
                     </div>
@@ -215,7 +215,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
           <FadeInItem className="min-w-0">
             <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col h-full min-w-0 overflow-hidden">
             <div className="pb-4 px-6 pt-6 border-b border-[#E2E8F0] dark:border-[#222]">
-              <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white">Upload New Assets</h2>
+              <h2 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Upload New Assets</h2>
               <p className="mt-1 text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 Need to send us a new logo, document, or brand guideline? Upload it here anytime.
               </p>
@@ -231,7 +231,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
             <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col overflow-hidden min-w-0">
             <div className="pb-4 px-6 pt-6 border-b border-[#E2E8F0] dark:border-[#222] flex flex-row items-center justify-between">
               <div>
-                <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                <h2 className="text-[16px] font-semibold text-[#0F172A] dark:text-white flex items-center gap-2">
                   Your Uploaded Files
                 </h2>
               </div>
@@ -248,11 +248,11 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
                            {asset.type?.includes("image") ? (
                              <Image src={asset.fileUrl} alt={asset.description || "Asset"} fill sizes="48px" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                            ) : (
-                             <span className="text-[10px] font-bold text-[#64748B] uppercase">{asset.fileUrl.split('.').pop()?.substring(0,3)}</span>
+                             <span className="text-[10px] font-semibold text-[#64748B] uppercase">{asset.fileUrl.split('.').pop()?.substring(0,3)}</span>
                            )}
                         </div>
                         <div className="flex flex-col flex-1 min-w-0 w-full">
-                          <p className="text-[14px] font-bold text-[#0F172A] dark:text-white truncate">{asset.description || asset.fileUrl.split('/').pop() || "File"}</p>
+                          <p className="text-[14px] font-semibold text-[#0F172A] dark:text-white truncate">{asset.description || asset.fileUrl.split('/').pop() || "File"}</p>
                           <div className="flex items-center gap-2 mt-0.5 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">
                             <span className="uppercase">{asset.fileUrl.split('.').pop() || "JPG"}</span>
                             <span>&middot;</span>
@@ -269,12 +269,12 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
 
                       <div className="flex items-center gap-2 flex-wrap">
                         <a href={asset.fileUrl} target="_blank" rel="noreferrer">
-                          <button className="px-3 py-1.5 rounded-[6px] bg-[#F1F5F9] dark:bg-[#222] hover:bg-[#E2E8F0] dark:hover:bg-[#333] text-[#343A40] dark:text-white transition-colors text-[12px] font-bold">
+                          <button className="px-3 py-1.5 rounded-[6px] bg-[#F1F5F9] dark:bg-[#222] hover:bg-[#E2E8F0] dark:hover:bg-[#333] text-[#343A40] dark:text-white transition-colors text-[12px] font-semibold">
                             View
                           </button>
                         </a>
                         <a href={`/api/download?url=${encodeURIComponent(asset.fileUrl)}`} download>
-                          <button className="px-3 py-1.5 rounded-[6px] bg-[#3454D1] hover:bg-[#2842A8] text-white transition-colors text-[12px] font-bold">
+                          <button className="px-3 py-1.5 rounded-[6px] bg-[#3454D1] hover:bg-[#2842A8] text-white transition-colors text-[12px] font-semibold">
                             Download
                           </button>
                         </a>
@@ -303,7 +303,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
       content: (
         <FadeInStagger className="space-y-6">
           <FadeInItem>
-            <h2 className="text-xl font-bold mb-4 font-sans text-[#0F172A] dark:text-white">Active Projects</h2>
+            <h2 className="text-xl font-semibold mb-4 font-sans text-[#0F172A] dark:text-white">Active Projects</h2>
           </FadeInItem>
           {clientProfile.projects.map((project: any) => (
             <FadeInItem key={project.id}>
@@ -353,7 +353,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
       <>
         Messages
         {unreadCount > 0 && (
-          <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#5A52FF] text-[10px] font-bold text-white shadow-[0_2px_8px_rgba(90,82,255,0.4)]">
+          <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#5A52FF] text-[10px] font-semibold text-white shadow-[0_2px_8px_rgba(90,82,255,0.4)]">
             {unreadCount}
           </span>
         )}

@@ -1,21 +1,13 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { getToken } from "next-auth/jwt"
-import { cookies, headers } from "next/headers"
+import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 
 // Helper to get auth session
 async function getAuthSession() {
-  const reqCookies = await cookies()
-  const reqHeaders = await headers()
-
-  const req = {
-    cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
-    headers: Object.fromEntries(reqHeaders.entries())
-  } as any
-
-  return getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
+  const session = await auth()
+  return session?.user
 }
 
 export async function getMessagesAction(clientProfileId: string) {
@@ -28,7 +20,7 @@ export async function getMessagesAction(clientProfileId: string) {
       where: { clientProfileId },
       include: {
         sender: {
-          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true } } }
+          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true, profileImageUrl: true } } }
         }
       },
       orderBy: { createdAt: "asc" }
@@ -65,7 +57,7 @@ export async function sendMessageAction(clientProfileId: string, content: string
       },
       include: {
         sender: {
-          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true } } }
+          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true, profileImageUrl: true } } }
         }
       }
     })

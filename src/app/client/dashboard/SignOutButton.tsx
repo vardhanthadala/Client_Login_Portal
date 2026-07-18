@@ -35,7 +35,7 @@ export default function SignOutButton({ variant = "default" }: { variant?: "defa
           <div className="w-4 flex justify-center">
             <LogOut className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
           </div>
-          <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">Logout</span>
+          <span className="text-[#0F172A] dark:text-white text-[14px]">Logout</span>
         </button>
       ) : (
         <button 
@@ -59,7 +59,7 @@ export default function SignOutButton({ variant = "default" }: { variant?: "defa
             </div>
 
             {/* Typography */}
-            <AlertDialogTitle className="text-2xl font-bold font-sans text-[#0F172A] dark:text-white tracking-tight mb-3">
+            <AlertDialogTitle className="text-2xl font-semibold font-sans text-[#0F172A] dark:text-white tracking-tight mb-3">
               Leaving so soon?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-[15px] font-medium text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8 px-2">

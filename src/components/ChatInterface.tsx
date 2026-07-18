@@ -199,9 +199,9 @@ export default function ChatInterface({
                     
                     {/* Avatar */}
                     <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0 flex items-center justify-center overflow-hidden border border-white dark:border-[#222] shadow-sm">
-                       {msg.sender?.image ? (
+                       {msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image ? (
                          <img 
-                           src={getAvatarSrc(msg.sender.image)} 
+                           src={getAvatarSrc(msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image)} 
                            alt="Profile" 
                            className="w-full h-full object-cover" 
                          />

@@ -272,7 +272,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
           {/* Navigation Links */}
           <div className="px-4 py-6 flex-1">
             <div className={`overflow-hidden transition-all duration-300 ${expanded ? 'h-[24px] mb-4 opacity-100' : 'h-0 mb-0 opacity-0'}`}>
-              <p className="px-3 text-[10px] font-bold tracking-[0.07em] text-[#7587A7] dark:text-[#94A3B8] uppercase whitespace-nowrap">
+              <p className="px-3 text-[10px] font-semibold tracking-[0.07em] text-[#7587A7] dark:text-[#94A3B8] uppercase whitespace-nowrap">
                 Navigation
               </p>
             </div>
@@ -297,12 +297,12 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                     <div className="flex items-center justify-center shrink-0 relative">
                       {getIconForTab(tab.id, isActive)}
                       {!expanded && tab.id === 'messages' && notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF4444] text-[9px] font-bold text-white border-2 border-white dark:border-[#1A1A1A] shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF4444] text-[9px] font-semibold text-white border-2 border-white dark:border-[#1A1A1A] shadow-sm">
                           {notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length}
                         </span>
                       )}
                       {!expanded && tab.id === 'notifications' && unreadNotifsCount > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF4444] text-[9px] font-bold text-white border-2 border-white dark:border-[#1A1A1A] shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EF4444] text-[9px] font-semibold text-white border-2 border-white dark:border-[#1A1A1A] shadow-sm">
                           {unreadNotifsCount}
                         </span>
                       )}
@@ -313,7 +313,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                         <>
                           <span>Messages</span>
                           {notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length > 0 && (
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shrink-0">
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-semibold text-white shrink-0">
                               {notifs.filter(n => !n.isRead && n.type === 'MESSAGE').length}
                             </span>
                           )}
@@ -322,7 +322,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                         <>
                           <span>Notifications</span>
                           {unreadNotifsCount > 0 && (
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-bold text-white shrink-0">
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EF4444] text-[10px] font-semibold text-white shrink-0">
                               {unreadNotifsCount}
                             </span>
                           )}
@@ -404,7 +404,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                           onChange={(e) => setSearchQuery(e.target.value)}
                           autoFocus
                         />
-                        <span className="text-[10px] font-bold text-[#64748B] dark:text-[#888] bg-[#F1F5F9] dark:bg-[#222] px-1.5 py-0.5 rounded border border-[#E2E8F0] dark:border-[#333]">ESC</span>
+                        <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#888] bg-[#F1F5F9] dark:bg-[#222] px-1.5 py-0.5 rounded border border-[#E2E8F0] dark:border-[#333]">ESC</span>
                       </div>
 
                       <div className="p-4 overflow-y-auto max-h-[400px] hidden-scrollbar">
@@ -432,7 +432,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                                       {getIconForTab(tab.id, false)}
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-[13px] font-bold text-[#0F172A] dark:text-white leading-tight capitalize">
+                                      <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-tight capitalize">
                                         {typeof tab.label === 'string' ? tab.label : tab.id}
                                       </span>
                                       <span className="text-[11px] text-[#94A3B8] mt-0.5">Home / {tab.id}</span>
@@ -475,7 +475,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                             <div className="mb-6">
                               <div className="flex items-center gap-2 mb-3">
                                 <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">Recent</p>
-                                <span className="text-[10px] font-bold bg-[#F1F5F9] dark:bg-[#222] text-[#64748B] dark:text-[#94A3B8] px-1.5 py-0.5 rounded">3</span>
+                                <span className="text-[10px] font-semibold bg-[#F1F5F9] dark:bg-[#222] text-[#64748B] dark:text-[#94A3B8] px-1.5 py-0.5 rounded">3</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 {/* Item 1 */}
@@ -485,7 +485,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                                       <CheckSquare className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-[13px] font-bold text-[#0F172A] dark:text-white leading-tight">Recent Approvals</span>
+                                      <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-tight">Recent Approvals</span>
                                       <span className="text-[11px] text-[#94A3B8] mt-0.5">Home / approvals</span>
                                     </div>
                                   </div>
@@ -502,7 +502,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                                       <CreditCard className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-[13px] font-bold text-[#0F172A] dark:text-white leading-tight">View Billing</span>
+                                      <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-tight">View Billing</span>
                                       <span className="text-[11px] text-[#94A3B8] mt-0.5">Home / billing</span>
                                     </div>
                                   </div>
@@ -520,7 +520,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                                       <MessageSquare className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-[13px] font-bold text-[#0F172A] dark:text-white leading-tight">New message from team</span>
+                                      <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-tight">New message from team</span>
                                       <span className="text-[11px] text-[#94A3B8] mt-0.5">Home / messages</span>
                                     </div>
                                   </div>
@@ -567,7 +567,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
               >
                 <FiBell size={20} />
                 {unreadNotifsCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#EF4444] text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-[#111111]">
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#EF4444] text-white text-[9px] font-semibold flex items-center justify-center rounded-full border-2 border-white dark:border-[#111111]">
                     {unreadNotifsCount}
                   </span>
                 )}
@@ -591,10 +591,10 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                       className="absolute top-[50px] right-2 w-[350px] bg-white dark:bg-[#111] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-[#E2E8F0] dark:border-[#333] z-50 flex flex-col overflow-hidden"
                     >
                       <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0] dark:border-[#333]">
-                        <h6 className="text-[15px] font-bold text-[#0F172A] dark:text-white">Notifications</h6>
+                        <h6 className="text-[15px] font-semibold text-[#0F172A] dark:text-white">Notifications</h6>
                         <button 
                           onClick={() => markAllAsRead()}
-                          className="flex items-center gap-1.5 text-[12px] font-bold text-[#10B981] hover:text-[#059669] transition-colors"
+                          className="flex items-center gap-1.5 text-[12px] font-semibold text-[#10B981] hover:text-[#059669] transition-colors"
                         >
                           <CheckCircle2 className="w-4 h-4" /> Mark as Read
                         </button>
@@ -613,7 +613,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                               </div>
                               <div className="flex flex-col flex-1">
                                 <p className="text-[14px] leading-[1.4] text-[#0F172A] dark:text-white">
-                                  <span className="font-bold">{notif.title}</span> <span className="text-[#333] dark:text-[#ccc]">{notif.message}</span>
+                                  <span className="font-semibold">{notif.title}</span> <span className="text-[#333] dark:text-[#ccc]">{notif.message}</span>
                                 </p>
                                 <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8] mt-1.5">
                                   {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
@@ -628,7 +628,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                         <div className="p-4 text-center">
                           <button 
                             onClick={() => setShowAllNotifications(!showAllNotifications)}
-                            className="text-[13px] font-bold text-[#0F172A] dark:text-white hover:text-[#3454D1] transition-colors"
+                            className="text-[13px] font-semibold text-[#0F172A] dark:text-white hover:text-[#3454D1] transition-colors"
                           >
                             {showAllNotifications ? "View Less" : "All Notifications"}
                           </button>
@@ -650,7 +650,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                   {localProfileImage ? (
                     <img src={getImageUrl(localProfileImage) as string} alt="Profile" className="w-9 h-9 object-cover" />
                   ) : (
-                    <span className="text-sm font-bold text-[#64748B] dark:text-white">
+                    <span className="text-sm font-semibold text-[#64748B] dark:text-white">
                       {clientProfile?.clientName?.charAt(0) || 'D'}
                     </span>
                   )}
@@ -680,21 +680,18 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                           {localProfileImage ? (
                             <img src={getImageUrl(localProfileImage) as string} alt="Profile" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-[#64748B] dark:text-[#94A3B8]">
+                            <div className="w-full h-full flex items-center justify-center font-semibold text-[#64748B] dark:text-[#94A3B8]">
                               {clientProfile?.clientName?.charAt(0) || 'D'}
                             </div>
                           )}
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-[15px] text-[#0F172A] dark:text-white">
+                            <span className="text-[15px] text-[#0F172A] dark:text-white truncate">
                               {clientProfile?.clientName || 'Alexandra Della'}
                             </span>
-                            <span className="bg-[#D1FAE5] dark:bg-[#065F46] text-[#059669] dark:text-[#34D399] text-[10px] font-bold px-1.5 py-0.5 rounded">
-                              PRO
-                            </span>
                           </div>
-                          <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+                          <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5 truncate">
                             {clientProfile?.email || 'alex.della@outlook.com'}
                           </span>
                         </div>
@@ -714,7 +711,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                           <div className="w-4 flex justify-center">
                             <User className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                           </div>
-                          <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">
+                          <span className="text-[#0F172A] dark:text-white text-[14px]">
                             Edit Profile
                           </span>
                         </button>
@@ -730,7 +727,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                               <div className="w-4 flex justify-center">
                                 <div className={`w-2.5 h-2.5 rounded-full ${statusColors[activeStatus]}`}></div>
                               </div>
-                              <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">{activeStatus}</span>
+                              <span className="text-[#0F172A] dark:text-white text-[14px]">{activeStatus}</span>
                             </div>
                             <ChevronRight className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                           </button>
@@ -749,7 +746,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                                 <div className="w-4 flex justify-center">
                                   <div className={`w-2.5 h-2.5 rounded-full ${statusColors[status]}`}></div>
                                 </div>
-                                <span className="font-semibold text-[#0F172A] dark:text-white text-[13px]">{status}</span>
+                                <span className="text-[#0F172A] dark:text-white text-[13px]">{status}</span>
                               </button>
                             ))}
                           </div>
@@ -764,7 +761,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                           <div className="w-4 flex justify-center">
                             <DollarSign className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                           </div>
-                          <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">Billing Details</span>
+                          <span className="text-[#0F172A] dark:text-white text-[14px]">Billing Details</span>
                         </button>
                         <button 
                           onClick={() => {
@@ -776,7 +773,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                           <div className="w-4 flex justify-center">
                             <MessageSquare className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                           </div>
-                          <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">Messages</span>
+                          <span className="text-[#0F172A] dark:text-white text-[14px]">Messages</span>
                         </button>
 
                       </div>
@@ -801,7 +798,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
           {/* Page Header (Sub-Navbar) - Now non-sticky and scrolls with content */}
           <div className="shrink-0 bg-white dark:bg-[#111111] border-b border-[#E2E8F0] dark:border-[#222] flex flex-col sm:flex-row sm:items-center justify-between px-4 lg:px-6 py-4 z-10 transition-colors duration-300 w-full">
             <div className="flex items-center gap-4 mb-4 sm:mb-0">
-              <h5 className="text-[15px] font-bold text-[#0F172A] dark:text-white capitalize">
+              <h5 className="text-[15px] font-semibold text-[#0F172A] dark:text-white capitalize">
                 {typeof activeTabData?.label === 'string' ? activeTabData.label : (activeTabData?.id || 'Dashboard')}
               </h5>
               <div className="w-[1px] h-[18px] bg-[#E2E8F0] dark:bg-[#333]"></div>
@@ -865,7 +862,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
             >
               <div className="flex items-center justify-between px-6 py-5 border-b border-[#E2E8F0]/60 dark:border-[#222]/60 bg-gradient-to-b from-[#F8FAFC] to-white dark:from-[#111] dark:to-[#0A0A0A]">
                 <div>
-                  <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white tracking-tight">Edit Profile</h3>
+                  <h3 className="text-[18px] font-semibold text-[#0F172A] dark:text-white tracking-tight">Edit Profile</h3>
                   <p className="text-[13px] text-[#64748B] dark:text-[#888] mt-0.5">Update your photo and personal details.</p>
                 </div>
                 <button 
@@ -888,7 +885,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                       {previewImage || localProfileImage ? (
                         <img src={getImageUrl(previewImage || localProfileImage) as string} alt="Profile" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       ) : (
-                        <span className="text-[48px] font-bold text-[#94A3B8] dark:text-[#444]">
+                        <span className="text-[48px] font-semibold text-[#94A3B8] dark:text-[#444]">
                           {clientProfile?.clientName?.charAt(0) || 'D'}
                         </span>
                       )}
@@ -955,7 +952,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                 <button 
                   onClick={handleSaveProfile}
                   disabled={(!selectedFile && localClientName === clientProfile?.clientName) || isUploading}
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-[14px] font-bold text-white bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:text-[#0A0A0A] dark:hover:bg-[#E2E8F0] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(15,23,42,0.15)] dark:shadow-[0_4px_12px_rgba(255,255,255,0.15)]"
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-[14px] font-semibold text-white bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:text-[#0A0A0A] dark:hover:bg-[#E2E8F0] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_12px_rgba(15,23,42,0.15)] dark:shadow-[0_4px_12px_rgba(255,255,255,0.15)]"
                 >
                   {isUploading ? (
                     <>
