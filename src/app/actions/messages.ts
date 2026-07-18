@@ -1,18 +1,27 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { getToken } from "next-auth/jwt"
+import { cookies, headers } from "next/headers"
 import { revalidatePath } from "next/cache"
 
 // Helper to get auth session
 async function getAuthSession() {
-  const session = await auth()
-  return session?.user
+  const reqCookies = await cookies()
+  const reqHeaders = await headers()
+
+  const req = {
+    cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
+    headers: Object.fromEntries(reqHeaders.entries())
+  } as any
+
+  return getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
 }
 
 export async function getMessagesAction(clientProfileId: string) {
   try {
     const token = await getAuthSession()
+    console.log("getMessagesAction auth session:", token?.id, token?.role)
     if (!token?.id) return { error: "Unauthorized" }
 
     const messages = await prisma.message.findMany({
@@ -24,6 +33,7 @@ export async function getMessagesAction(clientProfileId: string) {
       },
       orderBy: { createdAt: "asc" }
     })
+    console.log("getMessagesAction found", messages.length, "messages")
 
     return { success: true, data: messages }
   } catch (error: any) {

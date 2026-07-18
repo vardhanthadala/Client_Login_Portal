@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+
 import "./globals.css";
 
 const inter = Inter({ 
@@ -30,7 +31,8 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <head>
+      <head />
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <Script 
           id="theme-script" 
           strategy="beforeInteractive"
@@ -46,8 +48,6 @@ export default function RootLayout({
             } catch (e) {}
           `}}
         />
-      </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <ThemeProvider>
           <SessionGuard />
           {children}
