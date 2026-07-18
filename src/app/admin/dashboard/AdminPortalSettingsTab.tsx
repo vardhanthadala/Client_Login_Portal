@@ -22,7 +22,12 @@ export default function AdminPortalSettingsTab() {
 
   useEffect(() => {
     fetch("/api/admin/settings")
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          throw new Error("API returned status " + res.status)
+        }
+        return res.json()
+      })
       .then(data => {
         setKeys(prev => ({
           ...prev,
@@ -34,7 +39,7 @@ export default function AdminPortalSettingsTab() {
         setHasRazorpaySecret(data.hasRazorpaySecret)
         setHasAwsSecret(data.hasAwsSecret)
       })
-      .catch(() => toast.error("Failed to load settings"))
+      .catch((err) => console.error("Failed to load settings silently:", err))
       .finally(() => setLoading(false))
   }, [])
 

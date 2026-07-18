@@ -31,8 +31,9 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <head>
-        <script 
+        <Script 
           id="theme-script" 
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: `
             try {
               var theme = localStorage.getItem('theme');

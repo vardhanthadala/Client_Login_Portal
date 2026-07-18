@@ -48,11 +48,11 @@ export default function InviteClientModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger 
         render={
-          <Button className="w-full sm:w-auto bg-[#3651C6] hover:bg-[#2B42A4] text-white rounded-[4px] px-5 h-[38px] text-[12px] font-bold uppercase tracking-[0.05em] transition-all border-0 shadow-none hover:shadow-sm" />
+          <Button className="w-full sm:w-auto bg-[#0F172A] hover:bg-[#0F172A]/90 text-white rounded-[4px] px-5 h-[38px] text-[12px] font-medium uppercase tracking-[0.05em] transition-all border-0 shadow-none hover:shadow-sm" />
         }
       >
         <div className="flex items-center justify-center gap-1.5">
-          <Plus className="w-4 h-4" strokeWidth={2.5} />
+          <Plus className="w-4 h-4" strokeWidth={2} />
           INVITE NEW CLIENT
         </div>
       </DialogTrigger>
@@ -60,29 +60,29 @@ export default function InviteClientModal() {
         {credentials ? (
           <div className="flex flex-col">
             <div className="bg-[#FAFAFA] border-b border-[#F1F5F9] px-6 sm:px-8 py-6">
-              <DialogTitle className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A]">Client Invited Successfully!</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl font-sans font-medium text-[#0F172A]">Client Invited Successfully!</DialogTitle>
               <DialogDescription className="mt-2 text-[14px] sm:text-[15px] text-[#64748B]">
                 Send these temporary credentials securely to the client.
               </DialogDescription>
             </div>
             <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-4">
-              <div className="bg-[#F3F5FF] p-5 sm:p-6 rounded-xl space-y-3 border border-[#22C55E]/20">
+              <div className="bg-[#FAFAFA] p-5 sm:p-6 rounded-xl space-y-3 border border-[#E5E7EB]">
               <div>
-                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em]">URL: </span>
+                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em] font-medium">URL: </span>
                 <span className="font-mono text-sm">{typeof window !== "undefined" ? window.location.origin : ""}/login</span>
               </div>
               <div>
-                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em]">Email: </span>
+                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em] font-medium">Email: </span>
                 <span className="font-mono text-sm">{credentials.email}</span>
               </div>
               <div>
-                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em]">Temp Password: </span>
-                <span className="font-mono text-sm text-primary font-bold">{credentials.password}</span>
+                <span className="text-muted-foreground text-sm uppercase tracking-[0.12em] font-medium">Temp Password: </span>
+                <span className="font-mono text-sm text-[#0F172A] font-medium">{credentials.password}</span>
               </div>
               </div>
             </div>
             <div className="px-6 sm:px-8 py-5 bg-[#FAFAFA] border-t border-[#F1F5F9]">
-              <Button onClick={resetAndClose} className="w-full bg-[#22C55E] hover:bg-[#4F46E5] text-white h-12 rounded-xl text-[15px] font-medium transition-colors">
+              <Button onClick={resetAndClose} className="w-full bg-[#0F172A] hover:bg-[#0F172A]/90 text-white h-12 rounded-xl text-[15px] font-medium transition-colors">
                 Done
               </Button>
             </div>
@@ -90,7 +90,7 @@ export default function InviteClientModal() {
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col p-6 sm:p-10">
             <div className="mb-6 sm:mb-8">
-              <DialogTitle className="text-2xl sm:text-3xl font-sans font-bold text-[#0F172A] tracking-tight">Invite New Client</DialogTitle>
+              <DialogTitle className="text-2xl sm:text-3xl font-sans font-medium text-[#0F172A] tracking-tight">Invite New Client</DialogTitle>
               <DialogDescription className="mt-2 text-[14px] sm:text-[15px] text-[#64748B]">
                 Create a portal account for a new client in seconds.
               </DialogDescription>
@@ -98,30 +98,30 @@ export default function InviteClientModal() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-7">
               <div className="grid gap-2">
-                <Label htmlFor="companyName" className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Company Name</Label>
-                <Input id="companyName" name="companyName" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#22C55E]/10 focus-visible:border-[#22C55E] rounded-xl transition-all shadow-none" />
+                <Label htmlFor="companyName" className="text-[11px] font-medium tracking-[0.15em] text-[#64748B] uppercase">Company Name</Label>
+                <Input id="companyName" name="companyName" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#0F172A]/10 focus-visible:border-[#0F172A] rounded-xl transition-all shadow-none" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="clientName" className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Contact Person</Label>
-                <Input id="clientName" name="clientName" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#22C55E]/10 focus-visible:border-[#22C55E] rounded-xl transition-all shadow-none" />
+                <Label htmlFor="clientName" className="text-[11px] font-medium tracking-[0.15em] text-[#64748B] uppercase">Contact Person</Label>
+                <Input id="clientName" name="clientName" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#0F172A]/10 focus-visible:border-[#0F172A] rounded-xl transition-all shadow-none" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Email Address</Label>
-                <Input id="email" name="email" type="email" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#22C55E]/10 focus-visible:border-[#22C55E] rounded-xl transition-all shadow-none" />
+                <Label htmlFor="email" className="text-[11px] font-medium tracking-[0.15em] text-[#64748B] uppercase">Email Address</Label>
+                <Input id="email" name="email" type="email" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#0F172A]/10 focus-visible:border-[#0F172A] rounded-xl transition-all shadow-none" />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Password (For Client)</Label>
-                <Input id="password" name="password" type="text" placeholder="Set a password" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#22C55E]/10 focus-visible:border-[#22C55E] rounded-xl transition-all shadow-none" />
+                <Label htmlFor="password" className="text-[11px] font-medium tracking-[0.15em] text-[#64748B] uppercase">Password (For Client)</Label>
+                <Input id="password" name="password" type="text" placeholder="Set a password" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#0F172A]/10 focus-visible:border-[#0F172A] rounded-xl transition-all shadow-none" />
               </div>
               <div className="grid gap-2 sm:col-span-2">
-                <Label htmlFor="servicePurchased" className="text-[11px] font-bold tracking-[0.15em] text-[#64748B] uppercase">Service Purchased</Label>
-                <Input id="servicePurchased" name="servicePurchased" placeholder="e.g. Social Media Management" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#22C55E]/10 focus-visible:border-[#22C55E] rounded-xl transition-all shadow-none" />
+                <Label htmlFor="servicePurchased" className="text-[11px] font-medium tracking-[0.15em] text-[#64748B] uppercase">Service Purchased</Label>
+                <Input id="servicePurchased" name="servicePurchased" placeholder="e.g. Social Media Management" required className="h-12 bg-[#F8FAFC] border-transparent hover:bg-[#F1F5F9] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#0F172A]/10 focus-visible:border-[#0F172A] rounded-xl transition-all shadow-none" />
               </div>
             </div>
             {error && <p className="text-destructive text-sm font-medium mt-4">{error}</p>}
             
             <div className="mt-8 sm:mt-10">
-              <Button type="submit" disabled={isLoading} className="w-full bg-[#22C55E] hover:bg-[#4F46E5] text-white h-14 rounded-2xl text-[16px] font-bold transition-all shadow-lg shadow-[#22C55E]/20 hover:shadow-xl hover:shadow-[#22C55E]/30 hover:-translate-y-0.5">
+              <Button type="submit" disabled={isLoading} className="w-full bg-[#0F172A] hover:bg-[#0F172A]/90 text-white h-14 rounded-2xl text-[16px] font-medium transition-all shadow-lg shadow-[#0F172A]/10 hover:shadow-xl hover:shadow-[#0F172A]/20 hover:-translate-y-0.5">
                 {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Create Client Account"}
               </Button>
             </div>
