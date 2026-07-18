@@ -123,7 +123,7 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
           {/* Navigation Links */}
           <div className="px-4 py-2 flex-1">
             {!isMiniMenu && (
-              <p className="px-3 mt-6 text-[11px] font-semibold tracking-wider text-[#64748b] dark:text-[#94A3B8] uppercase mb-4">
+              <p className="px-3 mt-6 text-[11px] font-medium tracking-wider text-[#64748b] dark:text-[#94A3B8] uppercase mb-4">
                 PLATFORM ADMIN
               </p>
             )}
@@ -131,7 +131,7 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
               <Link
                 href="/superadmin/dashboard?tab=overview"
                 onClick={() => setIsSidebarOpen(false)}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-normal transition-colors w-full text-left ${
                   (activeTab === "overview")
                     ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
                     : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
@@ -156,7 +156,7 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
               <Link
                 href="/superadmin/dashboard?tab=agencies"
                 onClick={() => setIsSidebarOpen(false)}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-normal transition-colors w-full text-left ${
                   activeTab === "agencies"
                     ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
                     : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
