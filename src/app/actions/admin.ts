@@ -268,3 +268,21 @@ export async function cancelAdminSubscriptionAction() {
     return { error: "Failed to cancel subscription" }
   }
 }
+
+export async function updateAdminStatusAction(status: string) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
+
+    await prisma.user.update({
+      where: { id: token.id as string },
+      data: { availabilityStatus: status }
+    })
+
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+  } catch (error) {
+    console.error("Failed to update status:", error)
+    return { error: "Failed to update status" }
+  }
+}

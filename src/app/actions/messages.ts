@@ -27,7 +27,26 @@ export async function getMessagesAction(clientProfileId: string) {
     })
     console.log("getMessagesAction found", messages.length, "messages")
 
-    return { success: true, data: messages }
+    // Find the admin user's status for this client
+    let adminStatus = "ACTIVE"
+    let adminInfo = null
+    const clientProfile = await prisma.clientProfile.findUnique({
+      where: { id: clientProfileId },
+      select: { tenantId: true }
+    })
+    
+    if (clientProfile?.tenantId) {
+      const adminUser = await prisma.user.findFirst({
+        where: { tenantId: clientProfile.tenantId, role: "ADMIN" },
+        select: { availabilityStatus: true, name: true, image: true }
+      })
+      if (adminUser) {
+        adminStatus = adminUser.availabilityStatus
+        adminInfo = { name: adminUser.name, image: adminUser.image }
+      }
+    }
+
+    return { success: true, data: messages, adminStatus, adminInfo }
   } catch (error: any) {
     console.error("Failed to fetch messages:", error)
     return { error: "Failed to fetch messages" }

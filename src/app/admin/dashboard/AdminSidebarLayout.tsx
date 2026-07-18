@@ -93,14 +93,13 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
   }
 
   const statuses = [
-    { id: "active", label: "Active", color: "#10B981" },
-    { id: "always", label: "Always", color: "#F59E0B" },
-    { id: "bussy", label: "Bussy", color: "#EF4444" },
-    { id: "inactive", label: "Inactive", color: "#14B8A6" },
-    { id: "disabled", label: "Disabled", color: "#1E3A8A" },
-    { id: "customization", label: "Customization", color: "#3B82F6" }
+    { id: "ACTIVE", label: "Active", color: "#10B981" },
+    { id: "AWAY", label: "Away", color: "#F59E0B" },
+    { id: "BUSY", label: "Busy", color: "#EF4444" }
   ]
-  const [selectedStatus, setSelectedStatus] = useState(statuses[0])
+  const [selectedStatus, setSelectedStatus] = useState(
+    statuses.find(s => s.id === adminUser?.availabilityStatus) || statuses[0]
+  )
 
   const [nameValue, setNameValue] = useState(adminUser?.name || "")
   const [avatarPreview, setAvatarPreview] = useState<string | null>(adminUser?.image || null)
@@ -113,6 +112,8 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
       setNameValue(adminUser.name || "")
       setAvatarPreview(adminUser.image || null)
       setAvatarUrl(adminUser.image || null)
+      const currentStatus = statuses.find(s => s.id === adminUser.availabilityStatus)
+      if (currentStatus) setSelectedStatus(currentStatus)
     }
   }, [adminUser])
 
@@ -593,17 +594,21 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                         {/* Status Options Submenu */}
                         {isStatusDropdownOpen && (
                           <div className="absolute left-[-170px] top-0 w-[160px] bg-white dark:bg-[#171A21] border border-[#E5E7EB] dark:border-white/5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.06)] p-1 z-[60] flex flex-col gap-0.5">
-                            {statuses.map(st => (
+                            {statuses.map(status => (
                               <button
-                                key={st.id}
-                                onClick={() => {
-                                  setSelectedStatus(st)
+                                key={status.id}
+                                onClick={async () => {
+                                  setSelectedStatus(status)
                                   setIsStatusDropdownOpen(false)
+                                  const { updateAdminStatusAction } = await import("@/app/actions/admin")
+                                  const res = await updateAdminStatusAction(status.id)
+                                  if (res.error) toast.error(res.error)
+                                  else toast.success("Status updated")
                                 }}
                                 className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-white/5 text-left transition-colors"
                               >
-                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: st.color }} />
-                                <span>{st.label}</span>
+                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }} />
+                                <span>{status.label}</span>
                               </button>
                             ))}
                           </div>

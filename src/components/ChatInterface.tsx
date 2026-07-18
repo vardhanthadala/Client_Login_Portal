@@ -27,6 +27,8 @@ export default function ChatInterface({
   currentUserId: string
 }) {
   const [messages, setMessages] = useState<any[]>([])
+  const [adminStatus, setAdminStatus] = useState<string>("ACTIVE")
+  const [adminInfo, setAdminInfo] = useState<{name: string | null, image: string | null} | null>(null)
   const [content, setContent] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isSending, setIsSending] = useState(false)
@@ -46,7 +48,13 @@ export default function ChatInterface({
   }
 
   useEffect(() => {
-    fetchMessages()
+    fetchMessages(true)
+    
+    // Poll for new messages and admin status every 10 seconds
+    const interval = setInterval(() => {
+      fetchMessages(false)
+    }, 10000)
+
     markMessagesAsReadAction(clientProfileId).then(() => {
       // Clear corresponding notifications from the local store immediately
       const store = useNotificationsStore.getState()
@@ -56,6 +64,8 @@ export default function ChatInterface({
         }
       })
     })
+
+    return () => clearInterval(interval)
   }, [clientProfileId])
 
   useEffect(() => {
@@ -74,13 +84,15 @@ export default function ChatInterface({
     }, 150);
   }
 
-  const fetchMessages = async () => {
-    setIsLoading(true)
+  const fetchMessages = async (showLoader = true) => {
+    if (showLoader) setIsLoading(true)
     const res = await getMessagesAction(clientProfileId)
     if (res.success && res.data) {
       setMessages(res.data)
+      if (res.adminStatus) setAdminStatus(res.adminStatus)
+      if (res.adminInfo) setAdminInfo(res.adminInfo)
     }
-    setIsLoading(false)
+    if (showLoader) setIsLoading(false)
   }
 
   const handleSend = async (e: React.FormEvent) => {
@@ -142,10 +154,36 @@ export default function ChatInterface({
   }
 
   return (
-    <div className="flex flex-col h-full w-full relative bg-gradient-to-br from-[#f4f7fb] via-white to-[#eef2f7] dark:from-[#0b0d12] dark:via-[#0a0a0a] dark:to-[#111318] rounded-[24px] overflow-hidden border border-slate-200 dark:border-[#222]">
+    <div className="flex flex-col h-[calc(100vh-220px)] min-h-[500px] w-full relative bg-gradient-to-br from-[#f4f7fb] via-white to-[#eef2f7] dark:from-[#0b0d12] dark:via-[#0a0a0a] dark:to-[#111318] rounded-[24px] overflow-hidden border border-slate-200 dark:border-[#222]">
       
       {/* Background container */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+      {/* Chat Header (Only visible for Clients) */}
+      {typeof window !== 'undefined' && window.location.pathname.includes('/client') && !window.location.pathname.includes('/admin') && (
+        <div className="px-5 sm:px-8 py-3 sm:py-4 bg-white/80 dark:bg-black/40 backdrop-blur-md border-b border-slate-200/60 dark:border-white/5 z-20 shrink-0 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-[#333] shadow-sm">
+            {adminInfo?.image ? (
+              <img src={getAvatarSrc(adminInfo.image)} alt="Admin" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-[14px]">
+                {adminInfo?.name ? adminInfo.name.charAt(0).toUpperCase() : 'A'}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[14.5px] font-bold text-slate-800 dark:text-slate-100 leading-tight">
+              {adminInfo?.name || "Admin"}
+            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <div className={`w-2 h-2 rounded-full ${adminStatus === 'ACTIVE' ? 'bg-[#10B981]' : adminStatus === 'AWAY' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`} />
+              <span className="text-[12.5px] font-medium text-slate-500">{adminStatus.charAt(0).toUpperCase() + adminStatus.slice(1).toLowerCase()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
 
       {/* Chat Messages */}
       <div 
@@ -158,10 +196,12 @@ export default function ChatInterface({
           </div>
         ) : messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center space-y-3 flex-1">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-emerald-200">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-emerald-200 relative">
               <Send className="w-8 h-8 ml-1" />
+              <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${adminStatus === 'ACTIVE' ? 'bg-[#10B981]' : adminStatus === 'AWAY' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`} />
             </div>
             <p className="text-[#64748B] font-medium max-w-[200px]">No messages yet. Say hello to start the conversation!</p>
+            <p className="text-[12px] font-medium text-slate-400">Agency is currently {adminStatus.toLowerCase()}</p>
           </div>
         ) : (
           <>
