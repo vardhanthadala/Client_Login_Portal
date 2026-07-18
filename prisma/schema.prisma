@@ -122,7 +122,6 @@ model ClientProfile {
   slaAgreed       Boolean  @default(false)
   signature       String?
   agreedAt        DateTime?
-  profileImageUrl String?
 
   brandAssets         BrandAsset[]
   socialAccounts      SocialAccount[]
