@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from "framer-motion"
 import { PremiumIcon } from "@/components/PremiumIcon"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
-import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Building2, Maximize2, Minimize2 } from "lucide-react"
+import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Building2, Maximize2, Minimize2, Settings, Loader2 } from "lucide-react"
 import SignOutButton from "@/app/admin/dashboard/SignOutButton"
 import Link from "next/link"
 import { format } from "date-fns"
 import ThemeSettingsWidget from "@/components/admin/ThemeSettingsWidget"
+import { toast } from "sonner"
 
 export interface TabData {
   id: string;
@@ -23,12 +24,13 @@ interface SuperAdminSidebarLayoutProps {
   tabs: TabData[];
   initialTab?: string;
   adminName: string;
+  adminUser?: any;
   children?: React.ReactNode;
   webhookHealthy?: boolean;
 }
 
-export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, children, webhookHealthy = true }: SuperAdminSidebarLayoutProps) {
-  const finalAdminName = adminName || "Super Admin"
+export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, adminUser, children, webhookHealthy = true }: SuperAdminSidebarLayoutProps) {
+  const finalAdminName = adminUser?.name || adminName || "Super Admin"
   
   const router = useRouter()
   const pathname = usePathname()
@@ -44,6 +46,96 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+
+  // Account settings states
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [nameValue, setNameValue] = useState(adminUser?.name || finalAdminName || "")
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  // Helper to ensure avatar src is valid
+  const getAvatarSrc = (src: string | null | undefined) => {
+    if (!src) return ""
+    if (src.startsWith('data:') || src.startsWith('http')) return src
+    return src
+  }
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image must be less than 5MB")
+        return
+      }
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsUploading(true)
+    
+    try {
+      let finalImageUrl = adminUser?.image || null
+
+      if (selectedFile) {
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+        
+        const res = await fetch("/api/superadmin/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: selectedFile.name,
+            contentType: selectedFile.type,
+            fileSize: selectedFile.size
+          })
+        })
+        
+        if (!res.ok) {
+          const errorData = await res.json()
+          throw new Error(errorData.error || "Failed to get upload URL")
+        }
+        
+        const { uploadUrl, fileUrl } = await res.json()
+        
+        const uploadRes = await fetch(uploadUrl, {
+          method: "PUT",
+          body: selectedFile,
+          headers: {
+            "Content-Type": selectedFile.type
+          }
+        })
+        
+        if (!uploadRes.ok) throw new Error("Failed to upload image to S3")
+        finalImageUrl = fileUrl
+      }
+
+      const { updateSuperAdminProfileAction } = await import("@/app/actions/superadmin")
+      const form = new FormData()
+      form.append("name", nameValue)
+      if (finalImageUrl) form.append("imageUrl", finalImageUrl)
+
+      const result = await updateSuperAdminProfileAction(form)
+      
+      if (result.error) throw new Error(result.error)
+        
+      toast.success("Profile updated successfully")
+      setIsSettingsModalOpen(false)
+      setSelectedFile(null)
+      
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update profile")
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   // Sync state with props to handle Next.js navigations
   useEffect(() => {
@@ -232,7 +324,11 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
                 className="w-8 h-8 rounded-full overflow-hidden border border-[#E5E7EB] bg-[#eff1f6] dark:bg-[#1e293b] flex items-center justify-center font-bold text-sm text-[#0F172A] dark:text-white shrink-0 cursor-pointer outline-none focus:ring-2 focus:ring-[#3454d1]"
                 title={finalAdminName}
               >
-                {finalAdminName[0].toUpperCase()}
+                {(avatarPreview || adminUser?.image) ? (
+                  <img src={getAvatarSrc(avatarPreview || adminUser?.image)} alt={finalAdminName} className="w-full h-full object-cover" />
+                ) : (
+                  finalAdminName[0].toUpperCase()
+                )}
               </button>
 
               {/* Profile Dropdown Menu */}
@@ -244,19 +340,37 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
                     {/* User Profile Header Info */}
                     <div className="flex items-center gap-3 p-3 border-b border-[#F1F5F9] dark:border-white/5">
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-[#E5E7EB] bg-[#eff1f6] dark:bg-[#1e293b] flex items-center justify-center font-bold text-base text-[#0F172A] dark:text-white shrink-0">
-                        {finalAdminName[0].toUpperCase()}
+                        {(avatarPreview || adminUser?.image) ? (
+                          <img src={getAvatarSrc(avatarPreview || adminUser?.image)} alt={finalAdminName} className="w-full h-full object-cover" />
+                        ) : (
+                          finalAdminName[0].toUpperCase()
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="font-normal text-[14px] text-[#0F172A] dark:text-white truncate block">{finalAdminName}</span>
                           <span className="bg-[#5A52FF]/10 text-[#5A52FF] text-[9px] font-[700] px-1.5 py-0.5 rounded uppercase tracking-wider">SUPER ADMIN</span>
                         </div>
-                        <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8] truncate block mt-0.5">Administrator</span>
+                        <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8] truncate block mt-0.5">{adminUser?.email || "Administrator"}</span>
                       </div>
                     </div>
 
                     {/* Menu Actions */}
                     <div className="py-1.5 flex flex-col gap-0.5 relative">
+                      {/* Account Settings Option */}
+                      <button 
+                        onClick={() => {
+                          setIsSettingsModalOpen(true)
+                          setIsProfileOpen(false)
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-normal text-[#334155] dark:text-[#CBD5E1] hover:bg-[#F8FAFC] dark:hover:bg-white/5 text-left transition-colors"
+                      >
+                        <Settings className="w-4 h-4 text-[#64748B]" />
+                        <span>Account Settings</span>
+                      </button>
+
+                      <hr className="my-1 border-[#F1F5F9] dark:border-white/5" />
+
                       {/* Sign Out Action */}
                       <SignOutButton variant="dropdown" />
                     </div>
@@ -294,6 +408,115 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, c
           )}
         </div>
       </main>
+
+      {/* Account Settings Modal */}
+      <AnimatePresence>
+        {isSettingsModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSettingsModalOpen(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+
+            {/* Modal Box */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-[450px] bg-white dark:bg-[#171A21] border border-slate-200 dark:border-white/5 rounded-[24px] shadow-[0_30px_90px_rgba(0,0,0,0.15)] overflow-hidden z-10"
+            >
+              <div className="p-6 sm:p-8">
+                <h3 className="text-xl font-normal text-slate-900 dark:text-white tracking-tight mb-2 font-sans">Account Settings</h3>
+                <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-6 font-normal font-sans">Manage your super admin profile details and profile picture.</p>
+
+                <form onSubmit={handleSaveProfile} className="flex flex-col gap-5 font-sans">
+                  {/* Avatar Upload Selection Block */}
+                  <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-100 dark:border-white/5">
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white dark:border-[#171A21] bg-[#eff1f6] dark:bg-slate-800 flex items-center justify-center font-normal text-2xl text-slate-800 dark:text-white shrink-0 shadow-sm">
+                      {(avatarPreview || adminUser?.image) ? (
+                        <img src={getAvatarSrc(avatarPreview || adminUser?.image)} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        nameValue ? nameValue[0].toUpperCase() : "S"
+                      )}
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-normal text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Profile Photo</label>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleAvatarFileChange} 
+                        className="hidden" 
+                        id="avatar-upload-input"
+                        disabled={isUploading}
+                      />
+                      <label 
+                        htmlFor="avatar-upload-input" 
+                        className="inline-flex items-center justify-center px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#1C2029] text-xs font-normal text-[#3454d1] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                      >
+                        {isUploading ? "Uploading..." : "Upload New Picture"}
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Name field */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-normal text-slate-500 dark:text-slate-400 uppercase tracking-wider">Full Name</label>
+                    <input 
+                      type="text"
+                      value={nameValue}
+                      onChange={(e) => setNameValue(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1C2029] text-sm text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+                      placeholder="e.g. Super Admin"
+                      required
+                    />
+                  </div>
+
+                  {/* Email field (Read-only) */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-normal text-slate-500 dark:text-slate-400 uppercase tracking-wider">Email Address (Login Credential)</label>
+                    <input 
+                      type="email"
+                      value={adminUser?.email || ""}
+                      readOnly
+                      disabled
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-sm text-slate-400 cursor-not-allowed outline-none font-normal"
+                    />
+                  </div>
+
+                  {/* Actions buttons */}
+                  <div className="flex items-center justify-end gap-3 mt-4">
+                    <button 
+                      type="button"
+                      onClick={() => setIsSettingsModalOpen(false)}
+                      className="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#1C2029] text-xs font-normal text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                      disabled={isUploading}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      className="px-4 py-2 rounded-xl bg-[#3454d1] text-xs font-normal text-white hover:bg-[#2541a5] transition-colors"
+                      disabled={isUploading}
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   )
 }

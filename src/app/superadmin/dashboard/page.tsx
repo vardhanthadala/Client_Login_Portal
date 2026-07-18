@@ -22,7 +22,10 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   const initialTab = (searchParams?.tab as string) || "overview"
 
   const session = await auth()
-  const adminName = session?.user?.name || "Super Admin"
+  const adminUser = session?.user?.id 
+    ? await prisma.user.findUnique({ where: { id: session.user.id } }) 
+    : null;
+  const adminName = adminUser?.name || session?.user?.name || "Super Admin"
 
   const tenants = await prisma.tenant.findMany({
     orderBy: { createdAt: "desc" },
@@ -152,10 +155,8 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
       tabs={tabs} 
       initialTab={initialTab} 
       adminName={adminName} 
+      adminUser={adminUser}
       webhookHealthy={webhookHealthy} 
     />
   )
 }
-
-
-

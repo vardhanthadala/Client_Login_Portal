@@ -384,3 +384,33 @@ export async function overrideSubscriptionAction(tenantId: string, newPlan: stri
     return { error: "Failed to override subscription" }
   }
 }
+
+export async function updateSuperAdminProfileAction(formData: FormData) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") {
+      return { error: "Unauthorized" }
+    }
+
+    const name = formData.get("name") as string
+    const imageUrl = formData.get("imageUrl") as string | null
+
+    if (!name) {
+      return { error: "Name is required" }
+    }
+
+    await prisma.user.update({
+      where: { id: token.id as string },
+      data: {
+        name,
+        image: imageUrl || undefined
+      }
+    })
+
+    revalidatePath("/superadmin/dashboard")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to update super admin profile:", error)
+    return { error: "Failed to update profile" }
+  }
+}
