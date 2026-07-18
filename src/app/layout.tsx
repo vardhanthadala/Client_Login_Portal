@@ -35,7 +35,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <Script 
           id="theme-script" 
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: `
             try {
               var theme = localStorage.getItem('theme');

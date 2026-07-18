@@ -210,7 +210,16 @@ export async function getSuperAdminLogs() {
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {
-        tenant: { select: { name: true } }
+        tenant: {
+          select: { 
+            name: true,
+            id: true,
+            users: {
+              where: { role: "ADMIN" },
+              select: { image: true }
+            }
+          } 
+        }
       }
     })
     return { success: true, data: logs }

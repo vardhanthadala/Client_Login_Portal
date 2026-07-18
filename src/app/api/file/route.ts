@@ -28,45 +28,69 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Parse the S3 URL to extract the key
+    let key = ""
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(urlParam)
+      key = decodeURIComponent(parsedUrl.pathname.substring(1))
+    } catch (e) {
+      return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+    }
+
+    const platformBucketName = process.env.AWS_S3_BUCKET_NAME
+    const usePlatformS3 = !!(platformBucketName && parsedUrl.hostname.includes(platformBucketName))
+
     // Fetch user and tenant
     const user = await prisma.user.findUnique({
       where: { id: token.id as string },
       include: { tenant: true }
     })
 
-    if (!user || !user.tenant) {
-      return NextResponse.json({ error: "Tenant not found for user." }, { status: 404 })
+    if (!user) {
+      return NextResponse.json({ error: "User not found." }, { status: 404 })
     }
 
-    const tenant = user.tenant
+    let s3Client;
+    let targetBucket;
 
-    if (!tenant.awsAccessKeyId || !tenant.awsSecretAccessKey || !tenant.awsRegion || !tenant.awsS3BucketName) {
-      return NextResponse.json({ error: "Storage is not configured." }, { status: 400 })
+    if (usePlatformS3) {
+      // If fetching a platform file, both Admins and Super Admins can access it.
+      const pRegion = process.env.AWS_REGION?.split(" ").pop()?.trim() || process.env.AWS_REGION!
+      s3Client = new S3Client({
+        region: pRegion,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      })
+      targetBucket = platformBucketName
+    } else {
+      // Tenant-specific file
+      if (!user.tenant) {
+        return NextResponse.json({ error: "Tenant not found for user." }, { status: 404 })
+      }
+
+      const tenant = user.tenant
+      if (!tenant.awsAccessKeyId || !tenant.awsSecretAccessKey || !tenant.awsRegion || !tenant.awsS3BucketName) {
+        return NextResponse.json({ error: "Storage is not configured." }, { status: 400 })
+      }
+
+      const decryptedSecret = decrypt(tenant.awsSecretAccessKey)
+      const cleanRegion = tenant.awsRegion.split(" ").pop()?.trim() || tenant.awsRegion
+
+      s3Client = new S3Client({
+        region: cleanRegion,
+        credentials: {
+          accessKeyId: tenant.awsAccessKeyId,
+          secretAccessKey: decryptedSecret,
+        },
+      })
+      targetBucket = tenant.awsS3BucketName
     }
-
-    // Parse the S3 URL to extract the key
-    let key = ""
-    try {
-      const parsedUrl = new URL(urlParam)
-      // pathname has a leading slash, we need to remove it for S3 key
-      key = decodeURIComponent(parsedUrl.pathname.substring(1))
-    } catch (e) {
-      return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
-    }
-
-    const decryptedSecret = decrypt(tenant.awsSecretAccessKey)
-    const cleanRegion = tenant.awsRegion.split(" ").pop()?.trim() || tenant.awsRegion
-
-    const s3Client = new S3Client({
-      region: cleanRegion,
-      credentials: {
-        accessKeyId: tenant.awsAccessKeyId,
-        secretAccessKey: decryptedSecret,
-      },
-    })
 
     const commandOptions: any = {
-      Bucket: tenant.awsS3BucketName,
+      Bucket: targetBucket,
       Key: key,
     }
 

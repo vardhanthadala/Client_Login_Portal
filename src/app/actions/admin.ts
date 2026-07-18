@@ -231,11 +231,88 @@ export async function updateAdminProfileAction(formData: FormData) {
       return { error: "Name is required" }
     }
 
+    let finalImageUrl = imageUrl || undefined
+
+    // If an image URL is provided and platform S3 is configured,
+    // copy the image server-side to the platform S3 bucket
+    if (imageUrl && imageUrl.startsWith("http")) {
+      try {
+        const accessKeyId = process.env.AWS_ACCESS_KEY_ID
+        const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+        const region = process.env.AWS_REGION
+        const bucketName = process.env.AWS_S3_BUCKET_NAME
+
+        if (accessKeyId && secretAccessKey && region && bucketName) {
+          // Fetch the image from the admin's S3 (using tenant credentials via our own proxy)
+          const user = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            include: { tenant: true }
+          })
+
+          if (user?.tenant?.awsAccessKeyId && user?.tenant?.awsSecretAccessKey) {
+            const { S3Client, GetObjectCommand, PutObjectCommand } = await import("@aws-sdk/client-s3")
+            const { decrypt } = await import("@/lib/encryption")
+
+            // Parse the S3 key from the URL
+            const parsedUrl = new URL(imageUrl)
+            const s3Key = decodeURIComponent(parsedUrl.pathname.substring(1))
+
+            const tenantRegion = user.tenant.awsRegion.split(" ").pop()?.trim() || user.tenant.awsRegion
+            const decryptedSecret = decrypt(user.tenant.awsSecretAccessKey)
+
+            // Fetch from admin's S3
+            const tenantS3 = new S3Client({
+              region: tenantRegion,
+              credentials: {
+                accessKeyId: user.tenant.awsAccessKeyId,
+                secretAccessKey: decryptedSecret,
+              },
+            })
+
+            const getCmd = new GetObjectCommand({
+              Bucket: user.tenant.awsS3BucketName!,
+              Key: s3Key,
+            })
+
+            const s3Response = await tenantS3.send(getCmd)
+            if (s3Response.Body) {
+              const bodyBytes = await s3Response.Body.transformToByteArray()
+
+              // Upload to platform S3
+              const pRegion = region.split(" ").pop()?.trim() || region
+              const platformS3 = new S3Client({
+                region: pRegion,
+                credentials: { accessKeyId, secretAccessKey },
+              })
+
+              const filename = s3Key.split("/").pop() || "profile.jpg"
+              const pKey = `admin-profiles/${token.id}/${Date.now()}-${filename}`
+
+              const putCmd = new PutObjectCommand({
+                Bucket: bucketName,
+                Key: pKey,
+                ContentType: s3Response.ContentType || "image/jpeg",
+                Body: bodyBytes,
+              })
+
+              await platformS3.send(putCmd)
+              finalImageUrl = `https://${bucketName}.s3.${pRegion}.amazonaws.com/${pKey}`
+              console.log("[ProfileSync] Copied admin profile to platform S3:", finalImageUrl)
+            }
+          }
+        }
+      } catch (copyErr) {
+        console.warn("Failed to copy image to platform S3:", copyErr)
+        // Continue with the original imageUrl as fallback
+      }
+    }
+
+    console.log("[ProfileSync] Saving image to DB:", finalImageUrl || "(no image)")
     await prisma.user.update({
       where: { id: token.id as string },
       data: {
         name,
-        image: imageUrl || undefined
+        image: finalImageUrl || undefined
       }
     })
 

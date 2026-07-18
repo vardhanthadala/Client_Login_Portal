@@ -17,6 +17,13 @@ import {
 } from "recharts"
 import { Loader2, TrendingUp, PieChart as PieChartIcon } from "lucide-react"
 import ChurnAnalyticsWidget from "@/components/superadmin/ChurnAnalyticsWidget"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 const COLORS = ["#5A52FF", "#10B981", "#F59E0B", "#F43F5E", "#8B5CF6"]
 
@@ -45,16 +52,40 @@ export default function AnalyticsCharts() {
 
   if (!data) return null
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const PremiumTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const chartData = payload[0].payload;
+      return (
+        <div className="bg-white/95 backdrop-blur-md dark:bg-[#1A1C23]/95 border border-[#E2E8F0] dark:border-white/10 p-5 rounded-[16px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] min-w-[200px] z-50">
+          <p className="font-medium text-[#64748B] dark:text-[#94A3B8] mb-4 text-[12px] tracking-wider uppercase">{label}</p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-6">
+              <div className="flex items-center gap-2.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#5A52FF] shadow-[0_0_10px_rgba(90,82,255,0.8)]" />
+                <span className="text-[14px] font-normal text-[#475569] dark:text-[#CBD5E1]">New Companies</span>
+              </div>
+              <span className="text-[15px] font-medium text-[#0F172A] dark:text-white">
+                {chartData.agencies}
+              </span>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  // A basic CustomTooltip for the pie chart since it was using the generic CustomTooltip
+  const CustomPieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-[#161616] border border-[#E2E8F0] dark:border-[#333] p-4 rounded-[16px] shadow-[0_8px_30px_rgb(0,0,0,0.08)] min-w-[150px]">
-          <p className="font-bold text-[#0F172A] dark:text-white mb-2 text-[13px] uppercase tracking-wider">{label}</p>
+        <div className="bg-white/95 backdrop-blur-md dark:bg-[#1A1C23]/95 border border-[#E2E8F0] dark:border-white/10 p-4 rounded-[16px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] min-w-[150px]">
+          <p className="font-medium text-[#64748B] dark:text-[#94A3B8] mb-3 text-[12px] tracking-wider uppercase">{payload[0].name}</p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill || COLORS[index % COLORS.length] }} />
-              <p className="text-[14px] font-bold text-[#334155] dark:text-[#E2E8F0]">
-                {entry.name}: <span className="text-[#0F172A] dark:text-white">{entry.value}</span>
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color || entry.fill || COLORS[index % COLORS.length] }} />
+              <p className="text-[14px] font-normal text-[#475569] dark:text-[#CBD5E1]">
+                Count: <span className="text-[#0F172A] dark:text-white font-medium ml-1">{entry.value}</span>
               </p>
             </div>
           ))}
@@ -66,73 +97,77 @@ export default function AnalyticsCharts() {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10 h-full">
-      <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
-        <div className="pb-2 px-6 pt-6 sm:px-8 sm:pt-8 border-b border-[#F1F5F9] dark:border-[#222] relative z-10">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/5 flex items-center justify-center shadow-inner border border-indigo-100 dark:border-indigo-500/20 relative">
-              <div className="absolute inset-0 bg-indigo-500 blur-md opacity-20 rounded-[14px]"></div>
-              <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400 relative z-10" />
-            </div>
-            <h3 className="text-2xl font-sans font-bold text-[#0F172A] dark:text-white tracking-tight">Company Growth</h3>
-          </div>
-          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1 mb-4 ml-1">New company signups over the last 6 months</p>
-        </div>
-        <div className="p-6 sm:p-8 pt-6 flex-1 relative z-10">
-          <div className="h-[280px] w-full mt-4">
+      {/* Premium Company Growth Area Chart */}
+      <Card className="bg-white dark:bg-[#171A21] border border-[#E5E7EB] dark:border-white/5 rounded-[16px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] min-w-0">
+        <CardHeader className="pb-0 px-6 pt-6 sm:px-8 sm:pt-8 border-b-0">
+          <CardTitle className="text-lg font-sans font-medium text-[#0F172A] dark:text-white tracking-tight">Company Growth</CardTitle>
+          <CardDescription className="text-sm text-[#64748B] dark:text-[#94A3B8] font-normal mt-1 mb-2">New company signups over the last 6 months.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 sm:p-8 pt-4">
+          <div className="h-[280px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.growth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={data.growth} margin={{ top: 20, right: 10, left: -20, bottom: 20 }}>
                 <defs>
-                  <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#5A52FF" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#5A52FF" stopOpacity={0}/>
+                  <linearGradient id="premiumGrowthGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#5A52FF" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#5A52FF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.4} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" strokeOpacity={0.5} />
                 <XAxis 
                   dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{fill: '#64748B', fontSize: 13, fontWeight: 500}} 
-                  dy={10} 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 400 }}
+                  dy={15}
                 />
                 <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{fill: '#64748B', fontSize: 13, fontWeight: 500}} 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 400 }}
                   allowDecimals={false}
                   dx={-10}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#CBD5E1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                <Tooltip 
+                  content={<PremiumTooltip />} 
+                  cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
+                />
                 <Area 
                   type="monotone" 
                   dataKey="agencies" 
                   name="New Companies"
                   stroke="#5A52FF" 
-                  strokeWidth={3} 
-                  fill="url(#colorGrowth)"
-                  activeDot={{ r: 6, fill: '#5A52FF', stroke: '#fff', strokeWidth: 2 }} 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#premiumGrowthGradient)" 
+                  activeDot={{ 
+                    r: 6, 
+                    fill: '#5A52FF', 
+                    stroke: '#fff', 
+                    strokeWidth: 3,
+                    style: { filter: 'drop-shadow(0px 4px 8px rgba(90, 82, 255, 0.5))' } 
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/30 transition-all duration-300 min-w-0 flex flex-col relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
-        <div className="pb-2 px-6 pt-6 sm:px-8 sm:pt-8 border-b border-[#F1F5F9] dark:border-[#222] relative z-10">
+      {/* Premium Subscription Plans Pie Chart */}
+      <Card className="bg-[#FFFFFF] dark:bg-[#171A21] border border-[#E5E7EB] dark:border-white/5 rounded-[16px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] min-w-0 flex flex-col relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500"></div>
+        <CardHeader className="pb-0 px-6 pt-6 sm:px-8 sm:pt-8 border-b-0 relative z-10">
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-500/20 dark:to-emerald-500/5 flex items-center justify-center shadow-inner border border-emerald-100 dark:border-emerald-500/20 relative">
-              <div className="absolute inset-0 bg-emerald-500 blur-md opacity-20 rounded-[14px]"></div>
-              <PieChartIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 relative z-10" />
+            <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-500/20 dark:to-emerald-500/5 flex items-center justify-center shadow-inner border border-emerald-100 dark:border-emerald-500/20">
+              <PieChartIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-2xl font-sans font-bold text-[#0F172A] dark:text-white tracking-tight">Subscription Plans</h3>
+            <CardTitle className="text-lg font-sans font-medium text-[#0F172A] dark:text-white tracking-tight">Subscription Plans</CardTitle>
           </div>
-          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1 mb-4 ml-1">Distribution of active tenants across plans</p>
-        </div>
-        <div className="p-6 sm:p-8 pt-6 flex-1 relative z-10">
-          <div className="h-[280px] w-full mt-4 flex items-center justify-center">
+          <CardDescription className="text-sm text-[#64748B] dark:text-[#94A3B8] font-normal mt-2 mb-2 ml-1">Distribution of active tenants across plans.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 sm:p-8 pt-4 flex-1">
+          <div className="h-[280px] w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -150,21 +185,22 @@ export default function AnalyticsCharts() {
                       key={`cell-${index}`} 
                       fill={COLORS[index % COLORS.length]} 
                       className="hover:opacity-80 transition-opacity duration-300 outline-none"
+                      style={{ filter: `drop-shadow(0px 4px 10px ${COLORS[index % COLORS.length]}66)` }}
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomPieTooltip />} />
                 <Legend 
                   verticalAlign="bottom" 
                   height={36} 
                   iconType="circle" 
-                  formatter={(value) => <span className="text-[#64748B] dark:text-[#94A3B8] font-medium text-[13px] ml-1">{value}</span>}
+                  formatter={(value) => <span className="text-[#64748B] dark:text-[#94A3B8] font-normal text-[13px] ml-1">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       
       {/* Move Churn Analytics out or keep it here if layout allows */}
     </div>

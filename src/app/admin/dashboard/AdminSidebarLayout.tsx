@@ -174,7 +174,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
 
       const { uploadUrl, fileUrl } = data
 
-      // PUT compressed file to S3
+      // PUT compressed file to Admin S3
       const putRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": compressedFile.type },
@@ -184,9 +184,9 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
       if (!putRes.ok) throw new Error("Failed to upload file to S3")
 
       setAvatarUrl(fileUrl)
-      setAvatarPreview(fileUrl)
+      // Keep the local data: URL preview — don't overwrite with S3 URL
 
-      // Persist image URL to DB
+      // Persist image URL to DB (server will also copy to platform S3)
       const saveData = new FormData()
       saveData.append("name", nameValue || finalAdminName)
       saveData.append("imageUrl", fileUrl)
@@ -546,9 +546,16 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                 className="w-8 h-8 rounded-full overflow-hidden border border-[#E5E7EB] bg-[#eff1f6] dark:bg-[#1e293b] flex items-center justify-center font-bold text-sm text-[#0F172A] dark:text-white shrink-0 cursor-pointer outline-none focus:ring-2 focus:ring-[#3454d1]"
                 title={finalAdminName}
               >
-                {(avatarPreview || adminUser?.image) ? (
-                  <img src={getAvatarSrc(avatarPreview || adminUser?.image)} alt={finalAdminName} className="w-full h-full object-cover" />
-                ) : (
+                        {(avatarPreview || adminUser?.image) ? (
+                          <img 
+                            src={getAvatarSrc(avatarPreview || adminUser?.image)} 
+                            alt={finalAdminName} 
+                            className="w-full h-full object-cover" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${adminUser?.email || 'admin'}`;
+                            }}
+                          />
+                        ) : (
                   finalAdminName[0].toUpperCase()
                 )}
               </button>
@@ -563,7 +570,14 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                     <div className="flex items-center gap-3 p-3 border-b border-[#F1F5F9] dark:border-white/5">
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-[#E5E7EB] bg-[#eff1f6] dark:bg-[#1e293b] flex items-center justify-center font-bold text-base text-[#0F172A] dark:text-white shrink-0">
                         {(avatarPreview || adminUser?.image) ? (
-                          <img src={getAvatarSrc(avatarPreview || adminUser?.image)} alt={finalAdminName} className="w-full h-full object-cover" />
+                          <img 
+                            src={getAvatarSrc(avatarPreview || adminUser?.image)} 
+                            alt={finalAdminName} 
+                            className="w-full h-full object-cover" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${adminUser?.email || 'admin'}`;
+                            }}
+                          />
                         ) : (
                           finalAdminName[0].toUpperCase()
                         )}
@@ -729,7 +743,14 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                   <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-100 dark:border-white/5">
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white dark:border-[#171A21] bg-[#eff1f6] dark:bg-slate-800 flex items-center justify-center font-normal text-2xl text-slate-800 dark:text-white shrink-0 shadow-sm">
                       {avatarPreview ? (
-                        <img src={getAvatarSrc(avatarPreview)} alt="Preview" className="w-full h-full object-cover" />
+                        <img 
+                          src={getAvatarSrc(avatarPreview)} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = `https://i.pravatar.cc/150?u=${adminUser?.email || 'admin'}`;
+                          }}
+                        />
                       ) : (
                         nameValue ? nameValue[0].toUpperCase() : "A"
                       )}

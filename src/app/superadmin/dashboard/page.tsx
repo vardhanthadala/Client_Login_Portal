@@ -12,7 +12,7 @@ import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
 import AgencySearch from "./AgencySearch"
 import MrrArrWidget from "@/components/superadmin/MrrArrWidget"
-import { ShieldCheck, Search, Download, Building2, Zap, AlertCircle } from "lucide-react"
+import { ShieldCheck, Search, Download, Building2, Zap, AlertCircle, MoreVertical } from "lucide-react"
 import SuperAdminSidebarLayout, { TabData } from "./SuperAdminSidebarLayout"
 import AgencyCard from "./AgencyCard"
 
@@ -22,8 +22,8 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   const initialTab = (searchParams?.tab as string) || "overview"
 
   const session = await auth()
-  const adminUser = session?.user?.id 
-    ? await prisma.user.findUnique({ where: { id: session.user.id } }) 
+  const adminUser = session?.user?.id
+    ? await prisma.user.findUnique({ where: { id: session.user.id } })
     : null;
   const adminName = adminUser?.name || session?.user?.name || "Super Admin"
 
@@ -40,7 +40,7 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   // Basic check for Webhook Health
   const webhookHealthy = !!process.env.RAZORPAY_KEY_ID
 
-  const filteredTenants = tenants.filter(t => 
+  const filteredTenants = tenants.filter(t =>
     t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q)
   )
 
@@ -53,48 +53,95 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 2xl:gap-6">
             <MrrArrWidget />
-            
-            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/5 flex items-center justify-center shadow-inner border border-indigo-100 dark:border-indigo-500/20 relative">
-                  <div className="absolute inset-0 bg-indigo-500 blur-md opacity-20 rounded-[16px]"></div>
-                  <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 relative z-10" />
+
+            <div className="bg-white dark:bg-[#111111] rounded-[16px] border border-[#E9EDF4] dark:border-[#2A2E35] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[140px] relative group">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-[22px] font-medium text-[#0F172A] dark:text-white tabular-nums tracking-tight">
+                      {tenants.length}
+                    </h3>
+                    <p className="text-[13px] font-normal text-[#64748B] dark:text-[#94A3B8] mt-0.5">Total Companies</p>
+                  </div>
                 </div>
               </div>
-              <h3 className="text-3xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mt-1">{tenants.length}</h3>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Total Companies</p>
-              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Registered Platforms</p>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-normal text-[#64748B] dark:text-[#94A3B8]">Registered Platforms</span>
+                  <span className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">
+                    100%
+                  </span>
+                </div>
+                <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full w-[100%]"></div>
+                </div>
+              </div>
             </div>
             
-            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-500/20 dark:to-emerald-500/5 flex items-center justify-center shadow-inner border border-emerald-100 dark:border-emerald-500/20 relative">
-                  <div className="absolute inset-0 bg-emerald-500 blur-md opacity-20 rounded-[16px]"></div>
-                  <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400 relative z-10" />
+            <div className="bg-white dark:bg-[#111111] rounded-[16px] border border-[#E9EDF4] dark:border-[#2A2E35] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[140px] relative group">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-[22px] font-medium text-[#0F172A] dark:text-white tabular-nums tracking-tight">
+                      {tenants.filter(t => t.subscriptionStatus === "ACTIVE").length}
+                    </h3>
+                    <p className="text-[13px] font-normal text-[#64748B] dark:text-[#94A3B8] mt-0.5">Active Subs</p>
+                  </div>
                 </div>
               </div>
-              <h3 className="text-3xl font-sans font-bold text-[#0F172A] dark:text-white tabular-nums tracking-tight mt-1">
-                {tenants.filter(t => t.subscriptionStatus === "ACTIVE").length}
-              </h3>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Active Subs</p>
-              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Paying Customers</p>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-normal text-[#64748B] dark:text-[#94A3B8]">Paying Customers</span>
+                  <span className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">
+                    {tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "ACTIVE").length / tenants.length) * 100) : 0}%
+                  </span>
+                </div>
+                <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-emerald-500 rounded-full" 
+                    style={{ width: `${tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "ACTIVE").length / tenants.length) * 100) : 0}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
             
-            <div className="bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:border-rose-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 dark:bg-rose-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-rose-500/20 dark:to-rose-500/5 flex items-center justify-center shadow-inner border border-rose-100 dark:border-rose-500/20 relative">
-                  <div className="absolute inset-0 bg-rose-500 blur-md opacity-20 rounded-[16px]"></div>
-                  <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="bg-white dark:bg-[#111111] rounded-[16px] border border-[#E9EDF4] dark:border-[#2A2E35] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[140px] relative group">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                    <AlertCircle className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-[22px] font-medium text-[#0F172A] dark:text-white tabular-nums tracking-tight">
+                      {tenants.filter(t => t.subscriptionStatus === "EXPIRED").length}
+                    </h3>
+                    <p className="text-[13px] font-normal text-[#64748B] dark:text-[#94A3B8] mt-0.5">Expired Subs</p>
+                  </div>
                 </div>
               </div>
-              <h3 className="text-3xl font-sans font-bold text-rose-600 dark:text-rose-500 tabular-nums tracking-tight mt-1">
-                {tenants.filter(t => t.subscriptionStatus === "EXPIRED").length}
-              </h3>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mt-2 mb-0.5">Expired Subs</p>
-              <p className="text-[13px] font-medium text-[#64748B] dark:text-[#666]">Needs Action</p>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-normal text-[#64748B] dark:text-[#94A3B8]">Needs Action</span>
+                  <span className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">
+                    {tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "EXPIRED").length / tenants.length) * 100) : 0}%
+                  </span>
+                </div>
+                <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-rose-500 rounded-full" 
+                    style={{ width: `${tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "EXPIRED").length / tenants.length) * 100) : 0}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -114,21 +161,21 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
       label: "Companies",
       content: (
         <div className="flex flex-col gap-6">
-    <div className="flex flex-col xl:flex-row xl:items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm gap-4 xl:gap-6">
-      <div className="w-full xl:w-auto">
-        <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Companies Directory</h2>
-        <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all registered companies, their subscriptions, and limits.</p>
-      </div>
-      <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto mt-2 xl:mt-0">
-        <div className="w-full sm:w-auto">
-          <AgencySearch />
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-          <ExportCsvButton tenants={tenants} />
-          <AddAgencyDialog />
-        </div>
-      </div>
-    </div>
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm gap-4 xl:gap-6">
+            <div className="w-full xl:w-auto">
+              <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Companies Directory</h2>
+              <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all registered companies, their subscriptions, and limits.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto mt-2 xl:mt-0">
+              <div className="w-full sm:w-auto">
+                <AgencySearch />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+                <ExportCsvButton tenants={tenants} />
+                <AddAgencyDialog />
+              </div>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 2xl:gap-8">
             {filteredTenants.map((tenant) => {
@@ -151,12 +198,12 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   ]
 
   return (
-    <SuperAdminSidebarLayout 
-      tabs={tabs} 
-      initialTab={initialTab} 
-      adminName={adminName} 
+    <SuperAdminSidebarLayout
+      tabs={tabs}
+      initialTab={initialTab}
+      adminName={adminName}
       adminUser={adminUser}
-      webhookHealthy={webhookHealthy} 
+      webhookHealthy={webhookHealthy}
     />
   )
 }
