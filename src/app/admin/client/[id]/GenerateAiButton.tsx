@@ -21,7 +21,7 @@ export default function GenerateAiButton({ clientProfileId }: { clientProfileId:
   }
 
   return (
-    <Button onClick={handleGenerate} disabled={loading} size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/10 transition-colors">
+    <Button onClick={handleGenerate} disabled={loading} size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md border-0 transition-all duration-300 hover:scale-[1.02] active:scale-95">
       {loading ? "Generating..." : "Generate AI Summary"}
     </Button>
   )

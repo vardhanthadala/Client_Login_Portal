@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createApprovalAction, resubmitApprovalItemAction, deleteApprovalAction } from "@/app/actions/approvals"
-import { Loader2, Plus, Upload, Trash2, ExternalLink, RefreshCw, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp, X, Image as ImageIcon } from "lucide-react"
+import { Loader2, Plus, Upload, Trash2, ExternalLink, RefreshCw, CheckCircle2, Clock, AlertTriangle, ChevronDown, ChevronUp, X, Image as ImageIcon, ClipboardCheck, FileImage } from "lucide-react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -175,84 +175,90 @@ export default function ManageApprovals({
   const isImage = (fileType: string) => fileType.startsWith("image/")
 
   const getBatchStatus = (items: ApprovalItem[]) => {
-    if (items.every(i => i.status === "APPROVED")) return { label: "All Approved", className: "bg-green-100 text-green-700" }
-    if (items.some(i => i.status === "CHANGES_REQUESTED")) return { label: "Changes Requested", className: "bg-red-100 text-red-700" }
-    return { label: `${items.filter(i => i.status === "PENDING").length} Pending`, className: "bg-amber-100 text-amber-700" }
+    if (items.every(i => i.status === "APPROVED")) return { label: "ALL APPROVED", className: "bg-[#DCFCE7] text-[#166534] dark:bg-[#166534]/20 dark:text-[#4ADE80]" }
+    if (items.some(i => i.status === "CHANGES_REQUESTED")) return { label: "CHANGES REQUESTED", className: "bg-[#FEE2E2] text-[#991B1B] dark:bg-[#991B1B]/20 dark:text-[#F87171]" }
+    return { label: `${items.filter(i => i.status === "PENDING").length} PENDING`, className: "bg-[#FEF3C7] text-[#92400E] dark:bg-[#92400E]/20 dark:text-[#FBBF24]" }
   }
 
   return (
-    <Card className="bg-[#EBF7EE] dark:bg-[#EBF7EE]/10 border-none shadow-sm hover:border-primary/50 transition-all duration-200">
-      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
+    <Card className="bg-slate-50 dark:bg-[#0A0A0A] border border-slate-100 dark:border-[#222] shadow-none rounded-[24px] overflow-hidden p-2 sm:p-5">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 pt-2 px-2 border-none gap-4 sm:gap-0">
         <div className="w-full sm:w-auto">
-          <CardTitle className="text-[16px] font-sans font-bold">📋 Approval Center</CardTitle>
-          <CardDescription className="text-[13px]">Upload drafts for client review. Each file gets its own approval.</CardDescription>
+          <CardTitle className="text-[18px] font-sans font-medium text-slate-800 dark:text-slate-100 flex items-center gap-3">
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-[10px] bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] shadow-[0_4px_10px_rgba(79,70,229,0.25)] overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+              <ClipboardCheck className="w-4 h-4 text-white drop-shadow-sm relative z-10" strokeWidth={2} />
+            </div>
+            Approval Center
+          </CardTitle>
+          <CardDescription className="text-[13.5px] text-slate-500 dark:text-slate-400 font-normal mt-1.5">Upload drafts for client review. Each file gets its own approval.</CardDescription>
         </div>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0">
+          <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl shadow-sm text-[13px] font-medium h-9 px-4">
             <Plus className="w-4 h-4" /> New Batch
           </Button>
         )}
       </CardHeader>
 
-      <CardContent className="pt-6">
+      <CardContent className="px-2 pb-2 pt-0">
         {/* New Batch Form */}
         {isAdding && (
-          <div className="bg-muted/30 p-5 rounded-xl border border-border mb-6 space-y-4">
+          <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-sm p-6 rounded-2xl border-none shadow-sm mb-6 space-y-5">
             <div>
-              <Label className="text-xs uppercase tracking-wider mb-2 block">Batch Title *</Label>
-              <Input placeholder="e.g. Social Media Ads - Week 3, Logo Concepts..." value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Batch Title *</Label>
+              <Input className="bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#333] rounded-xl" placeholder="e.g. Social Media Ads - Week 3, Logo Concepts..." value={title} onChange={(e) => setTitle(e.target.value)} />
             </div>
             <div>
-              <Label className="text-xs uppercase tracking-wider mb-2 block">Description (optional)</Label>
+              <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Description (optional)</Label>
               <textarea
-                className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex min-h-[80px] w-full rounded-xl border border-slate-200 dark:border-[#333] bg-white dark:bg-[#1A1A1A] px-3 py-2 text-[14px] placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4F46E5]"
                 placeholder="Add a note about this batch..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <div>
-              <Label className="text-xs uppercase tracking-wider mb-2 block">Upload Files * (select multiple)</Label>
+              <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Upload Files * (select multiple)</Label>
 
               {/* Already uploaded files */}
               {uploadedFiles.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
                   {uploadedFiles.map((f, i) => (
-                    <div key={i} className="relative group bg-card border border-border rounded-lg overflow-hidden">
-                      <div className="h-20 flex items-center justify-center bg-muted/30">
+                    <div key={i} className="relative group bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#333] rounded-xl overflow-hidden shadow-sm">
+                      <div className="h-24 flex items-center justify-center bg-slate-50 dark:bg-[#222]">
                         {isImage(f.type) ? (
                           <img src={f.url} alt={f.name} className="w-full h-full object-cover" />
                         ) : (
-                          <p className="text-xs font-bold text-muted-foreground uppercase">{f.type.split("/")[1]?.slice(0, 4)}</p>
+                          <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{f.type.split("/")[1]?.slice(0, 4)}</p>
                         )}
                       </div>
-                      <p className="text-[10px] px-2 py-1 truncate text-muted-foreground">{f.name}</p>
+                      <p className="text-[11px] px-3 py-2 truncate text-slate-600 dark:text-slate-300 font-medium">{f.name}</p>
                       <button
                         onClick={() => removeUploadedFile(i)}
-                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
                 </div>
               )}
 
-              <label className="flex items-center justify-center gap-3 p-5 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 hover:bg-muted/20 transition-colors">
+              <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-slate-200 dark:border-[#333] rounded-2xl cursor-pointer hover:border-[#4F46E5]/50 hover:bg-[#4F46E5]/5 dark:hover:bg-[#4F46E5]/10 transition-colors bg-white dark:bg-[#1A1A1A]">
                 {isUploading ? (
-                  <><Loader2 className="w-5 h-5 animate-spin text-primary" /><span className="text-sm text-muted-foreground">Uploading...</span></>
+                  <><Loader2 className="w-6 h-6 animate-spin text-[#4F46E5]" /><span className="text-[13px] font-medium text-slate-500">Uploading...</span></>
                 ) : (
-                  <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-sm text-muted-foreground">Click to select files (images, videos, PDFs…)</span></>
+                  <><Upload className="w-6 h-6 text-slate-400" /><span className="text-[13px] font-medium text-slate-500">Click to select files (images, videos, PDFs…)</span></>
                 )}
                 <input type="file" multiple className="hidden" onChange={handleMultiFileSelect} disabled={isUploading} />
               </label>
               {uploadedFiles.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1">{uploadedFiles.length} file(s) ready</p>
+                <p className="text-[12px] text-slate-500 mt-2 font-medium">{uploadedFiles.length} file(s) ready</p>
               )}
             </div>
-            <div className="flex gap-2 justify-end pt-2">
-              <Button variant="ghost" size="sm" onClick={() => { setIsAdding(false); setTitle(""); setDescription(""); setUploadedFiles([]) }}>Cancel</Button>
-              <Button size="sm" onClick={handleCreate} disabled={!title || uploadedFiles.length === 0 || isSaving}>
+            <div className="flex gap-2 justify-end pt-4">
+              <Button variant="ghost" size="sm" className="rounded-xl text-slate-500 font-medium hover:bg-slate-100" onClick={() => { setIsAdding(false); setTitle(""); setDescription(""); setUploadedFiles([]) }}>Cancel</Button>
+              <Button size="sm" className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-sm font-medium" onClick={handleCreate} disabled={!title || uploadedFiles.length === 0 || isSaving}>
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                 Send {uploadedFiles.length} File(s) for Approval
               </Button>
@@ -268,104 +274,111 @@ export default function ManageApprovals({
               const isExpanded = expandedApproval === approval.id
 
               return (
-                <div key={approval.id} className="border border-border rounded-xl overflow-hidden bg-card hover:border-primary/30 transition-colors">
+                <div key={approval.id} className="border-none shadow-[0_2px_10px_rgba(0,0,0,0.03)] rounded-2xl overflow-hidden bg-white dark:bg-[#111] transition-shadow">
                   {/* Batch Header */}
                   <div
-                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-muted/10 transition-colors gap-3 sm:gap-0"
+                    className="p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-slate-50/50 dark:hover:bg-[#161616] transition-colors gap-4 sm:gap-0"
                     onClick={() => setExpandedApproval(isExpanded ? null : approval.id)}
                   >
-                    <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <ImageIcon className="w-4 h-4 text-primary" />
+                    <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+                      <div className="relative flex items-center justify-center w-11 h-11 rounded-[14px] bg-gradient-to-tr from-indigo-50 to-white dark:from-indigo-950/40 dark:to-[#111] shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-200/60 dark:border-indigo-900/40 shrink-0">
+                        <div className="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-white/60 dark:ring-white/5"></div>
+                        <FileImage className="w-5 h-5 text-indigo-500 dark:text-indigo-400 drop-shadow-sm" strokeWidth={1.5} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-bold text-sm text-foreground flex items-center gap-2 truncate">
-                          <span className="truncate">{approval.title}</span>
-                          <span className="text-[10px] text-muted-foreground font-normal shrink-0">{approval.items.length} file(s)</span>
+                        <h4 className="font-medium text-[15.5px] text-slate-800 dark:text-slate-200 flex items-center gap-2 break-words">
+                          <span className="break-words">{approval.title}</span>
+                          <span className="text-[12.5px] text-slate-400 font-normal shrink-0">{approval.items.length} file(s)</span>
                         </h4>
-                        {approval.description && <p className="text-xs text-muted-foreground truncate">{approval.description}</p>}
+                        {approval.description && <p className="text-[12.5px] text-slate-500 break-words mt-0.5 whitespace-pre-wrap">{approval.description}</p>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-end pl-11 sm:pl-0 mt-1 sm:mt-0">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold truncate max-w-full ${batchStatus.className}`}>
+                    <div className="flex items-center gap-4 shrink-0 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-end pl-14 sm:pl-0 mt-1 sm:mt-0">
+                      <span className={`px-3 py-1 rounded-md text-[10.5px] tracking-wider font-semibold truncate max-w-full ${batchStatus.className}`}>
                         {batchStatus.label}
                       </span>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDeleteClick(approval.id) }}
-                          className="text-destructive hover:text-destructive/80 p-1"
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
-                        {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                        <div className="p-2 text-slate-400">
+                          {isExpanded ? <ChevronUp className="w-4.5 h-4.5" /> : <ChevronDown className="w-4.5 h-4.5" />}
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Expanded Items */}
                   {isExpanded && (
-                    <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
+                    <div className="border-t border-slate-100 dark:border-[#222] px-5 pb-5 pt-4 space-y-3 bg-white dark:bg-[#111]">
                       {approval.items.map((item) => {
                         const config = STATUS_CONFIG[item.status] || STATUS_CONFIG.PENDING
                         const StatusIcon = config.icon
                         const isFeedbackExpanded = expandedItemFeedback === item.id
 
+                        let itemBadgeClass = "bg-[#FEF3C7] text-[#92400E]"
+                        if (item.status === "APPROVED") itemBadgeClass = "bg-[#DCFCE7] text-[#166534]"
+                        if (item.status === "CHANGES_REQUESTED") itemBadgeClass = "bg-[#FEE2E2] text-[#991B1B]"
+
                         return (
-                          <div key={item.id} className="border border-border/50 rounded-lg p-3 bg-muted/10">
-                            <div className="flex gap-3 items-start">
+                          <div key={item.id} className="border border-slate-100 dark:border-[#222] rounded-xl p-4 bg-slate-50/50 dark:bg-[#161616]">
+                            <div className="flex gap-4 items-start">
                               {/* Thumbnail */}
-                              <div className="w-14 h-14 rounded-md overflow-hidden border border-border bg-muted/30 flex items-center justify-center shrink-0">
+                              <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 dark:border-[#333] bg-white flex items-center justify-center shrink-0 shadow-sm">
                                 {isImage(item.fileType) ? (
                                   <img src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} className="w-full h-full object-cover" />
                                 ) : (
-                                  <p className="text-[10px] font-bold text-muted-foreground uppercase">{item.fileType.split("/")[1]?.slice(0, 4)}</p>
+                                  <p className="text-[11px] font-medium text-slate-400 uppercase">{item.fileType.split("/")[1]?.slice(0, 4)}</p>
                                 )}
                               </div>
 
                               {/* File Info */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2">
-                                  <p className="text-xs font-medium truncate">{item.fileName} <span className="text-muted-foreground">v{item.version}</span></p>
-                                  <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] uppercase tracking-wider font-bold shrink-0 ${config.className}`}>
-                                    <StatusIcon className="w-2.5 h-2.5" />{config.label}
+                              <div className="flex-1 min-w-0 pt-0.5">
+                                <div className="flex items-center justify-between gap-3">
+                                  <p className="text-[14px] font-medium text-slate-800 dark:text-slate-200 truncate">{item.fileName} <span className="text-slate-400 font-normal">v{item.version}</span></p>
+                                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[9px] uppercase tracking-wider font-semibold shrink-0 ${itemBadgeClass}`}>
+                                    <StatusIcon className="w-3 h-3" />{config.label}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                  <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer" className="text-[10px] text-primary font-semibold hover:underline flex items-center gap-1">
-                                    <ExternalLink className="w-2.5 h-2.5" /> View
+                                <div className="flex items-center gap-3 mt-3 flex-wrap">
+                                  <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer" className="text-[11.5px] text-[#4F46E5] font-medium hover:underline flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded-md">
+                                    <ExternalLink className="w-3 h-3" /> View
                                   </a>
                                   {item.status === "CHANGES_REQUESTED" && (
                                     resubmitItemId === item.id ? (
-                                      <label className="text-[10px] text-primary font-semibold cursor-pointer hover:underline flex items-center gap-1">
-                                        {resubmitUploading ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Upload className="w-2.5 h-2.5" />}
+                                      <label className="text-[11.5px] text-[#4F46E5] font-medium cursor-pointer hover:underline flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded-md">
+                                        {resubmitUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
                                         {resubmitUploading ? "Uploading..." : "Upload New Version"}
                                         <input type="file" className="hidden" onChange={(e) => handleResubmitFile(item.id, e)} disabled={resubmitUploading} />
                                       </label>
                                     ) : (
-                                      <button onClick={() => setResubmitItemId(item.id)} className="text-[10px] text-primary font-semibold hover:underline flex items-center gap-1">
-                                        <RefreshCw className="w-2.5 h-2.5" /> Resubmit
+                                      <button onClick={() => setResubmitItemId(item.id)} className="text-[11.5px] text-[#4F46E5] font-medium hover:underline flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded-md">
+                                        <RefreshCw className="w-3 h-3" /> Resubmit
                                       </button>
                                     )
                                   )}
                                   {item.feedback.length > 0 && (
-                                    <button onClick={() => setExpandedItemFeedback(isFeedbackExpanded ? null : item.id)} className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1">
-                                      {isFeedbackExpanded ? <ChevronUp className="w-2.5 h-2.5" /> : <ChevronDown className="w-2.5 h-2.5" />}
+                                    <button onClick={() => setExpandedItemFeedback(isFeedbackExpanded ? null : item.id)} className="text-[11.5px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-medium flex items-center gap-1.5 bg-slate-100 dark:bg-[#222] px-2 py-1 rounded-md">
+                                      {isFeedbackExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                       {item.feedback.length} response(s)
                                     </button>
                                   )}
                                 </div>
                                 {/* Item Feedback */}
                                 {isFeedbackExpanded && (
-                                  <div className="mt-2 pt-2 border-t border-border/50 space-y-1.5">
+                                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-[#333] space-y-3">
                                     {item.feedback.map(fb => (
-                                      <div key={fb.id} className="flex gap-2 items-start">
-                                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${fb.action === "APPROVED" ? "bg-green-500" : fb.action === "CHANGES_REQUESTED" ? "bg-red-500" : "bg-blue-500"}`} />
+                                      <div key={fb.id} className="flex gap-3 items-start bg-white dark:bg-[#1A1A1A] p-3 rounded-lg border border-slate-100 dark:border-[#222]">
+                                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${fb.action === "APPROVED" ? "bg-emerald-500" : fb.action === "CHANGES_REQUESTED" ? "bg-red-500" : "bg-[#4F46E5]"}`} />
                                         <div>
-                                          <p className="text-[10px] font-semibold">
-                                            {fb.action === "APPROVED" ? "✅ Approved" : fb.action === "CHANGES_REQUESTED" ? "🔄 Changes Requested" : "📤 Resubmitted"}
+                                          <p className="text-[12px] font-medium text-slate-800 dark:text-slate-200">
+                                            {fb.action === "APPROVED" ? "Approved" : fb.action === "CHANGES_REQUESTED" ? "Changes Requested" : "Resubmitted"}
                                           </p>
-                                          {fb.comment && <p className="text-[10px] text-muted-foreground">{fb.comment}</p>}
-                                          <p className="text-[9px] text-muted-foreground/60">{new Date(fb.createdAt).toLocaleString()}</p>
+                                          {fb.comment && <p className="text-[12.5px] text-slate-600 dark:text-slate-400 mt-1">{fb.comment}</p>}
+                                          <p className="text-[10px] text-slate-400 mt-1.5">{new Date(fb.createdAt).toLocaleString()}</p>
                                         </div>
                                       </div>
                                     ))}

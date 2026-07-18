@@ -14,7 +14,7 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog"
-import { Loader2 } from "lucide-react"
+import { Loader2, Plus } from "lucide-react"
 
 export default function InviteClientModal() {
   const [open, setOpen] = useState(false)
@@ -48,10 +48,13 @@ export default function InviteClientModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger 
         render={
-          <Button className="w-full sm:w-auto bg-[#22C55E] hover:bg-[#4F46E5] text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(90,82,255,0.39)] hover:shadow-[0_6px_20px_rgba(90,82,255,0.23)] hover:-translate-y-0.5" />
+          <Button className="w-full sm:w-auto bg-[#3651C6] hover:bg-[#2B42A4] text-white rounded-[4px] px-5 h-[38px] text-[12px] font-bold uppercase tracking-[0.05em] transition-all border-0 shadow-none hover:shadow-sm" />
         }
       >
-        Invite New Client
+        <div className="flex items-center justify-center gap-1.5">
+          <Plus className="w-4 h-4" strokeWidth={2.5} />
+          INVITE NEW CLIENT
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] p-0 overflow-y-auto max-h-[95vh] bg-white border-0 rounded-2xl shadow-2xl">
         {credentials ? (

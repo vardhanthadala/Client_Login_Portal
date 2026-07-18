@@ -27,7 +27,7 @@ export async function getMessagesAction(clientProfileId: string) {
       where: { clientProfileId },
       include: {
         sender: {
-          select: { id: true, role: true, email: true, clientProfile: { select: { clientName: true } } }
+          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true } } }
         }
       },
       orderBy: { createdAt: "asc" }
@@ -63,7 +63,7 @@ export async function sendMessageAction(clientProfileId: string, content: string
       },
       include: {
         sender: {
-          select: { id: true, role: true, email: true, clientProfile: { select: { clientName: true } } }
+          select: { id: true, role: true, email: true, image: true, clientProfile: { select: { clientName: true } } }
         }
       }
     })
@@ -100,5 +100,37 @@ export async function markMessagesAsReadAction(clientProfileId: string) {
   } catch (error: any) {
     console.error("Failed to mark messages as read:", error)
     return { error: "Failed to mark messages as read" }
+  }
+}
+
+export async function deleteMessageAction(messageId: string, clientProfileId: string) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id) return { error: "Unauthorized" }
+
+    // Check if message exists and user has permission to delete it
+    const message = await prisma.message.findUnique({
+      where: { id: messageId }
+    })
+
+    if (!message) return { error: "Message not found" }
+
+    // Allow deletion if the user is the sender OR if they are an ADMIN
+    if (message.senderId !== token.id && token.role !== "ADMIN") {
+      return { error: "Unauthorized to delete this message" }
+    }
+
+    await prisma.message.delete({
+      where: { id: messageId }
+    })
+
+    revalidatePath("/client/dashboard")
+    revalidatePath("/admin/dashboard")
+    revalidatePath(`/admin/client/${clientProfileId}`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to delete message:", error)
+    return { error: "Failed to delete message" }
   }
 }

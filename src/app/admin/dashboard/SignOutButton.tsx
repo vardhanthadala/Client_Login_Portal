@@ -38,13 +38,15 @@ export default function SignOutButton({ isMini = false, variant = "button" }: { 
         </button>
       ) : (
         <Button 
+          variant="ghost"
           onClick={() => setOpen(true)}
           className={isMini 
-            ? "w-10 h-10 p-0 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)]"
-            : "w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 h-11 text-[15px] font-medium transition-all border-0 shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.23)] hover:-translate-y-0.5"
+            ? "w-[42px] h-[42px] p-0 flex items-center justify-center bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 rounded-md transition-colors border-0 shadow-none"
+            : "w-full flex items-center justify-start gap-3 px-3 py-2.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 rounded-md text-[14px] font-medium transition-colors border-0 shadow-none h-auto"
           }
         >
-          {isMini ? <LogOut className="w-4 h-4" /> : "Sign Out"}
+          <LogOut className={isMini ? "w-5 h-5" : "w-[18px] h-[18px] shrink-0"} />
+          {!isMini && <span>Sign Out</span>}
         </Button>
       )}
       <AlertDialog open={open} onOpenChange={setOpen}>

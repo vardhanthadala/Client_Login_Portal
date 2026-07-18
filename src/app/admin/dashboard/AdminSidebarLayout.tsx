@@ -297,7 +297,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#F0F2F8] dark:bg-[#0F1115] text-[#0F172A] dark:text-[#F8FAFC] overflow-hidden font-sans transition-colors duration-300">
+    <div className="flex h-screen w-full bg-white dark:bg-[#0F1115] text-[#0F172A] dark:text-[#F8FAFC] overflow-hidden font-sans transition-colors duration-300">
       <ThemeSettingsWidget />
       
       {/* Mobile Sidebar Overlay */}
@@ -387,7 +387,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
           {/* Navigation Links */}
           <div className="px-4 py-2 flex-1">
             {!isMiniMenu && (
-              <p className="px-3 text-[11px] font-semibold tracking-wider text-[#64748b] dark:text-[#94A3B8] uppercase mb-3">
+              <p className="px-3 mt-6 text-[11px] font-semibold tracking-wider text-[#64748b] dark:text-[#94A3B8] uppercase mb-4">
                 NAVIGATION
               </p>
             )}
@@ -395,15 +395,14 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
               <Link
                 href="/admin/dashboard?tab=overview"
                 onClick={() => setIsSidebarOpen(false)}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-medium transition-colors w-full text-left ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left ${
                   (activeTab === "overview" && !pathname.includes("/admin/client"))
                     ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
-                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#0F172A] dark:hover:text-white"
+                    : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
                 }`}
               >
-                <PremiumIcon 
-                  icon={LayoutDashboard} 
-                  iconClassName={(activeTab === "overview" && !pathname.includes("/admin/client")) ? "text-[#0F172A] dark:text-white" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                <LayoutDashboard 
+                  className={`w-[18px] h-[18px] transition-colors ${(activeTab === "overview" && !pathname.includes("/admin/client")) ? "text-[#0F172A] dark:text-white" : "text-[#0F172A] dark:text-[#CBD5E1] group-hover:text-[#000] dark:group-hover:text-white"}`} 
                 />
                 {!isMiniMenu && (
                   <div className="flex-1 flex items-center justify-between">
@@ -420,15 +419,14 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
               <Link
                 href="/admin/dashboard?tab=notifications"
                 onClick={() => setIsSidebarOpen(false)}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-medium transition-colors w-full text-left relative ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left relative ${
                   activeTab === "notifications" && !pathname.includes("/admin/client")
                     ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
-                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#0F172A] dark:hover:text-white"
+                    : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
                 }`}
               >
-                <PremiumIcon 
-                  icon={Bell} 
-                  iconClassName={(activeTab === "notifications" && !pathname.includes("/admin/client")) ? "text-[#0F172A] dark:text-white" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                <Bell 
+                  className={`w-[18px] h-[18px] transition-colors ${(activeTab === "notifications" && !pathname.includes("/admin/client")) ? "text-[#0F172A] dark:text-white" : "text-[#0F172A] dark:text-[#CBD5E1] group-hover:text-[#000] dark:group-hover:text-white"}`} 
                 />
                 {!isMiniMenu ? (
                   <div className="flex-1 flex items-center justify-between">
@@ -459,15 +457,14 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
               <Link
                 href="/admin/dashboard?tab=clients"
                 onClick={() => setIsSidebarOpen(false)}
-                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-medium transition-colors w-full text-left ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left ${
                   activeTab === "clients"
                     ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
-                    : "text-[#475569] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#0F172A] dark:hover:text-white"
+                    : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
                 }`}
               >
-                <PremiumIcon 
-                  icon={Users} 
-                  iconClassName={activeTab === "clients" ? "text-[#0F172A] dark:text-white" : "text-[#475569] dark:text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-white"} 
+                <Users 
+                  className={`w-[18px] h-[18px] transition-colors ${activeTab === "clients" ? "text-[#0F172A] dark:text-white" : "text-[#0F172A] dark:text-[#CBD5E1] group-hover:text-[#000] dark:group-hover:text-white"}`} 
                 />
                 {!isMiniMenu && (
                   <div className="flex-1 flex items-center justify-between">
@@ -678,7 +675,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-[1200px] mx-auto pb-20"
+              className="w-full mx-auto pb-20"
             >
               {children || activeTabData?.content}
             </motion.div>

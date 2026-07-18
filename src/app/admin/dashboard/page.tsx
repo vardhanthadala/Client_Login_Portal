@@ -41,8 +41,8 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
 
   const adminUser = await prisma.user.findUnique({
     where: { id: adminUserId as string },
-    select: { 
-      name: true, 
+    select: {
+      name: true,
       email: true,
       image: true,
       tenant: {
@@ -65,7 +65,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
   const isSetupComplete = !!(tenant?.razorpayKeySecret && tenant?.awsSecretAccessKey)
 
   const clients = await prisma.user.findMany({
-    where: { 
+    where: {
       role: "CLIENT",
       tenantId: tenantId
     },
@@ -234,7 +234,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
   let summaryAwaiting = 0;
   let summaryCompleted = 0;
   let summaryRejected = 0;
-  
+
   clients.forEach(client => {
     (client.clientProfile?.invoices || []).forEach(inv => {
       if (inv.status === "SENT") summaryAwaiting += inv.amount;
@@ -242,7 +242,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       if (inv.status === "OVERDUE") summaryRejected += inv.amount;
     })
   });
-  
+
   const summaryStats = {
     awaiting: summaryAwaiting,
     completed: summaryCompleted,
@@ -256,24 +256,24 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
     const clientMonth = chartData.find(m => isSameMonth(m.date, clientDate))
     if (clientMonth) clientMonth.clients += 1
 
-    // Earnings Growth & New Metrics
-    ;(client.clientProfile?.invoices || [])
-      .forEach(inv => {
-      if (inv.createdAt) {
-        const invDate = new Date(inv.createdAt)
-        const invMonth = chartData.find(m => isSameMonth(m.date, invDate))
-        if (invMonth) {
-          if (inv.status === "PAID") {
-            invMonth.completed += inv.amount;
-            invMonth.earnings += inv.amount;
-          } else if (inv.status === "SENT") {
-            invMonth.awaiting += inv.amount;
-          } else if (inv.status === "OVERDUE") {
-            invMonth.rejected += inv.amount;
+      // Earnings Growth & New Metrics
+      ; (client.clientProfile?.invoices || [])
+        .forEach(inv => {
+          if (inv.createdAt) {
+            const invDate = new Date(inv.createdAt)
+            const invMonth = chartData.find(m => isSameMonth(m.date, invDate))
+            if (invMonth) {
+              if (inv.status === "PAID") {
+                invMonth.completed += inv.amount;
+                invMonth.earnings += inv.amount;
+              } else if (inv.status === "SENT") {
+                invMonth.awaiting += inv.amount;
+              } else if (inv.status === "OVERDUE") {
+                invMonth.rejected += inv.amount;
+              }
+            }
           }
-        }
-      }
-    })
+        })
   })
 
   // Map clients for LatestLeadsWidget
@@ -336,7 +336,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
                   <AlertCircle className="w-4 h-4 sm:hidden" /> Action Required: Complete Your Setup
                 </h3>
                 <p className="text-sm text-amber-800 mt-1">
-                  You must configure your <strong>Payment Gateway (Razorpay)</strong> and <strong>AWS S3 Storage (BYOS)</strong> before inviting clients. 
+                  You must configure your <strong>Payment Gateway (Razorpay)</strong> and <strong>AWS S3 Storage (BYOS)</strong> before inviting clients.
                   Your clients will be completely blocked from paying invoices or uploading files until this is configured.
                 </p>
               </div>
@@ -401,20 +401,21 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       label: "Clients",
       content: (
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] dark:bg-[#171A21] p-6 rounded-[20px] border border-[#E5E7EB]/80 dark:border-white/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_8px_24px_rgba(0,0,0,0.15)]">
             <div>
-              <h2 className="text-2xl font-[650] text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Client Roster</h2>
-              <p className="text-[15px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
+              <h2 className="text-[28px] font-normal text-[#0F172A] dark:text-white font-sans tracking-tight mb-1.5">Client Roster</h2>
+              <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-normal max-w-md">Manage all your agency clients, their statuses, and earnings.</p>
             </div>
             <div className="w-full sm:w-auto shrink-0 flex justify-end">
               <InviteClientModal />
             </div>
           </div>
 
-          <ClientRosterTable 
+          <ClientRosterTable
             clients={clients.map(client => ({
               id: client.id,
               email: client.email || "",
+              createdAt: client.createdAt.toISOString(),
               clientProfile: client.clientProfile,
               unreadCount: (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
             }))}

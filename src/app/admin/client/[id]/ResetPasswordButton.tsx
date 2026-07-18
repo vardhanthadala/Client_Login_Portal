@@ -50,17 +50,17 @@ export default function ResetPasswordButton({ clientId }: { clientId: string }) 
         <KeyRound className="w-4 h-4" />
         Reset Password
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden border-none rounded-[24px] shadow-2xl bg-white dark:bg-[#111] [&>button]:hidden">
+      <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden border border-[#E2E8F0]/60 dark:border-[#222] rounded-[24px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xl [&>button]:hidden">
         <div className="p-8 pb-6 flex flex-col items-center text-center">
-          <div className="w-24 h-24 bg-[#22C55E]/10 dark:bg-[#22C55E]/20 rounded-full flex items-center justify-center mb-6">
-            <KeyRound className="w-12 h-12 text-[#22C55E]" strokeWidth={1.5} />
+          <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 dark:from-indigo-500/20 dark:to-violet-500/20 rounded-full flex items-center justify-center mb-6 shadow-inner border border-indigo-500/20 dark:border-indigo-500/10">
+            <KeyRound className="w-8 h-8 text-indigo-500 dark:text-indigo-400 drop-shadow-sm" strokeWidth={1.25} />
           </div>
           
-          <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-2">
+          <h2 className="text-xl font-semibold text-[#0F172A] dark:text-white font-sans tracking-tight mb-2">
             Reset Client Password
           </h2>
           
-          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] mb-6">
+          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] mb-6 font-normal leading-relaxed">
             Set a new secure password. We'll automatically notify the client with their updated login credentials.
           </p>
 
@@ -74,14 +74,14 @@ export default function ResetPasswordButton({ clientId }: { clientId: string }) 
                 required
                 minLength={8}
                 placeholder="Enter new password"
-                className="pr-10 h-12 rounded-xl border-[#E2E8F0] dark:border-[#333] bg-[#F8FAFC] dark:bg-[#1A1A1A] text-[15px] focus-visible:ring-[#22C55E] focus-visible:border-[#22C55E]"
+                className="pr-10 h-12 rounded-xl border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#111] text-[15px] focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500 shadow-sm transition-all font-medium"
               />
               <button
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-5 h-5" strokeWidth={1.5} /> : <Eye className="w-5 h-5" strokeWidth={1.5} />}
               </button>
             </div>
 
@@ -90,14 +90,14 @@ export default function ResetPasswordButton({ clientId }: { clientId: string }) 
                 type="button" 
                 onClick={() => setOpen(false)} 
                 disabled={loading}
-                className="flex-1 h-12 rounded-xl border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#111] text-[14px] font-bold text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                className="flex-1 h-12 rounded-xl border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#111] text-[14px] font-medium text-[#475569] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] hover:text-[#0F172A] dark:hover:text-white transition-all shadow-sm"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 disabled={loading} 
-                className="flex-[1.5] h-12 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] text-[14px] font-bold hover:bg-[#1E293B] dark:hover:bg-[#E2E8F0] transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+                className="flex-[1.5] h-12 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-100 dark:to-white text-white dark:text-slate-900 text-[14px] font-medium hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-slate-900/10"
               >
                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Save & Send Email
