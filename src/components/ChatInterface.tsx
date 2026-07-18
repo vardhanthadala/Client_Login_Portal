@@ -1,5 +1,7 @@
 "use client"
 
+import { useNotificationsStore } from "@/store/notificationsStore"
+
 import { useState, useEffect, useRef } from "react"
 import { Send, Loader2, Paperclip, Smile, CheckCheck, X, Trash2 } from "lucide-react"
 import EmojiPicker from 'emoji-picker-react';
@@ -45,7 +47,15 @@ export default function ChatInterface({
 
   useEffect(() => {
     fetchMessages()
-    markMessagesAsReadAction(clientProfileId)
+    markMessagesAsReadAction(clientProfileId).then(() => {
+      // Clear corresponding notifications from the local store immediately
+      const store = useNotificationsStore.getState()
+      store.notifications.forEach(n => {
+        if (n.type === 'MESSAGE' && !n.isRead) {
+          store.markAsRead(n.id)
+        }
+      })
+    })
   }, [clientProfileId])
 
   useEffect(() => {
