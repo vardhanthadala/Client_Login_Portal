@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma"
-import { getToken } from "next-auth/jwt"
-import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { auth } from "@/auth"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -26,22 +25,15 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const initialTab = (resolvedSearchParams?.tab as string) || "overview";
 
-  const reqCookies = await cookies()
-  const reqHeaders = await headers()
+  const session = await auth()
+  const userId = session?.user?.id
 
-  const req = {
-    cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
-    headers: Object.fromEntries(reqHeaders.entries())
-  } as any
-
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
-
-  if (!token?.id) {
+  if (!userId) {
     redirect("/login")
   }
 
   const clientProfile = await prisma.clientProfile.findUnique({
-    where: { userId: token.id as string },
+    where: { userId: userId as string },
     include: {
       brandAssets: {
         orderBy: { createdAt: 'desc' }
@@ -62,7 +54,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
     redirect("/client/onboarding")
   }
 
-  const unreadCount = (clientProfile.messages || []).filter(m => m.senderId !== (token.id as string)).length
+  const unreadCount = (clientProfile.messages || []).filter(m => m.senderId !== (userId as string)).length
 
   // Build tabs based on available data
   const tabs: Array<{ id: string, label: React.ReactNode, content: React.ReactNode }> = [
