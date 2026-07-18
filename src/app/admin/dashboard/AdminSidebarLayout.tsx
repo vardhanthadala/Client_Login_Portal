@@ -494,7 +494,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         {/* Top Header */}
-        <header className="h-[72px] shrink-0 border-b border-[#E5E7EB] dark:border-[#222] bg-white dark:bg-[#171A21] flex items-center justify-between px-6 lg:px-10 z-10 sticky top-0">
+        <header className="h-[72px] shrink-0 border-b border-[#E5E7EB] dark:border-[#222] bg-white dark:bg-[#171A21] flex items-center justify-between px-6 lg:px-10 z-50 sticky top-0">
           {/* Left Side Elements */}
           <div className="flex items-center gap-4">
             <button 
