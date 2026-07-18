@@ -249,7 +249,7 @@ export async function updateAdminProfileAction(formData: FormData) {
             include: { tenant: true }
           })
 
-          if (user?.tenant?.awsAccessKeyId && user?.tenant?.awsSecretAccessKey) {
+          if (user?.tenant?.awsAccessKeyId && user?.tenant?.awsSecretAccessKey && user?.tenant?.awsRegion && user?.tenant?.awsS3BucketName) {
             const { S3Client, GetObjectCommand, PutObjectCommand } = await import("@aws-sdk/client-s3")
             const { decrypt } = await import("@/lib/encryption")
 
