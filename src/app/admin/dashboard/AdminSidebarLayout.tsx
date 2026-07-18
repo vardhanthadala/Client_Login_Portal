@@ -37,6 +37,7 @@ interface AdminSidebarLayoutProps {
       subscriptionEnd: string | Date | null;
       cancelAtPeriodEnd: boolean;
     } | null;
+    availabilityStatus?: string;
   };
   children?: React.ReactNode;
   clients?: any[];
