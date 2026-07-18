@@ -270,7 +270,14 @@ export default function LoginPage() {
                 </div>
 
                 <div className="flex flex-col gap-6 mt-2">
-                  <div className="flex justify-end mt-2">
+                  <div className="flex justify-between items-center mt-2">
+                    <button 
+                      type="button" 
+                      onClick={() => setMode("forgot")} 
+                      className="text-[12px] text-[#554B86] hover:text-[#301A6A] font-medium transition-colors underline decoration-[#554B86]/40 underline-offset-4"
+                    >
+                      Forgot Password?
+                    </button>
                     <button 
                       type="submit" 
                       disabled={isLoginPending}
