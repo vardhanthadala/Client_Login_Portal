@@ -85,13 +85,13 @@ export function Navbar() {
             <div className="hidden sm:flex items-center gap-3">
               <Link
                 href="/login"
-                className="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-white text-black text-sm font-black flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm hover:translate-y-[3px]"
+                className="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-white text-black text-sm font-normal flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm hover:translate-y-[3px]"
               >
                 Login
               </Link>
               <CheckoutModal
                 buttonText="Purchase"
-                triggerClassName="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-black text-white hover:text-black text-sm font-black flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm hover:translate-y-[3px]"
+                triggerClassName="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-black text-white hover:text-black text-sm font-normal flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm hover:translate-y-[3px]"
               />
             </div>
             <button
@@ -119,13 +119,13 @@ export function Navbar() {
             <div className="pt-4 border-t-[3px] border-gray-100 flex flex-col gap-3">
               <Link
                 href="/login"
-                className="w-full h-[48px] px-6 rounded-xl bg-white text-black text-sm font-black flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm"
+                className="w-full h-[48px] px-6 rounded-xl bg-white text-black text-sm font-normal flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm"
               >
                 Login
               </Link>
               <CheckoutModal
                 buttonText="Purchase"
-                triggerClassName="w-full h-[48px] px-6 rounded-xl bg-black text-white hover:text-black text-sm font-black flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm"
+                triggerClassName="w-full h-[48px] px-6 rounded-xl bg-black text-white hover:text-black text-sm font-normal flex items-center justify-center border border-black hover:bg-white transition-all duration-200 shadow-sm"
               />
             </div>
           </div>

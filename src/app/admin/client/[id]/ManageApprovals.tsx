@@ -184,8 +184,8 @@ export default function ManageApprovals({
     <Card className="bg-[#EBF7EE] dark:bg-[#EBF7EE]/10 border-none shadow-sm hover:border-primary/50 transition-all duration-200">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-border/50 gap-4 sm:gap-0">
         <div className="w-full sm:w-auto">
-          <CardTitle className="text-lg font-sans font-bold">📋 Approval Center</CardTitle>
-          <CardDescription>Upload drafts for client review. Each file gets its own approval.</CardDescription>
+          <CardTitle className="text-[16px] font-sans font-bold">📋 Approval Center</CardTitle>
+          <CardDescription className="text-[13px]">Upload drafts for client review. Each file gets its own approval.</CardDescription>
         </div>
         {!isAdding && (
           <Button onClick={() => setIsAdding(true)} size="sm" className="gap-2 w-full sm:w-auto shrink-0">

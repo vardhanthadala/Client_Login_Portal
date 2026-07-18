@@ -1,24 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Calistoga, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const geist = Geist({ 
+const inter = Inter({ 
   variable: "--font-sans", 
   subsets: ["latin"], 
   display: "swap" 
 });
-const calistoga = Calistoga({ 
-  variable: "--font-display", 
-  subsets: ["latin"], 
-  weight: "400", 
-  display: "swap" 
-});
-const jetbrainsMono = JetBrains_Mono({ 
-  variable: "--font-mono", 
-  subsets: ["latin"], 
-  display: "swap" 
-});
+
 
 export const metadata: Metadata = {
   title: "Client Portal",
@@ -38,11 +28,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geist.variable} ${calistoga.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <Script id="theme-script" strategy="afterInteractive">
-          {`
+      <head>
+        <script 
+          id="theme-script" 
+          dangerouslySetInnerHTML={{ __html: `
             try {
               var theme = localStorage.getItem('theme');
               var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -52,8 +43,10 @@ export default function RootLayout({
                 document.documentElement.classList.remove('dark');
               }
             } catch (e) {}
-          `}
-        </Script>
+          `}}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <ThemeProvider>
           <SessionGuard />
           {children}

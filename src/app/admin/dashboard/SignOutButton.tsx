@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { signOut } from "next-auth/react"
 
 export default function SignOutButton({ isMini = false, variant = "button" }: { isMini?: boolean, variant?: "button" | "dropdown" }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -22,20 +23,7 @@ export default function SignOutButton({ isMini = false, variant = "button" }: { 
   const handleSignOut = async () => {
     setIsLoading(true)
     toast.success("Signing out...", { duration: 2000 })
-    try {
-      // Get CSRF token first
-      const csrfRes = await fetch("/api/auth/csrf")
-      const { csrfToken } = await csrfRes.json()
-      // Post to signout endpoint
-      await fetch("/api/auth/signout", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `csrfToken=${encodeURIComponent(csrfToken)}`,
-      })
-    } catch (e) {
-      // Ignore errors - redirect regardless
-    }
-    window.location.href = "/login"
+    await signOut({ callbackUrl: "/login" })
   }
 
   return (

@@ -12,43 +12,42 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { signOut } from "next-auth/react"
 
-export default function SignOutButton() {
+export default function SignOutButton({ variant = "default" }: { variant?: "default" | "sidebar" }) {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false)
 
   const handleSignOut = async () => {
     setIsLoading(true)
     toast.success("Signing out...", { duration: 2000 })
-    try {
-      // Get CSRF token first
-      const csrfRes = await fetch("/api/auth/csrf")
-      const { csrfToken } = await csrfRes.json()
-      // Post to signout endpoint
-      await fetch("/api/auth/signout", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `csrfToken=${encodeURIComponent(csrfToken)}`,
-      })
-    } catch (e) {
-      // Ignore errors - redirect regardless
-    }
-    window.location.href = "/client-login"
+    await signOut({ callbackUrl: "/login" })
   }
 
   return (
     <>
-      <button 
-        onClick={() => setOpen(true)}
-        className="w-full flex items-center justify-center gap-2 bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-[12px] h-11 transition-all shadow-sm"
-      >
-        <LogOut className="w-4 h-4" />
-        <span className="text-[14px] font-semibold tracking-wide">
-          Sign Out
-        </span>
-      </button>
+      {variant === "sidebar" ? (
+        <button 
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-3 px-5 py-2.5 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors w-full text-left"
+        >
+          <div className="w-4 flex justify-center">
+            <LogOut className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
+          </div>
+          <span className="font-semibold text-[#0F172A] dark:text-white text-[14px]">Logout</span>
+        </button>
+      ) : (
+        <button 
+          onClick={() => setOpen(true)}
+          className="w-full flex items-center justify-center gap-2 bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-[12px] h-11 transition-all shadow-sm"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="text-[14px] font-semibold tracking-wide">
+            Sign Out
+          </span>
+        </button>
+      )}
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className="sm:max-w-[400px] p-8 rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">
           

@@ -56,7 +56,7 @@ export default function ResetPasswordButton({ clientId }: { clientId: string }) 
             <KeyRound className="w-12 h-12 text-[#22C55E]" strokeWidth={1.5} />
           </div>
           
-          <h2 className="text-xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-2">
+          <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-2">
             Reset Client Password
           </h2>
           

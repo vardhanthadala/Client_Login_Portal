@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { Download, ExternalLink, Bell, CheckCircle2, Activity, Clock, ShieldCheck, Mail, Upload, Folder, MessageSquare, Calendar, ChevronRight, MoreVertical, Building2, Check } from "lucide-react"
+import { Download, ExternalLink, Bell, CheckCircle2, Activity, Clock, ShieldCheck, Mail, Upload, Folder, MessageSquare, Calendar, ChevronRight, MoreVertical, Building2, Check, DollarSign, Briefcase, Monitor, MoreHorizontal } from "lucide-react"
 import { PiGlobeDuotone, PiFileTextDuotone, PiUsersDuotone, PiRocketLaunchDuotone, PiImageDuotone, PiChecksDuotone, PiChatCircleDuotone } from "react-icons/pi"
 import ClientUploader from "./ClientUploader"
 import ChatInterface from "@/components/ChatInterface"
@@ -70,180 +70,233 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
       id: "overview",
       label: "Overview",
       content: (
-        <FadeInStagger className="flex flex-col gap-4 sm:gap-6 overflow-hidden">
-          {/* Quick Actions Row */}
-          <FadeInItem className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
-              <div className="flex items-center gap-3">
-                <Upload className="w-[18px] h-[18px] text-[#10B981]" />
-                <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Upload Assets</span>
+        <FadeInStagger className="flex flex-col gap-[25px]">
+          {/* Top Duralux Stat Cards Grid */}
+          <FadeInItem className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-[25px]">
+            
+            {/* Invoices Card */}
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex flex-col relative">
+
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center shrink-0">
+                  <DollarSign size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                    {clientProfile.invoices?.length || 0}/{clientProfile.invoices?.length || 0}
+                  </span>
+                  <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Invoices Awaiting Payment</span>
+                </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
-            </button>
-            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
-              <div className="flex items-center gap-3">
-                <Folder className="w-[18px] h-[18px] text-[#10B981]" />
-                <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">View Projects</span>
+              <div className="mt-auto">
+                <div className="flex items-center justify-between text-[12px] mb-2 font-medium">
+                  <span className="text-[#64748B] dark:text-[#94A3B8]">Invoices Awaiting Payment</span>
+                  <span className="text-[#0F172A] dark:text-white">$0 <span className="text-[#64748B] dark:text-[#94A3B8] font-normal">(0%)</span></span>
+                </div>
+                <div className="w-full h-1 bg-[#F1F5F9] dark:bg-[#222] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#3454D1] rounded-full" style={{ width: '0%' }}></div>
+                </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
-            </button>
-            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
-              <div className="flex items-center gap-3">
-                <MessageSquare className="w-[18px] h-[18px] text-[#10B981]" />
-                <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Contact Agency</span>
+            </div>
+
+            {/* Projects Card */}
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex flex-col relative">
+
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center shrink-0">
+                  <Briefcase size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                    {clientProfile.projects?.length || 0}/{clientProfile.projects?.length || 0}
+                  </span>
+                  <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Projects In Progress</span>
+                </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
-            </button>
-            <button className="flex items-center justify-between p-3 sm:p-4 rounded-[16px] border border-[#E2E8F0] dark:border-[#222] bg-white dark:bg-[#111111] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors group min-w-0">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-[18px] h-[18px] text-[#10B981]" />
-                <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">Schedule Call</span>
+              <div className="mt-auto">
+                <div className="flex items-center justify-between text-[12px] mb-2 font-medium">
+                  <span className="text-[#64748B] dark:text-[#94A3B8]">Projects In Progress</span>
+                  <span className="text-[#0F172A] dark:text-white">{clientProfile.projects?.length || 0} Completed <span className="text-[#64748B] dark:text-[#94A3B8] font-normal">(100%)</span></span>
+                </div>
+                <div className="w-full h-1 bg-[#F1F5F9] dark:bg-[#222] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#10B981] rounded-full" style={{ width: '100%' }}></div>
+                </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#64748B] group-hover:text-white transition-colors" />
-            </button>
+            </div>
+
+            {/* Approvals / Converted Leads Card */}
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex flex-col relative">
+
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center shrink-0">
+                  <Monitor size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                    {clientProfile.approvals?.length || 0}
+                  </span>
+                  <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Pending Approvals</span>
+                </div>
+              </div>
+              <div className="mt-auto">
+                <div className="flex items-center justify-between text-[12px] mb-2 font-medium">
+                  <span className="text-[#64748B] dark:text-[#94A3B8]">Approvals Completed</span>
+                  <span className="text-[#0F172A] dark:text-white">0 Completed <span className="text-[#64748B] dark:text-[#94A3B8] font-normal">(0%)</span></span>
+                </div>
+                <div className="w-full h-1 bg-[#F1F5F9] dark:bg-[#222] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#F59E0B] rounded-full" style={{ width: '0%' }}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity / Conversion Rate Card */}
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex flex-col relative">
+
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-12 h-12 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center shrink-0">
+                  <Activity size={20} className="text-[#64748B] dark:text-[#94A3B8]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[24px] font-bold text-[#0F172A] dark:text-white leading-none mb-1">
+                    {clientProfile.brandAssets?.length || 0}
+                  </span>
+                  <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">Total Assets</span>
+                </div>
+              </div>
+              <div className="mt-auto">
+                <div className="flex items-center justify-between text-[12px] mb-2 font-medium">
+                  <span className="text-[#64748B] dark:text-[#94A3B8]">Asset Utilization</span>
+                  <span className="text-[#0F172A] dark:text-white">Active <span className="text-[#64748B] dark:text-[#94A3B8] font-normal">(100%)</span></span>
+                </div>
+                <div className="w-full h-1 bg-[#F1F5F9] dark:bg-[#222] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#EF4444] rounded-full" style={{ width: '100%' }}></div>
+                </div>
+              </div>
+            </div>
           </FadeInItem>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Business Profile Card */}
+          <div className="grid md:grid-cols-2 gap-[25px]">
+            {/* Business Profile Card (Restyled to Duralux) */}
             <FadeInItem>
-            <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-sm flex flex-col h-full">
-              <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 flex flex-row items-center justify-between border-b border-[#F1F5F9] dark:border-[#222]">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#10B981]/10 flex items-center justify-center shrink-0">
-                    <Building2 className="w-6 h-6 text-[#10B981]" />
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col h-full overflow-hidden">
+              <div className="pb-4 px-6 pt-6 flex flex-row items-center justify-between border-b border-[#E2E8F0] dark:border-[#222]">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white">Your Business Profile</h2>
+                </div>
+
+              </div>
+              <div className="p-0 flex-1 flex flex-col">
+                <div className="p-[25px] border-b border-[#E2E8F0] dark:border-[#222]">
+                  <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">COMPANY NAME</p>
+                  <p className="text-[18px] font-bold text-[#0F172A] dark:text-white">{clientProfile.companyName}</p>
+                </div>
+                <div className="grid grid-cols-2 flex-1">
+                  <div className="p-[25px] border-r border-b border-[#E2E8F0] dark:border-[#222]">
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">INDUSTRY</p>
+                    <p className="text-[14px] font-semibold text-[#0F172A] dark:text-white truncate">{clientProfile.industry || "Technology"}</p>
                   </div>
-                  <CardTitle className="text-lg sm:text-xl font-sans font-bold text-[#0F172A] dark:text-white">Your Business Profile</CardTitle>
-                </div>
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#10B981]/10 text-[#10B981] text-[12px] font-bold tracking-wide">
-                  <Check className="w-3.5 h-3.5" /> Verified
-                </div>
-              </CardHeader>
-              <CardContent className="p-0 flex-1 flex flex-col">
-                <div className="p-4 sm:p-6 md:p-8 border-b border-[#F1F5F9] dark:border-[#222] min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">COMPANY NAME</p>
-                  <p className="text-xl font-sans font-bold text-[#0F172A] dark:text-white truncate">{clientProfile.companyName}</p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 flex-1">
-                  <div className="p-4 sm:p-6 md:p-8 sm:border-r border-b border-[#F1F5F9] dark:border-[#222] min-w-0">
-                    <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">INDUSTRY</p>
-                    <p className="text-[14px] font-medium text-[#0F172A] dark:text-white truncate">{clientProfile.industry || "Technology"}</p>
-                  </div>
-                  <div className="p-4 sm:p-6 md:p-8 border-b border-[#F1F5F9] dark:border-[#222] min-w-0 flex flex-col">
-                    <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">WEBSITE</p>
-                    <a href={clientProfile.website || "#"} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-[#10B981] hover:underline truncate block">
+                  <div className="p-[25px] border-b border-[#E2E8F0] dark:border-[#222]">
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">WEBSITE</p>
+                    <a href={clientProfile.website || "#"} target="_blank" rel="noreferrer" className="text-[14px] font-semibold text-[#3454D1] hover:underline truncate block">
                       {clientProfile.website?.replace(/^https?:\/\//, '') || "vardhanit.com"}
                     </a>
                   </div>
-                  <div className="p-4 sm:p-6 md:p-8 sm:border-r border-[#F1F5F9] dark:border-[#222]">
-                    <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">MEMBER SINCE</p>
-                    <p className="text-[14px] font-medium text-[#0F172A] dark:text-white">
+                  <div className="p-[25px] border-r border-[#E2E8F0] dark:border-[#222]">
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">MEMBER SINCE</p>
+                    <p className="text-[14px] font-semibold text-[#0F172A] dark:text-white">
                       {new Date(clientProfile.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  <div className="p-4 sm:p-6 md:p-8">
-                    <p className="text-[10px] font-bold tracking-[0.15em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">STATUS</p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                      <span className="text-[12px] font-bold text-[#10B981]">Active Account</span>
+                  <div className="p-[25px]">
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">STATUS</p>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10B981]/10 text-[#10B981] text-[12px] font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                      Active Account
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </FadeInItem>
-
-          {/* Upload Assets Card */}
-          <FadeInItem className="min-w-0">
-            <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:border-[#5A52FF]/30 dark:hover:border-[#10B981]/30 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(90,82,255,0.06)] overflow-hidden flex flex-col h-full min-w-0">
-            <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 bg-white dark:bg-[#111111] border-b border-[#F1F5F9] dark:border-[#222]">
-              <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white">Upload New Assets</CardTitle>
-              <CardDescription className="mt-2 text-[#64748B] dark:text-[#94A3B8]">
-                Need to send us a new logo, document, or brand guideline? Upload it here anytime.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <ClientUploader />
-              </CardContent>
-            </Card>
-          </FadeInItem>
-
-          {/* Uploaded Files Card */}
-          <FadeInItem className="md:col-span-2">
-            <Card className="bg-white dark:bg-[#111111] border-[#E5E7EB] dark:border-[#222] rounded-[24px] shadow-sm flex flex-col overflow-hidden min-w-0">
-            <CardHeader className="pb-4 px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 border-b border-[#F1F5F9] dark:border-[#222] flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-sans font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#10B981]/10 flex items-center justify-center shrink-0">
-                    <PiImageDuotone className="w-4 h-4 text-[#10B981]" />
-                  </div>
-                  Your Uploaded Files
-                </CardTitle>
-                <CardDescription className="mt-2 text-[#64748B] dark:text-[#94A3B8]">Files you have uploaded so far.</CardDescription>
               </div>
-              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full border border-[#E2E8F0] dark:border-[#333] text-[13px] font-semibold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors">
-                View All Files <ChevronRight className="w-4 h-4" />
-              </button>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6 flex-1 flex flex-col">
+            </div>
+          </FadeInItem>
+
+          {/* Upload Assets Card (Restyled to Duralux) */}
+          <FadeInItem className="min-w-0">
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col h-full min-w-0 overflow-hidden">
+            <div className="pb-4 px-6 pt-6 border-b border-[#E2E8F0] dark:border-[#222]">
+              <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white">Upload New Assets</h2>
+              <p className="mt-1 text-[13px] text-[#64748B] dark:text-[#94A3B8]">
+                Need to send us a new logo, document, or brand guideline? Upload it here anytime.
+              </p>
+            </div>
+            <div className="p-[25px]">
+              <ClientUploader />
+              </div>
+            </div>
+          </FadeInItem>
+
+          {/* Uploaded Files Card (Restyled to Duralux) */}
+          <FadeInItem className="md:col-span-2">
+            <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col overflow-hidden min-w-0">
+            <div className="pb-4 px-6 pt-6 border-b border-[#E2E8F0] dark:border-[#222] flex flex-row items-center justify-between">
+              <div>
+                <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                  Your Uploaded Files
+                </h2>
+              </div>
+
+            </div>
+            <div className="p-0 flex-1 flex flex-col">
               {clientProfile.brandAssets.length > 0 ? (
                 <ul className="flex flex-col gap-0">
                   {clientProfile.brandAssets.map((asset: any, i: number) => (
-                    <li key={asset.id} className={`group flex flex-col md:flex-row md:items-center justify-between p-4 bg-transparent hover:bg-[#FAFAFA] dark:hover:bg-[#161616] transition-colors min-w-0 ${i !== clientProfile.brandAssets.length - 1 ? 'border-b border-[#E2E8F0] dark:border-[#222]' : ''}`}>
+                    <li key={asset.id} className={`group flex flex-col md:flex-row md:items-center justify-between p-4 px-6 bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors min-w-0 ${i !== clientProfile.brandAssets.length - 1 ? 'border-b border-[#E2E8F0] dark:border-[#222]' : ''}`}>
                       <div className="flex items-center gap-4 mb-4 md:mb-0 flex-1 min-w-0">
                         {/* Mock Image Thumbnail */}
-                        <div className="flex items-center justify-center shrink-0 w-16 h-12 rounded-md bg-[#1A1A1A] border border-[#333] overflow-hidden relative">
+                        <div className="flex items-center justify-center shrink-0 w-12 h-12 rounded-[8px] bg-[#F1F5F9] dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#333] overflow-hidden relative">
                            {asset.type?.includes("image") ? (
-                             <Image src={asset.fileUrl} alt={asset.description || "Asset"} fill sizes="64px" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                             <Image src={asset.fileUrl} alt={asset.description || "Asset"} fill sizes="48px" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                            ) : (
-                             <span className="text-[10px] font-bold text-[#888] uppercase">{asset.fileUrl.split('.').pop()?.substring(0,3)}</span>
+                             <span className="text-[10px] font-bold text-[#64748B] uppercase">{asset.fileUrl.split('.').pop()?.substring(0,3)}</span>
                            )}
                         </div>
                         <div className="flex flex-col flex-1 min-w-0 w-full">
-                          <p className="text-[15px] font-semibold text-[#0F172A] dark:text-white truncate pr-4">{asset.description || asset.fileUrl.split('/').pop() || "File"}</p>
-                          <div className="flex items-center gap-2 mt-1 text-[13px] text-[#64748B] dark:text-[#888]">
-                            <PiFileTextDuotone className="w-3.5 h-3.5" />
+                          <p className="text-[14px] font-bold text-[#0F172A] dark:text-white truncate">{asset.description || asset.fileUrl.split('/').pop() || "File"}</p>
+                          <div className="flex items-center gap-2 mt-0.5 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">
                             <span className="uppercase">{asset.fileUrl.split('.').pop() || "JPG"}</span>
                             <span>&middot;</span>
                             <span>2.4 MB</span>
-                            <span>&middot;</span>
-                            <span className="hidden sm:inline">1200 x 800</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Uploaded Timestamp */}
                       <div className="hidden lg:flex flex-col w-[180px] mr-4">
-                        <span className="text-[13px] text-[#64748B] dark:text-[#888]">Uploaded</span>
-                        <span className="text-[14px] font-medium text-[#0F172A] dark:text-white">{new Date(asset.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">Uploaded</span>
+                        <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white">{new Date(asset.createdAt).toLocaleDateString()}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <a href={asset.fileUrl} target="_blank" rel="noreferrer">
-                          <Button variant="outline" size="sm" className="h-9 px-4 rounded-lg border-[#E2E8F0] dark:border-[#333] bg-transparent hover:bg-white dark:hover:bg-[#222] text-[#0F172A] dark:text-white transition-colors text-[13px] font-semibold">
-                            <ExternalLink className="w-3.5 h-3.5 mr-2" /> View
-                          </Button>
+                          <button className="px-3 py-1.5 rounded-[6px] bg-[#F1F5F9] dark:bg-[#222] hover:bg-[#E2E8F0] dark:hover:bg-[#333] text-[#343A40] dark:text-white transition-colors text-[12px] font-bold">
+                            View
+                          </button>
                         </a>
                         <a href={`/api/download?url=${encodeURIComponent(asset.fileUrl)}`} download>
-                          <Button className="h-9 px-4 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white transition-colors text-[13px] font-semibold">
-                            <Download className="w-3.5 h-3.5 mr-2" /> Download
-                          </Button>
+                          <button className="px-3 py-1.5 rounded-[6px] bg-[#3454D1] hover:bg-[#2842A8] text-white transition-colors text-[12px] font-bold">
+                            Download
+                          </button>
                         </a>
-                        <button className="w-9 h-9 flex items-center justify-center rounded-lg text-[#64748B] dark:text-[#888] hover:bg-[#E2E8F0] dark:hover:bg-[#222] transition-colors shrink-0">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
                       </div>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 rounded-[16px] border border-dashed border-[#E5E7EB] dark:border-[#333] bg-[#FAFAFA] dark:bg-[#1A1A1A]">
-                  <PiFileTextDuotone className="w-10 h-10 text-[#CBD5E1] dark:text-[#444] mb-3" />
-                  <p className="text-sm font-medium text-[#0F172A] dark:text-white">No files uploaded yet</p>
-                  <p className="text-xs text-[#64748B] dark:text-[#888] mt-1 max-w-[200px]">Upload assets to see them listed here.</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 bg-transparent">
+                  <p className="text-[14px] font-medium text-[#64748B] dark:text-[#94A3B8]">No files uploaded yet.</p>
                 </div>
               )}
-            </CardContent>
-            </Card>
+            </div>
+            </div>
           </FadeInItem>
           </div>
         </FadeInStagger>
@@ -303,18 +356,6 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
   }
 
   tabs.push({
-    id: "notifications",
-    label: "Notifications",
-    content: (
-      <FadeInStagger>
-        <FadeInItem>
-          <ClientNotificationsTab />
-        </FadeInItem>
-      </FadeInStagger>
-    )
-  })
-
-  tabs.push({
     id: "messages",
     label: (
       <>
@@ -346,7 +387,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
     <ClientSidebarLayout 
       tabs={tabs} 
       initialTab={initialTab} 
-      clientProfile={clientProfile} 
+      clientProfile={{ ...clientProfile, email: token?.email } as any} 
       currentProject={currentProject} 
     />
   )

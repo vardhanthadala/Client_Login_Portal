@@ -48,7 +48,8 @@ export async function GET(req: NextRequest) {
     let key = ""
     try {
       const parsedUrl = new URL(urlParam)
-      key = parsedUrl.pathname.substring(1)
+      // pathname has a leading slash, we need to remove it for S3 key
+      key = decodeURIComponent(parsedUrl.pathname.substring(1))
     } catch (e) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
     }

@@ -22,9 +22,9 @@ export default function ClientNotificationsTab() {
   }
 
   const getBgColor = (type: string, isRead: boolean) => {
-    if (isRead) return 'bg-[#F1F5F9] dark:bg-[#222]'
+    if (isRead) return 'bg-[#F1F5F9] dark:bg-[#1A1A1A]'
     switch (type) {
-      case 'MESSAGE': return 'bg-[#3B82F6]'
+      case 'MESSAGE': return 'bg-[#3454D1]'
       case 'APPROVAL': return 'bg-[#F59E0B]'
       case 'PROJECT': return 'bg-[#10B981]'
       default: return 'bg-[#8B5CF6]'
@@ -46,15 +46,15 @@ export default function ClientNotificationsTab() {
       
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
+          <h2 className="text-[22px] font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
             Notifications
             {unreadCount > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#EF4444] text-white text-[12px] font-bold shadow-sm">
+              <span className="px-2.5 py-0.5 rounded-[6px] bg-[#EF4444] text-white text-[12px] font-bold shadow-sm">
                 {unreadCount} New
               </span>
             )}
           </h2>
-          <p className="text-[#64748B] dark:text-[#94A3B8] mt-1 text-sm font-medium">
+          <p className="text-[#64748B] dark:text-[#94A3B8] mt-1 text-[14px] font-medium">
             Stay updated on your projects and approvals
           </p>
         </div>
@@ -63,7 +63,7 @@ export default function ClientNotificationsTab() {
           <Button 
             variant="outline"
             onClick={markAllAsRead}
-            className="rounded-xl border-[#E2E8F0] dark:border-[#333] hover:bg-[#FAFAFA] dark:hover:bg-[#1A1A1A] font-semibold text-[13px] text-[#0F172A] dark:text-white"
+            className="rounded-[12px] border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] font-semibold text-[13px] text-[#0F172A] dark:text-white transition-colors"
           >
             <CheckCheck className="w-4 h-4 mr-2 text-[#10B981]" />
             Mark all as read
@@ -71,7 +71,7 @@ export default function ClientNotificationsTab() {
         )}
       </div>
 
-      <div className="bg-white dark:bg-[#111] border border-[#E2E8F0] dark:border-[#222] rounded-[24px] shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm overflow-hidden">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-[#F1F5F9] dark:bg-[#1A1A1A] flex items-center justify-center mb-4">
@@ -91,19 +91,19 @@ export default function ClientNotificationsTab() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className={`transition-colors relative block group ${notif.isRead ? 'bg-transparent' : 'bg-[#FAFAFA] dark:bg-[#161616]'}`}
+                  className={`transition-colors relative block group ${notif.isRead ? 'bg-transparent' : 'bg-[#F8FAFC] dark:bg-[#161616]'}`}
                 >
                   <Link 
                     href={notif.link || "#"} 
                     onClick={() => markAsRead(notif.id)}
-                    className="p-6 flex gap-4 w-full h-full items-start"
+                    className="p-[25px] flex gap-4 w-full h-full items-start hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors"
                   >
                     {/* Unread indicator dot */}
                     {!notif.isRead && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#10B981]" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#3454D1]" />
                     )}
                     
-                    <div className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center shadow-sm ${getBgColor(notif.type, notif.isRead)}`}>
+                    <div className={`w-12 h-12 rounded-[12px] shrink-0 flex items-center justify-center shadow-sm ${getBgColor(notif.type, notif.isRead)}`}>
                       {getIcon(notif.type, notif.isRead)}
                     </div>
 
@@ -129,7 +129,7 @@ export default function ClientNotificationsTab() {
                             e.stopPropagation();
                             markAsRead(notif.id);
                           }}
-                          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-[#222] border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#333] text-[#94A3B8] hover:text-[#10B981] transition-all shadow-sm group-hover:scale-100"
+                          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-[#222] border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#333] text-[#94A3B8] hover:text-[#3454D1] transition-all shadow-sm group-hover:scale-100"
                           title="Mark as read"
                         >
                           <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
