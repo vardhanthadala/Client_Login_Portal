@@ -106,7 +106,8 @@ export async function generateProjectPhasesAction(serviceName: string) {
     if (!token?.id || token.role !== "ADMIN") return { error: "Unauthorized" }
 
     const prompt = `Generate 4 to 6 standard project delivery phases/stages for a service called: "${serviceName}".
-Return ONLY a JSON object with a single key "phases" containing an array of strings representing the phases in chronological order. Example: {"phases": ["Planning", "Design", "Development", "Launch"]}`
+The last phase must always be exactly "Project Finished" or "Final Delivery" to indicate completion.
+Return ONLY a JSON object with a single key "phases" containing an array of strings representing the phases in chronological order. Example: {"phases": ["Planning", "Design", "Development", "Project Finished"]}`
 
     let aiResponseText = ""
     try {

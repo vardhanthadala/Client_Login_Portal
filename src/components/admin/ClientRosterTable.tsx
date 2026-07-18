@@ -10,6 +10,7 @@ import { format } from "date-fns"
 interface ClientData {
   id: string;
   email: string;
+  image?: string | null;
   createdAt?: string;
   clientProfile?: {
     id: string;
@@ -23,6 +24,14 @@ interface ClientData {
 const getInitial = (name: string | undefined) => {
   if (!name) return "?"
   return name.charAt(0).toUpperCase()
+}
+
+const getAvatarSrc = (imagePath: string | null | undefined) => {
+  if (!imagePath) return ""
+  if (imagePath.startsWith("data:") || imagePath.startsWith("blob:") || imagePath.startsWith("/")) {
+    return imagePath
+  }
+  return `/api/file?url=${encodeURIComponent(imagePath)}`
 }
 
 const getAvatarColor = (name: string) => {
@@ -130,9 +139,15 @@ export default function ClientRosterTable({ clients }: { clients: ClientData[] }
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-4">
                         {/* Avatar */}
-                        <div className={`w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 ${avatarColor} text-white font-normal text-[16px]`}>
-                          {getInitial(companyName)}
-                        </div>
+                        {client.image ? (
+                          <div className="w-[42px] h-[42px] rounded-full shrink-0 border border-[#E2E8F0] dark:border-[#333] overflow-hidden relative bg-[#F1F5F9] dark:bg-[#1A1A1A]">
+                            <img src={getAvatarSrc(client.image)} alt={companyName} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className={`w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 ${avatarColor} text-white font-normal text-[16px]`}>
+                            {getInitial(companyName)}
+                          </div>
+                        )}
 
                         {/* Text */}
                         <div className="flex flex-col justify-center">

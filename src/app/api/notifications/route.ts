@@ -10,11 +10,27 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const notifications = await prisma.notification.findMany({
+    const notificationsRaw = await prisma.notification.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       take: 50,
     })
+
+    const clientIds = Array.from(new Set(notificationsRaw.filter(n => n.clientId).map(n => n.clientId!)))
+    let imageMap: Record<string, string | null> = {}
+    
+    if (clientIds.length > 0) {
+      const users = await prisma.user.findMany({
+        where: { id: { in: clientIds } },
+        select: { id: true, image: true, clientProfile: { select: { profileImageUrl: true } } }
+      })
+      imageMap = Object.fromEntries(users.map(u => [u.id, u.clientProfile?.profileImageUrl || u.image || null]))
+    }
+
+    const notifications = notificationsRaw.map(n => ({
+      ...n,
+      clientImage: n.clientId ? imageMap[n.clientId] : undefined
+    }))
 
     return NextResponse.json({ notifications })
   } catch (error) {

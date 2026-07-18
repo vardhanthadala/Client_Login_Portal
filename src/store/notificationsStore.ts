@@ -13,6 +13,7 @@ export interface RealTimeNotification {
   clientName?: string
   clientId?: string
   sourceId?: string
+  clientImage?: string | null
 }
 
 interface NotificationsState {

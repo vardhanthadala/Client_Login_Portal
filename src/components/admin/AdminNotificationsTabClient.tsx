@@ -97,6 +97,14 @@ export default function AdminNotificationsTabClient() {
     return name.charAt(0).toUpperCase()
   }
 
+  const getAvatarSrc = (imagePath: string | null | undefined) => {
+    if (!imagePath) return ""
+    if (imagePath.startsWith("data:") || imagePath.startsWith("blob:") || imagePath.startsWith("/")) {
+      return imagePath
+    }
+    return `/api/file?url=${encodeURIComponent(imagePath)}`
+  }
+
   const getTypeLabel = (type: string) => {
     if (type === "MESSAGE") return "Message"
     if (type === "APPROVAL") return "Approval"
@@ -221,11 +229,17 @@ export default function AdminNotificationsTabClient() {
                       />
 
                       {/* Avatar */}
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-br ${avatarGrad} shadow-[0_2px_8px_rgba(0,0,0,0.12)] ${item.isRead ? "opacity-50" : ""} transition-all group-hover:scale-105`}>
-                        <span className="text-[14px] font-semibold text-white leading-none">
-                          {getInitial(item.clientName)}
-                        </span>
-                      </div>
+                      {item.clientImage ? (
+                        <div className={`w-10 h-10 rounded-full shrink-0 border border-[#E2E8F0] dark:border-[#333] overflow-hidden relative bg-[#F1F5F9] dark:bg-[#1A1A1A] ${item.isRead ? "opacity-50" : ""} transition-all group-hover:scale-105`}>
+                          <img src={getAvatarSrc(item.clientImage)} alt={item.clientName || "Client"} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-br ${avatarGrad} shadow-[0_2px_8px_rgba(0,0,0,0.12)] ${item.isRead ? "opacity-50" : ""} transition-all group-hover:scale-105`}>
+                          <span className="text-[14px] font-semibold text-white leading-none">
+                            {getInitial(item.clientName)}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">

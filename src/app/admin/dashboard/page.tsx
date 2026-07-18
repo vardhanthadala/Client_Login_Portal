@@ -75,6 +75,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       email: true,
       name: true,
       role: true,
+      image: true,
       tenantId: true,
       createdAt: true,
       updatedAt: true,
@@ -353,7 +354,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
             {[
               { label: "Total Clients", value: clients.length, subtext: "Active Accounts", icon: GoPeople, progress: "65%", textRight: `${clients.length} Active`, barColor: "duralux-progress-orange", href: "?tab=clients" },
               { label: "Total Earnings", value: totalEarningsDisplay, subtext: "Lifetime Volume", icon: DollarSign, progress: "80%", textRight: "80% Target", barColor: "duralux-progress-green", href: "?tab=billing" },
-              { label: "In Progress", value: clients.filter(c => c.clientProfile && c.clientProfile.status !== "COMPLETED").length, subtext: "Active Projects", icon: GrInProgress, progress: "50%", textRight: "50% Completed", barColor: "duralux-progress-blue", href: "?tab=clients" },
+              { label: "In Progress", value: totalProjects - completedProjects, subtext: "Active Projects", icon: GrInProgress, progress: `${totalProjects > 0 ? Math.round((completedProjects / totalProjects) * 100) : 0}%`, textRight: `${totalProjects > 0 ? Math.round((completedProjects / totalProjects) * 100) : 0}% Completed`, barColor: "duralux-progress-blue", href: "?tab=clients" },
               { label: "Unread Messages", value: clients.reduce((acc, client) => acc + (client.clientProfile?.messages || []).filter(m => !m.isRead && m.senderId !== adminUserId).length, 0), subtext: "Requires Attention", icon: LuMessageCircle, progress: "15%", textRight: "Needs Review", barColor: "duralux-progress-red", href: "?tab=notifications" }
             ].map((stat, i) => (
               <Link key={i} href={stat.href}>
@@ -415,6 +416,7 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
             clients={clients.map(client => ({
               id: client.id,
               email: client.email || "",
+              image: client.clientProfile?.profileImageUrl || client.image,
               createdAt: client.createdAt.toISOString(),
               clientProfile: client.clientProfile,
               unreadCount: (client.clientProfile?.messages || []).filter(m => m.senderId !== adminUserId).length
