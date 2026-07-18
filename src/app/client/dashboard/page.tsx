@@ -362,7 +362,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
     content: (
       <FadeInStagger>
         <FadeInItem>
-          <ChatInterface clientProfileId={clientProfile.id} currentUserId={token.id as string} />
+          <ChatInterface clientProfileId={clientProfile.id} currentUserId={userId as string} />
         </FadeInItem>
       </FadeInStagger>
     )
@@ -379,7 +379,7 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
     <ClientSidebarLayout 
       tabs={tabs} 
       initialTab={initialTab} 
-      clientProfile={{ ...clientProfile, email: token?.email } as any} 
+      clientProfile={{ ...clientProfile, email: session?.user?.email } as any} 
       currentProject={currentProject} 
     />
   )
