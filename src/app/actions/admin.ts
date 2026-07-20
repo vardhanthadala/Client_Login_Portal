@@ -89,8 +89,8 @@ export async function inviteClientAction(formData: FormData) {
       })
     })
 
-    // Send Welcome Email via Resend (fire and forget, or await)
-    await sendWelcomeEmail(email, password)
+    // Send Welcome Email via custom SMTP
+    await sendWelcomeEmail(email, password, "Our Platform", clientName, token.tenantId as string)
 
     revalidatePath("/admin/dashboard")
 

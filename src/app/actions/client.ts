@@ -232,7 +232,7 @@ export async function adminResetClientPassword(clientId: string, newPassword: st
     })
 
     // Email the new password to the client
-    await sendClientPasswordResetEmail(clientProfile.user.email, newPassword, "Our Platform")
+    await sendClientPasswordResetEmail(clientProfile.user.email, newPassword, token.tenantId as string, "Our Platform")
 
     // Log the password for dev fallback
     console.log(`\n==============================================`)

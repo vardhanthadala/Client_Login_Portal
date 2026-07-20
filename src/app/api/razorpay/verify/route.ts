@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       const amountStr = `${updatedInvoice.currency} ${updatedInvoice.amount.toFixed(2)}`
       const clientName = updatedInvoice.clientProfile.clientName
 
-      await sendClientInvoiceSuccessEmail(clientEmail, invoiceTitle, amountStr, agencyName)
+      await sendClientInvoiceSuccessEmail(clientEmail, invoiceTitle, amountStr, agencyName, updatedInvoice.clientProfile.tenantId as string)
       
       if (adminEmail) {
         await sendAdminInvoicePaidEmail(adminEmail, invoiceTitle, amountStr, clientName)

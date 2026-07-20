@@ -19,6 +19,11 @@ export async function GET(req: NextRequest) {
         awsRegion: true,
         awsS3BucketName: true,
         awsSecretAccessKey: true,
+        smtpHost: true,
+        smtpPort: true,
+        smtpUser: true,
+        smtpPassword: true,
+        smtpFrom: true,
       }
     })
 
@@ -33,7 +38,12 @@ export async function GET(req: NextRequest) {
       awsAccessKeyId: tenant.awsAccessKeyId || "",
       awsRegion: tenant.awsRegion || "",
       awsS3BucketName: tenant.awsS3BucketName || "",
-      hasAwsSecret: !!tenant.awsSecretAccessKey
+      hasAwsSecret: !!tenant.awsSecretAccessKey,
+      smtpHost: tenant.smtpHost || "",
+      smtpPort: tenant.smtpPort || "",
+      smtpUser: tenant.smtpUser || "",
+      smtpFrom: tenant.smtpFrom || "",
+      hasSmtpPassword: !!tenant.smtpPassword
     })
   } catch (error: any) {
     console.error("Error fetching settings:", error)
@@ -54,7 +64,12 @@ export async function POST(req: NextRequest) {
       awsAccessKeyId,
       awsSecretAccessKey,
       awsRegion,
-      awsS3BucketName
+      awsS3BucketName,
+      smtpHost,
+      smtpPort,
+      smtpUser,
+      smtpPassword,
+      smtpFrom
     } = await req.json()
 
     const updateData: any = {}
@@ -74,6 +89,15 @@ export async function POST(req: NextRequest) {
 
     if (awsSecretAccessKey) {
       updateData.awsSecretAccessKey = encrypt(awsSecretAccessKey)
+    }
+    
+    if (smtpHost !== undefined) updateData.smtpHost = smtpHost
+    if (smtpPort !== undefined) updateData.smtpPort = smtpPort ? parseInt(smtpPort, 10) : null
+    if (smtpUser !== undefined) updateData.smtpUser = smtpUser
+    if (smtpFrom !== undefined) updateData.smtpFrom = smtpFrom
+    
+    if (smtpPassword) {
+      updateData.smtpPassword = encrypt(smtpPassword)
     }
 
     await prisma.tenant.update({

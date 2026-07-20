@@ -128,7 +128,8 @@ export async function sendInvoiceReminderAction(invoiceId: string) {
       invoice.title,
       invoice.amount,
       invoice.currency,
-      dueDateStr
+      dueDateStr,
+      token.tenantId as string
     )
 
     if (!emailResult.success) {

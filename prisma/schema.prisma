@@ -38,6 +38,12 @@ model Tenant {
   cancelledAt             DateTime?
   cancellationReason      String?
   
+  smtpHost                String?
+  smtpPort                Int?
+  smtpUser                String?
+  smtpPassword            String?
+  smtpFrom                String?
+
 
   users              User[]
   clientProfiles     ClientProfile[]

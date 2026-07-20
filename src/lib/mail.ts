@@ -1,5 +1,33 @@
 import nodemailer from "nodemailer"
+import { prisma } from "@/lib/prisma"
+import { decrypt } from "@/lib/encryption"
 
+async function getAdminTransporter(tenantId: string) {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { smtpHost: true, smtpPort: true, smtpUser: true, smtpPassword: true, smtpFrom: true }
+  })
+  
+  if (!tenant || !tenant.smtpHost || !tenant.smtpPort || !tenant.smtpUser || !tenant.smtpPassword) {
+    throw new Error("Admin SMTP credentials not configured in Portal Settings.")
+  }
+  
+  const decryptedPassword = decrypt(tenant.smtpPassword)
+  
+  const transporter = nodemailer.createTransport({
+    host: tenant.smtpHost,
+    port: tenant.smtpPort,
+    secure: tenant.smtpPort === 465,
+    auth: {
+      user: tenant.smtpUser,
+      pass: decryptedPassword,
+    },
+  })
+  
+  const from = tenant.smtpFrom || `"${tenant.smtpUser}" <${tenant.smtpUser}>`
+  
+  return { transporter, from }
+}
 // Create a Nodemailer transporter using SMTP (Gmail in this case)
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -11,17 +39,24 @@ const transporter = nodemailer.createTransport({
 
 const ADMIN_EMAIL = process.env.SMTP_USER || "vardhan.thadala23@gmail.com"
 
-export async function sendWelcomeEmail(toEmail: string, tempPassword: string, agencyName: string = "Our Platform", adminName: string = "Admin") {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-    console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping welcome email to ${toEmail}.`)
-    return { success: false, error: "SMTP credentials not set." }
-  }
-
+export async function sendWelcomeEmail(toEmail: string, tempPassword: string, agencyName: string = "Our Platform", adminName: string = "Admin", tenantId?: string) {
   try {
-    const info = await transporter.sendMail({
-      from: `"${agencyName} Portal" <${process.env.SMTP_USER}>`,
+    let mailTransporter = transporter
+    let fromAddress = `"${agencyName} Portal" <${process.env.SMTP_USER}>`
+
+    if (tenantId) {
+      const adminSmtp = await getAdminTransporter(tenantId)
+      mailTransporter = adminSmtp.transporter
+      fromAddress = adminSmtp.from
+    } else if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+      console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping welcome email to ${toEmail}.`)
+      return { success: false, error: "SMTP credentials not set." }
+    }
+
+    const info = await mailTransporter.sendMail({
+      from: fromAddress,
       to: toEmail,
-      subject: `Welcome to ${agencyName}! Your Admin Access`,
+      subject: `Welcome to ${agencyName}! Your Access Details`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #465fff;">Welcome to ${agencyName}!</h1>
@@ -146,15 +181,11 @@ export async function sendPasswordResetOTP(toEmail: string, otp: string) {
   }
 }
 
-export async function sendClientPasswordResetEmail(toEmail: string, newPassword: string, agencyName: string = "Our Platform") {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-    console.warn(`[MAILER] SMTP_USER or SMTP_PASSWORD is not set. Skipping client password reset email to ${toEmail}.`)
-    return { success: false, error: "SMTP credentials not set." }
-  }
-
+export async function sendClientPasswordResetEmail(toEmail: string, newPassword: string, tenantId: string, agencyName: string = "Our Platform") {
   try {
-    const info = await transporter.sendMail({
-      from: `"${agencyName} Portal" <${process.env.SMTP_USER}>`,
+    const adminSmtp = await getAdminTransporter(tenantId)
+    const info = await adminSmtp.transporter.sendMail({
+      from: adminSmtp.from,
       to: toEmail,
       subject: `Your ${agencyName} password has been reset`,
       html: `
@@ -250,15 +281,11 @@ export async function sendAdminSubscriptionFailureEmail(toEmail: string, planNam
   }
 }
 
-export async function sendClientInvoiceSuccessEmail(toEmail: string, invoiceTitle: string, amount: string, agencyName: string) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-    console.warn(`[MAILER] SMTP missing. Skipping client invoice success email to ${toEmail}.`)
-    return { success: false, error: "SMTP credentials not set." }
-  }
-
+export async function sendClientInvoiceSuccessEmail(toEmail: string, invoiceTitle: string, amount: string, agencyName: string, tenantId: string) {
   try {
-    const info = await transporter.sendMail({
-      from: `"${agencyName} Billing" <${process.env.SMTP_USER}>`,
+    const adminSmtp = await getAdminTransporter(tenantId)
+    const info = await adminSmtp.transporter.sendMail({
+      from: adminSmtp.from,
       to: toEmail,
       subject: `Payment Receipt: ${invoiceTitle}`,
       html: `
@@ -351,15 +378,11 @@ export async function sendSuperadminNewSubscriberEmail(toEmail: string, agencyNa
 
 
 
-export async function sendInvoiceReminderEmail(toEmail: string, clientName: string, invoiceTitle: string, amount: number, currency: string, dueDateStr: string) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-    console.warn(`[MAILER] SMTP credentials not set. Skipping reminder for ${invoiceTitle}.`);
-    return { success: false, error: "SMTP credentials not set." };
-  }
-  
+export async function sendInvoiceReminderEmail(toEmail: string, clientName: string, invoiceTitle: string, amount: number, currency: string, dueDateStr: string, tenantId: string) {
   try {
-    const info = await transporter.sendMail({
-      from: `"Agency Portal" <${process.env.SMTP_USER}>`,
+    const adminSmtp = await getAdminTransporter(tenantId)
+    const info = await adminSmtp.transporter.sendMail({
+      from: adminSmtp.from,
       to: toEmail,
       subject: `Action Required: Overdue Invoice - ${invoiceTitle}`,
       html: `

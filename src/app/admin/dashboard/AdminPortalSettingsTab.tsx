@@ -9,15 +9,22 @@ export default function AdminPortalSettingsTab() {
   const [saving, setSaving] = useState(false)
   const [hasRazorpaySecret, setHasRazorpaySecret] = useState(false)
   const [hasAwsSecret, setHasAwsSecret] = useState(false)
+  const [hasSmtpPassword, setHasSmtpPassword] = useState(false)
   const [showRazorpaySecret, setShowRazorpaySecret] = useState(false)
   const [showAwsSecret, setShowAwsSecret] = useState(false)
+  const [showSmtpPassword, setShowSmtpPassword] = useState(false)
   const [keys, setKeys] = useState({
     razorpayKeyId: "",
     razorpayKeySecret: "",
     awsAccessKeyId: "",
     awsSecretAccessKey: "",
     awsRegion: "",
-    awsS3BucketName: ""
+    awsS3BucketName: "",
+    smtpHost: "",
+    smtpPort: "",
+    smtpUser: "",
+    smtpPassword: "",
+    smtpFrom: ""
   })
 
   useEffect(() => {
@@ -34,10 +41,15 @@ export default function AdminPortalSettingsTab() {
           razorpayKeyId: data.razorpayKeyId || "",
           awsAccessKeyId: data.awsAccessKeyId || "",
           awsRegion: data.awsRegion || "",
-          awsS3BucketName: data.awsS3BucketName || ""
+          awsS3BucketName: data.awsS3BucketName || "",
+          smtpHost: data.smtpHost || "",
+          smtpPort: data.smtpPort || "",
+          smtpUser: data.smtpUser || "",
+          smtpFrom: data.smtpFrom || ""
         }))
         setHasRazorpaySecret(data.hasRazorpaySecret)
         setHasAwsSecret(data.hasAwsSecret)
+        setHasSmtpPassword(data.hasSmtpPassword)
       })
       .catch((err) => console.error("Failed to load settings silently:", err))
       .finally(() => setLoading(false))
@@ -62,6 +74,10 @@ export default function AdminPortalSettingsTab() {
         if (keys.awsSecretAccessKey) {
           setHasAwsSecret(true)
           setKeys(prev => ({ ...prev, awsSecretAccessKey: "" }))
+        }
+        if (keys.smtpPassword) {
+          setHasSmtpPassword(true)
+          setKeys(prev => ({ ...prev, smtpPassword: "" }))
         }
       } else {
         toast.error(data.error || "Failed to save settings")
@@ -243,6 +259,117 @@ export default function AdminPortalSettingsTab() {
             </button>
           </div>
         </div>
+
+        {/* Custom SMTP Section */}
+        <div className="bg-white dark:bg-[#171A21] rounded-[20px] sm:rounded-[24px] border border-[#0F172A]/5 dark:border-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.45)] overflow-hidden">
+          <div className="px-4 sm:px-8 pt-5 sm:pt-7 pb-3 sm:pb-4 border-b border-[#F1F5F9] dark:border-white/5">
+            <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-violet-500" />
+              </div>
+              <h3 className="text-base sm:text-lg font-normal text-[#0F172A] dark:text-white tracking-tight">Custom Email SMTP Server</h3>
+            </div>
+            <p className="text-[12px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-normal">Configure your SMTP settings to send invites and notifications directly from your own domain.</p>
+          </div>
+          <div className="p-4 sm:p-8 flex flex-col gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">SMTP Host</label>
+                <input
+                  type="text"
+                  value={keys.smtpHost}
+                  onChange={(e) => setKeys({ ...keys, smtpHost: e.target.value })}
+                  placeholder="smtp.gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-[#FAFBFD] dark:bg-[#1C2029] text-[15px] text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">SMTP Port</label>
+                <input
+                  type="number"
+                  value={keys.smtpPort}
+                  onChange={(e) => setKeys({ ...keys, smtpPort: e.target.value })}
+                  placeholder="587"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-[#FAFBFD] dark:bg-[#1C2029] text-[15px] text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">SMTP Username / Email</label>
+                <input
+                  type="email"
+                  value={keys.smtpUser}
+                  onChange={(e) => setKeys({ ...keys, smtpUser: e.target.value })}
+                  placeholder="hello@youragency.com"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-[#FAFBFD] dark:bg-[#1C2029] text-[15px] text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">SMTP App Password</label>
+                  {hasSmtpPassword && (
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-normal bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-900/50">
+                      <ShieldCheck className="w-3 h-3" /> Configured
+                    </span>
+                  )}
+                </div>
+                <div className="relative">
+                  <input
+                    type={showSmtpPassword ? "text" : "password"}
+                    value={keys.smtpPassword}
+                    onChange={(e) => setKeys({ ...keys, smtpPassword: e.target.value })}
+                    placeholder={hasSmtpPassword ? "••••••••••••••••" : "Enter App Password"}
+                    className="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-white/10 bg-[#FAFBFD] dark:bg-[#1C2029] text-[15px] text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  >
+                    {showSmtpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">From Name</label>
+              <input
+                type="text"
+                value={keys.smtpFrom}
+                onChange={(e) => setKeys({ ...keys, smtpFrom: e.target.value })}
+                placeholder="Your Agency Name <hello@youragency.com>"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-[#FAFBFD] dark:bg-[#1C2029] text-[15px] text-slate-900 dark:text-white outline-none focus:border-[#3454d1] focus:ring-1 focus:ring-[#3454d1] transition-all font-normal"
+              />
+            </div>
+          </div>
+          <div className="px-4 sm:px-8 py-3 sm:py-4 border-t border-[#F1F5F9] dark:border-white/5 bg-[#F8FAFC]/50 dark:bg-[#1A1A1A]/50 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={async () => {
+                const res = await fetch("/api/admin/settings/test-smtp", { method: "POST" })
+                const data = await res.json()
+                if (res.ok) {
+                  toast.success("Test email sent successfully!")
+                } else {
+                  toast.error(data.error || "Failed to send test email")
+                }
+              }}
+              className="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-[#333] bg-white dark:bg-[#111] text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-[#1A1E24] text-xs font-normal transition-colors flex items-center gap-2 shadow-sm"
+            >
+              Test Connection
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-6 py-2.5 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] hover:bg-[#1E293B] dark:hover:bg-[#E2E8F0] text-xs font-normal transition-colors flex items-center gap-2 disabled:opacity-50 shadow-md"
+            >
+              {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              Save SMTP Config
+            </button>
+          </div>
+        </div>
+
       </form>
     </div>
   )
