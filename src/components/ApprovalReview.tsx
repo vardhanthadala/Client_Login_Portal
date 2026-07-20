@@ -103,8 +103,8 @@ export default function ApprovalReview({ projects: initialProjects }: { projects
   const allItems = currentProject.approvals?.flatMap((a: any) => a.items) || []
 
   const totalFiles = allItems.length
-  const pendingReview = allItems.filter(i => i.status === "PENDING").length
-  const approved = allItems.filter(i => i.status === "APPROVED").length
+  const pendingReview = allItems.filter((i: any) => i.status === "PENDING").length
+  const approved = allItems.filter((i: any) => i.status === "APPROVED").length
 
   const handleApprove = async (itemId: string) => {
     setLoadingId(itemId)
@@ -250,7 +250,7 @@ export default function ApprovalReview({ projects: initialProjects }: { projects
                </tr>
              </thead>
              <tbody>
-               {allItems.map((item, idx) => {
+               {allItems.map((item: any, idx: number) => {
                  const isApproved = item.status === "APPROVED"
                  const isPending = item.status === "PENDING"
                  const isChangesRequested = item.status === "CHANGES_REQUESTED"
