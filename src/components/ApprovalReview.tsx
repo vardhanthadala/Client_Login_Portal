@@ -1,12 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { respondToApprovalItemAction } from "@/app/actions/approvals"
-import { Loader2, Check, AlertTriangle, Download, MoreVertical, LayoutGrid, List, ChevronDown, Clock, Search, FileText, CheckCircle2, User, ImageIcon, Database } from "lucide-react"
+import { Loader2, Check, Download, FileText, CheckCircle2, ImageIcon, Folder, Clock, ChevronLeft, ChevronRight, PenLine, Eye } from "lucide-react"
 import { toast } from "sonner"
 import Image from "next/image"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
 
 type ApprovalFeedback = {
   id: string
@@ -37,28 +45,62 @@ type Approval = {
   createdAt: string
 }
 
-export default function ApprovalReview({ approvals: initialApprovals }: { approvals: Approval[] }) {
-  const [approvals, setApprovals] = useState<Approval[]>(initialApprovals)
+export default function ApprovalReview({ projects: initialProjects }: { projects: any[] }) {
+  const [projects, setProjects] = useState<any[]>(initialProjects)
   const [loadingId, setLoadingId] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<"Newest" | "Oldest">("Newest")
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list")
+  
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
+  
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [activeItemId, setActiveItemId] = useState<string | null>(null)
+  const [changesComment, setChangesComment] = useState("")
 
-  if (approvals.length === 0) return null
-
-  // Flatten items for the new UI
-  const allItems = approvals.flatMap(a => 
-    a.items.map(item => ({ 
-      ...item, 
-      batchId: a.id, 
-      uploadedAt: new Date(a.createdAt) 
-    }))
-  ).sort((a, b) => {
-    if (sortBy === "Newest") {
-      return b.uploadedAt.getTime() - a.uploadedAt.getTime()
-    } else {
-      return a.uploadedAt.getTime() - b.uploadedAt.getTime()
+  let displayProjects = projects.length > 0 ? projects : [
+    {
+      id: "mock-proj-1",
+      name: "Acme Corp Rebranding (Demo)",
+      approvals: []
     }
+  ]
+
+  displayProjects = displayProjects.map((p, index) => {
+    const allItems = p.approvals?.flatMap((a: any) => a.items) || []
+    if (allItems.length === 0) {
+      let items: any[] = [];
+      if (index % 3 === 0) {
+        items = [
+          { id: `mock-item-1-${p.id}`, fileName: "Homepage_Design_v1.fig", fileType: "application/figma", status: "PENDING", fileUrl: "#" },
+          { id: `mock-item-2-${p.id}`, fileName: "Copywriting_Draft.pdf", fileType: "application/pdf", status: "APPROVED", fileUrl: "#" },
+          { id: `mock-item-3-${p.id}`, fileName: "Social_Media_Assets.zip", fileType: "application/zip", status: "CHANGES_REQUESTED", fileUrl: "#" }
+        ];
+      } else if (index % 3 === 1) {
+        items = [
+          { id: `mock-item-1-${p.id}`, fileName: "Brand_Logo_Options.pdf", fileType: "application/pdf", status: "PENDING", fileUrl: "#" },
+          { id: `mock-item-2-${p.id}`, fileName: "Video_Ad_v2.mp4", fileType: "video/mp4", status: "PENDING", fileUrl: "#" }
+        ];
+      } else {
+        items = [
+          { id: `mock-item-1-${p.id}`, fileName: "Q3_Marketing_Report.xlsx", fileType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", status: "APPROVED", fileUrl: "#" },
+          { id: `mock-item-2-${p.id}`, fileName: "Email_Newsletter_Template.html", fileType: "text/html", status: "APPROVED", fileUrl: "#" },
+          { id: `mock-item-3-${p.id}`, fileName: "Blog_Post_Header.png", fileType: "image/png", status: "APPROVED", fileUrl: "https://placehold.co/800x400.png" },
+          { id: `mock-item-4-${p.id}`, fileName: "SEO_Audit.pdf", fileType: "application/pdf", status: "CHANGES_REQUESTED", fileUrl: "#" }
+        ];
+      }
+
+      return {
+        ...p,
+        approvals: [
+          {
+            items
+          }
+        ]
+      }
+    }
+    return p
   })
+
+  const currentProject = displayProjects[currentProjectIndex]
+  const allItems = currentProject.approvals?.flatMap((a: any) => a.items) || []
 
   const totalFiles = allItems.length
   const pendingReview = allItems.filter(i => i.status === "PENDING").length
@@ -68,223 +110,296 @@ export default function ApprovalReview({ approvals: initialApprovals }: { approv
     setLoadingId(itemId)
     const res = await respondToApprovalItemAction(itemId, "APPROVED")
     if (res.success) {
-      setApprovals(approvals.map(a => ({
-        ...a,
-        items: a.items.map(item => item.id === itemId ? {
-          ...item,
-          status: "APPROVED",
-          feedback: [...item.feedback, { id: `temp-${Date.now()}`, action: "APPROVED", comment: null, createdAt: new Date().toISOString() }]
-        } : item)
+      setProjects(projects.map(p => ({
+        ...p,
+        approvals: p.approvals?.map((a: any) => ({
+          ...a,
+          items: a.items.map((item: any) => item.id === itemId ? {
+            ...item,
+            status: "APPROVED",
+            feedback: [...item.feedback, { id: `temp-${Date.now()}`, action: "APPROVED", comment: null, createdAt: new Date().toISOString() }]
+          } : item)
+        }))
       })))
+      toast.success("File approved!")
     } else {
       toast.error(res.error)
     }
     setLoadingId(null)
   }
 
-  const handleRequestChanges = async (itemId: string) => {
-    const comment = prompt("Describe what changes you need:")
-    if (!comment?.trim()) return toast.error("Please describe what changes you need.")
-    setLoadingId(itemId)
-    const res = await respondToApprovalItemAction(itemId, "CHANGES_REQUESTED", comment)
+  const openChangesDialog = (itemId: string) => {
+    setActiveItemId(itemId)
+    setChangesComment("")
+    setDialogOpen(true)
+  }
+
+  const submitChanges = async () => {
+    if (!activeItemId) return
+    if (!changesComment.trim()) return toast.error("Please describe what changes you need.")
+    
+    setLoadingId(activeItemId)
+    setDialogOpen(false)
+    
+    const res = await respondToApprovalItemAction(activeItemId, "CHANGES_REQUESTED", changesComment)
     if (res.success) {
-      setApprovals(approvals.map(a => ({
-        ...a,
-        items: a.items.map(item => item.id === itemId ? {
-          ...item,
-          status: "CHANGES_REQUESTED",
-          feedback: [...item.feedback, { id: `temp-${Date.now()}`, action: "CHANGES_REQUESTED", comment, createdAt: new Date().toISOString() }]
-        } : item)
+      setProjects(projects.map(p => ({
+        ...p,
+        approvals: p.approvals?.map((a: any) => ({
+          ...a,
+          items: a.items.map((item: any) => item.id === activeItemId ? {
+            ...item,
+            status: "CHANGES_REQUESTED",
+            feedback: [...item.feedback, { id: `temp-${Date.now()}`, action: "CHANGES_REQUESTED", comment: changesComment, createdAt: new Date().toISOString() }]
+          } : item)
+        }))
       })))
+      toast.success("Changes requested successfully.")
     } else {
       toast.error(res.error)
     }
     setLoadingId(null)
+  }
+
+  const handlePrev = () => {
+    if (currentProjectIndex > 0) setCurrentProjectIndex(currentProjectIndex - 1)
+  }
+
+  const handleNext = () => {
+    if (currentProjectIndex < displayProjects.length - 1) setCurrentProjectIndex(currentProjectIndex + 1)
   }
 
   const isImage = (fileType: string) => fileType.startsWith("image/")
 
   return (
     <div className="w-full flex flex-col gap-[25px]">
+      
       {/* Header and Stats */}
-      <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-[25px]">
+      <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-[22px] font-bold text-[#0F172A] dark:text-white tracking-tight mb-1">Approvals</h1>
+          <h1 className="text-[22px] font-normal text-[#0F172A] dark:text-white tracking-tight mb-1">Approvals</h1>
           <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8]">Review and approve files shared by your agency.</p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:flex xl:flex-wrap gap-4 w-full xl:w-auto">
-          {/* Total Files */}
-          <div className="bg-white dark:bg-[#111111] rounded-[15px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-[25px] flex items-center gap-4 w-full sm:w-auto">
-            <div className="bg-[#3454D1]/10 text-[#3454D1] rounded-[12px] p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          {/* Project Name Card */}
+          <div className="bg-white dark:bg-[#111111] rounded-[12px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-5 flex items-center gap-4">
+            <div className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 rounded-[10px] p-2.5 shrink-0">
+              <Folder className="w-5 h-5 fill-indigo-100 dark:fill-indigo-900/30" />
+            </div>
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider truncate">Project Name</span>
+              <span className="text-[15px] font-medium text-[#0F172A] dark:text-white leading-none mt-1 mb-1.5 truncate">{currentProject.name}</span>
+              <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                Active
+              </div>
+            </div>
+          </div>
+          
+          {/* Total Files Card */}
+          <div className="bg-white dark:bg-[#111111] rounded-[12px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-5 flex items-center gap-4">
+            <div className="bg-[#3454D1]/10 text-[#3454D1] rounded-[10px] p-2.5 shrink-0">
               <FileText className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Total Files</span>
-              <span className="text-xl font-bold text-[#0F172A] dark:text-white leading-none mt-1">{totalFiles}</span>
+              <span className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Total Files</span>
+              <span className="text-[20px] font-medium text-[#0F172A] dark:text-white leading-none mt-1">{totalFiles}</span>
             </div>
           </div>
-          {/* Pending Review */}
-          <div className="bg-white dark:bg-[#111111] rounded-[15px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-[25px] flex items-center gap-4 w-full sm:w-auto">
-            <div className="bg-[#F59E0B]/10 text-[#F59E0B] rounded-[12px] p-3">
-              <AlertTriangle className="w-5 h-5" />
+          
+          {/* Pending Review Card */}
+          <div className="bg-white dark:bg-[#111111] rounded-[12px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-5 flex items-center gap-4">
+            <div className="bg-[#F59E0B]/10 text-[#F59E0B] rounded-[10px] p-2.5 shrink-0">
+              <Clock className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Pending</span>
-              <span className="text-xl font-bold text-[#0F172A] dark:text-white leading-none mt-1">{pendingReview}</span>
+              <span className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Pending</span>
+              <span className="text-[20px] font-medium text-[#0F172A] dark:text-white leading-none mt-1">{pendingReview}</span>
             </div>
           </div>
-          {/* Approved */}
-          <div className="bg-white dark:bg-[#111111] rounded-[15px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-[25px] flex items-center gap-4 w-full sm:w-auto">
-            <div className="bg-[#10B981]/10 text-[#10B981] rounded-[12px] p-3">
+          
+          {/* Approved Card */}
+          <div className="bg-white dark:bg-[#111111] rounded-[12px] shadow-sm border border-[#E2E8F0] dark:border-[#222] p-5 flex items-center gap-4">
+            <div className="bg-[#10B981]/10 text-[#10B981] rounded-[10px] p-2.5 shrink-0">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Approved</span>
-              <span className="text-xl font-bold text-[#0F172A] dark:text-white leading-none mt-1">{approved}</span>
+              <span className="text-[11px] font-normal text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Approved</span>
+              <span className="text-[20px] font-medium text-[#0F172A] dark:text-white leading-none mt-1">{approved}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 overflow-hidden">
-        <button className="flex items-center gap-2 bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] px-4 py-2 shadow-sm text-[#0F172A] dark:text-white text-[13px] font-bold transition-colors w-max">
-          <LayoutGrid className="w-4 h-4 text-[#3454D1]" />
-          All Files
-          <span className="bg-[#F1F5F9] dark:bg-[#1A1A1A] text-[#64748B] dark:text-[#94A3B8] px-2 py-0.5 rounded-full text-[11px]">{totalFiles}</span>
-        </button>
+      {/* Table Section */}
+      <div className="bg-white dark:bg-[#111] rounded-[12px] border border-[#E2E8F0] dark:border-[#222] shadow-sm flex flex-col mt-2">
+        <div className="block md:hidden px-6 pt-4 pb-2 text-[11px] text-[#64748B] text-right italic">
+          Scroll horizontally to view all details →
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[900px]">
+             <thead>
+               <tr className="border-b border-[#E2E8F0] dark:border-[#222]">
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">File Name</th>
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Type</th>
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider text-center">Approve</th>
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider text-center">Changes Requested</th>
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Status</th>
+                 <th className="px-6 py-5 text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Action</th>
+               </tr>
+             </thead>
+             <tbody>
+               {allItems.map((item, idx) => {
+                 const isApproved = item.status === "APPROVED"
+                 const isPending = item.status === "PENDING"
+                 const isChangesRequested = item.status === "CHANGES_REQUESTED"
+                 const isLoading = loadingId === item.id
 
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setSortBy(prev => prev === "Newest" ? "Oldest" : "Newest")}
-            className="flex items-center gap-2 bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] px-4 py-2.5 shadow-sm text-[13px] font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors"
-          >
-            <Search className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
-            Sort: {sortBy}
-            <ChevronDown className={`w-4 h-4 text-[#64748B] dark:text-[#94A3B8] ml-2 transition-transform ${sortBy === 'Oldest' ? 'rotate-180' : ''}`} />
-          </button>
-          
-          <div className="flex items-center bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] p-1 shadow-sm">
+                 return (
+                   <tr key={item.id} className={`${idx !== allItems.length - 1 ? 'border-b border-[#E2E8F0] dark:border-[#222]' : ''} hover:bg-[#F8FAFC] dark:hover:bg-[#161616] transition-colors`}>
+                     <td className="px-6 py-4">
+                       <div className="flex items-center gap-4">
+                         <div className="w-12 h-12 rounded-[8px] overflow-hidden bg-[#F1F5F9] dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#333] shrink-0 flex items-center justify-center relative">
+                           {isImage(item.fileType) ? (
+                             <Image src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} fill sizes="48px" className="object-cover" unoptimized={true} />
+                           ) : (
+                             <FileText className="w-5 h-5 text-[#94A3B8]" />
+                           )}
+                         </div>
+                         <span className="text-[13px] font-normal text-[#0F172A] dark:text-white max-w-[200px] truncate">{item.fileName}</span>
+                       </div>
+                     </td>
+                     
+                     <td className="px-6 py-4">
+                       <span className="text-[13px] font-normal text-[#64748B] dark:text-[#94A3B8]">{item.fileType}</span>
+                     </td>
+                     
+                     <td className="px-6 py-4 text-center">
+                       <button 
+                         onClick={() => handleApprove(item.id)}
+                         disabled={isLoading}
+                         className={`inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-full border text-[12px] font-normal transition-all
+                           ${isApproved 
+                              ? 'border-[#10B981] text-[#10B981] bg-[#10B981]/10' 
+                              : 'border-[#10B981] text-[#10B981] hover:bg-[#10B981]/10 bg-transparent'}`}
+                       >
+                         {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                         Approve
+                       </button>
+                     </td>
+                     
+                     <td className="px-6 py-4 text-center">
+                       <button 
+                         onClick={() => openChangesDialog(item.id)}
+                         disabled={isLoading || isApproved}
+                         className={`inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-full border text-[12px] font-normal transition-all
+                           ${isChangesRequested
+                              ? 'border-[#EF4444] text-[#EF4444] bg-[#EF4444]/10'
+                              : isApproved 
+                                ? 'border-[#E2E8F0] text-[#94A3B8] dark:border-[#333] dark:text-[#666] opacity-50 cursor-not-allowed bg-transparent'
+                                : 'border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 bg-transparent'}`}
+                       >
+                         {isLoading && isChangesRequested ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PenLine className="w-3 h-3" />}
+                         Request Changes
+                       </button>
+                     </td>
+
+                     <td className="px-6 py-4">
+                       {isPending ? (
+                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#F59E0B]/10 text-[#F59E0B] w-max">
+                           <Clock className="w-3.5 h-3.5" />
+                           <span className="text-[10px] font-normal tracking-widest uppercase">Pending</span>
+                         </div>
+                       ) : isApproved ? (
+                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#10B981]/10 text-[#10B981] w-max">
+                           <CheckCircle2 className="w-3.5 h-3.5" />
+                           <span className="text-[10px] font-normal tracking-widest uppercase">Approved</span>
+                         </div>
+                       ) : (
+                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#EF4444]/10 text-[#EF4444] w-max">
+                           <span className="text-[10px] font-normal tracking-widest uppercase">Changes Requested</span>
+                         </div>
+                       )}
+                     </td>
+
+                     <td className="px-6 py-4">
+                       <div className="flex items-center gap-2">
+                         <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer">
+                           <button className="flex items-center justify-center h-8 px-3 rounded-[6px] border border-[#E2E8F0] dark:border-[#333] text-[12px] text-[#0F172A] dark:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1A1A1A] transition-colors gap-1.5">
+                             <Eye className="w-3.5 h-3.5" />
+                             View
+                           </button>
+                         </a>
+                         <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}&download=true`} download>
+                           <button className="flex items-center justify-center w-8 h-8 rounded-[6px] border border-[#E2E8F0] dark:border-[#333] text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#1A1A1A] transition-colors">
+                             <Download className="w-3.5 h-3.5" />
+                           </button>
+                         </a>
+                       </div>
+                     </td>
+                   </tr>
+                 )
+               })}
+             </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination Footer */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E8F0] dark:border-[#222] bg-[#F8FAFC]/50 dark:bg-[#111]/50 rounded-b-[15px]">
+          <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-normal">
+            Showing Project {currentProjectIndex + 1} of {displayProjects.length}
+          </span>
+          <div className="flex items-center gap-2">
             <button 
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-[8px] transition-colors ${viewMode === "list" ? "bg-[#F1F5F9] dark:bg-[#1A1A1A] text-[#0F172A] dark:text-white" : "hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] text-[#64748B] dark:text-[#94A3B8]"}`}
+              onClick={handlePrev} 
+              disabled={currentProjectIndex === 0} 
+              className="w-8 h-8 flex items-center justify-center rounded-[6px] border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#111] disabled:opacity-50 hover:bg-[#F8FAFC] dark:hover:bg-[#222] transition-colors"
             >
-              <List className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded-[6px] border border-[#3454D1] bg-[#3454D1]/10 text-[#3454D1] font-normal text-[13px]">
+              {currentProjectIndex + 1}
             </button>
             <button 
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-[8px] transition-colors ${viewMode === "grid" ? "bg-[#F1F5F9] dark:bg-[#1A1A1A] text-[#0F172A] dark:text-white" : "hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] text-[#64748B] dark:text-[#94A3B8]"}`}
+              onClick={handleNext} 
+              disabled={currentProjectIndex === displayProjects.length - 1} 
+              className="w-8 h-8 flex items-center justify-center rounded-[6px] border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#111] disabled:opacity-50 hover:bg-[#F8FAFC] dark:hover:bg-[#222] transition-colors"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* File List */}
-      <div className={viewMode === "list" ? "flex flex-col gap-4 mt-2" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2"}>
-        {allItems.map((item, index) => {
-          const isPending = item.status === "PENDING"
-          const isApproved = item.status === "APPROVED"
-          const isLoading = loadingId === item.id
-          
-          return (
-            <div 
-              key={item.id} 
-              className={`p-[25px] bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col ${viewMode === "list" ? "xl:flex-row xl:items-center justify-between" : ""} gap-[25px] transition-colors hover:bg-[#F8FAFC] dark:hover:bg-[#161616]`}
-            >
-              <div className={`flex flex-col ${viewMode === "list" ? "sm:flex-row sm:items-center" : ""} gap-5 items-start flex-1 min-w-0`}>
-                {/* Thumbnail */}
-                <div className={`${viewMode === "list" ? "w-32 h-24" : "w-full h-40"} relative rounded-[12px] overflow-hidden shrink-0 flex items-center justify-center bg-[#F1F5F9] dark:bg-[#1A1A1A] border border-[#E2E8F0] dark:border-[#333]`}>
-                  {isImage(item.fileType) ? (
-                     <Image src={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} alt={item.fileName} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" unoptimized={true} />
-                  ) : (
-                     <FileText className="w-8 h-8 text-[#94A3B8]" />
-                  )}
-                </div>
-
-                {/* Details */}
-                <div className="flex flex-col gap-2 min-w-0">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className="font-semibold text-[14px] text-[#0F172A] dark:text-white truncate">{item.fileName}</h3>
-                    <span className="px-2 py-0.5 rounded-[4px] text-[11px] font-bold bg-[#F1F5F9] dark:bg-[#1A1A1A] text-[#64748B] dark:text-[#94A3B8]">v{item.version}</span>
-                    <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">{item.fileType}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      {item.uploadedAt ? Math.max(1, Math.floor((Date.now() - item.uploadedAt.getTime()) / (1000 * 60 * 60))) + ' hours ago' : '2 hours ago'}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      Agency Team
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions & Status */}
-              <div className={`flex flex-wrap items-center gap-4 ${viewMode === "list" ? "xl:justify-end" : "justify-start mt-2"}`}>
-                {/* Status Badge */}
-                {isPending ? (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#F59E0B]/10 text-[#F59E0B]">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-semibold tracking-widest uppercase">PENDING</span>
-                  </div>
-                ) : isApproved ? (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#10B981]/10 text-[#10B981]">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-semibold tracking-widest uppercase">APPROVED</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#F1F5F9] dark:bg-[#1A1A1A] text-[#64748B] dark:text-[#94A3B8]">
-                    <span className="text-[10px] font-semibold tracking-widest uppercase">{item.status.replace('_', ' ')}</span>
-                  </div>
-                )}
-
-                {/* Primary Actions */}
-                {isPending && (
-                  <>
-                    <Button 
-                      className="bg-[#10B981] hover:bg-[#059669] text-white font-semibold h-8 px-4 rounded-[6px] text-[12px] flex items-center gap-1.5 transition-colors"
-                      onClick={() => handleApprove(item.id)}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                      Approve
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]/10 dark:hover:bg-[#EF4444]/20 font-semibold h-8 px-4 rounded-[6px] text-[12px] flex items-center gap-1.5 transition-colors bg-transparent"
-                      onClick={() => handleRequestChanges(item.id)}
-                      disabled={isLoading}
-                    >
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      Changes
-                    </Button>
-                  </>
-                )}
-
-                {/* Secondary Actions */}
-                <div className="flex gap-2">
-                  <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}`} target="_blank" rel="noreferrer">
-                    <Button variant="outline" className="border-[#E2E8F0] dark:border-[#333] text-[#0F172A] dark:text-white font-bold h-10 w-10 p-0 rounded-[8px] flex items-center justify-center hover:bg-[#F1F5F9] dark:hover:bg-[#1A1A1A] bg-transparent">
-                      <ImageIcon className="w-4 h-4" />
-                    </Button>
-                  </a>
-                  <a href={`/api/file?url=${encodeURIComponent(item.fileUrl)}&download=true`} download>
-                    <Button variant="outline" className="border-[#E2E8F0] dark:border-[#333] text-[#0F172A] dark:text-white font-bold h-10 w-10 p-0 rounded-[8px] flex items-center justify-center hover:bg-[#F1F5F9] dark:hover:bg-[#1A1A1A] bg-transparent">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </a>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {/* Changes Requested Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="font-normal">Request Changes</DialogTitle>
+            <DialogDescription className="font-normal">
+              Describe the specific changes you need for this file. Your agency will be notified.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              value={changesComment}
+              onChange={(e) => setChangesComment(e.target.value)}
+              placeholder="E.g., Please make the logo larger..."
+              className="min-h-[100px] font-normal"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="font-normal">
+              Cancel
+            </Button>
+            <Button onClick={submitChanges} disabled={!changesComment.trim() || loadingId !== null} className="bg-[#3454D1] hover:bg-[#283C50] text-white font-normal">
+              {loadingId ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Submit Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

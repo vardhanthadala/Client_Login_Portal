@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useState } from "react"
-import { Loader2, LogOut } from "lucide-react"
+import { Loader2, LogOut, X, Heart } from "lucide-react"
+import Image from "next/image"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -50,42 +51,57 @@ export default function SignOutButton({ isMini = false, variant = "button" }: { 
         </Button>
       )}
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className="sm:max-w-[400px] p-8 rounded-[32px] gap-0 border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:bg-[#111111]">
+        <AlertDialogContent style={{ maxWidth: 650, width: '100%' }} className="p-0 rounded-[24px] overflow-hidden border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] bg-white dark:bg-[#111111] grid grid-cols-2 gap-0">
           
-          <div className="flex flex-col items-center text-center">
-            {/* Illustrative Icon */}
-            <div className="w-24 h-24 mb-6 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center relative">
-              <div className="absolute inset-0 rounded-full bg-red-400/20 blur-md animate-pulse"></div>
-              <LogOut className="w-10 h-10 text-red-500 relative z-10 -ml-1" strokeWidth={1.5} />
-            </div>
+          <AlertDialogCancel className="absolute right-4 top-4 z-10 border-0 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded-full w-auto h-auto mt-0 shadow-none">
+            <X className="w-5 h-5 text-gray-500" />
+          </AlertDialogCancel>
 
-            {/* Typography */}
-            <AlertDialogTitle className="text-2xl font-normal font-sans text-[#0F172A] dark:text-white tracking-tight mb-3">
-              Leaving so soon?
+          {/* Left Column */}
+          <div className="flex flex-col p-10 justify-center h-full">
+            <div className="text-[11px] font-bold text-[#8B5CF6] tracking-wider uppercase mb-5">
+              LOG OUT
+            </div>
+            <AlertDialogTitle className="text-[26px] font-bold text-[#0F172A] dark:text-white tracking-tight mb-3 font-sans">
+              Log out of Dexze?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[15px] font-normal text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8 px-2">
-              You're about to sign out. You will need to log back in to access the company dashboard.
+            <AlertDialogDescription className="text-[14px] font-medium text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8">
+              You'll be logged out and need to sign in again to continue.
             </AlertDialogDescription>
 
-            {/* Buttons */}
-            <div className="flex items-center gap-3 w-full">
+            <div className="flex items-center gap-3 w-full mb-10">
               <AlertDialogCancel 
                 disabled={isLoading}
-                className="flex-1 rounded-[16px] h-12 text-[15px] font-normal border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] mt-0"
+                className="flex-1 rounded-[12px] h-11 text-[14px] font-semibold border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] mt-0 text-[#0F172A] dark:text-white"
               >
                 Cancel
               </AlertDialogCancel>
               <Button 
                 onClick={handleSignOut} 
                 disabled={isLoading}
-                className="flex-1 rounded-[16px] h-12 text-[15px] font-normal bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors"
+                className="flex-1 rounded-[12px] h-11 text-[14px] font-semibold bg-[#8B5CF6] hover:bg-[#7C3AED] text-white transition-colors border-0"
               >
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Sign out
+                Log out
               </Button>
             </div>
+
+            <div className="flex items-center gap-2 mt-auto">
+              <Heart className="w-[14px] h-[14px] text-[#8B5CF6]" />
+              <span className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8]">We'll see you soon!</span>
+            </div>
           </div>
-          
+
+          {/* Right Column / Image */}
+          <div className="bg-[#F8FAFC] dark:bg-[#1A1A1A] h-full w-full relative min-h-[350px]">
+            <Image 
+              src="/logout-illustration.png" 
+              alt="Log out illustration" 
+              fill 
+              className="object-cover object-center scale-105" 
+            />
+          </div>
+
         </AlertDialogContent>
       </AlertDialog>
     </>

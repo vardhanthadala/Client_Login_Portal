@@ -44,7 +44,7 @@ export default function NotificationSync({ role, data, adminUserId }: Notificati
         // Refresh store after sync
         await fetchNotifications()
       } catch (err) {
-        console.error('Failed to sync notifications:', err)
+        // Ignore network errors during sync to prevent Next.js error overlays
       }
     }
 

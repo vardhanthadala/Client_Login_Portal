@@ -1,9 +1,11 @@
 "use client"
 
 import { useNotificationsStore } from "@/store/notificationsStore"
+import { useMessageStore } from "@/store/messageStore"
 
 import { useState, useEffect, useRef } from "react"
-import { Send, Loader2, Paperclip, Smile, CheckCheck, X, Trash2 } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Send, Loader2, Paperclip, Smile, CheckCheck, X, Trash2, MessageSquare } from "lucide-react"
 import EmojiPicker from 'emoji-picker-react';
 import { Button } from "@/components/ui/button"
 import { getMessagesAction, sendMessageAction, markMessagesAsReadAction, deleteMessageAction } from "@/app/actions/messages"
@@ -26,9 +28,12 @@ export default function ChatInterface({
   clientProfileId: string
   currentUserId: string
 }) {
-  const [messages, setMessages] = useState<any[]>([])
-  const [adminStatus, setAdminStatus] = useState<string>("ACTIVE")
-  const [adminInfo, setAdminInfo] = useState<{name: string | null, image: string | null} | null>(null)
+  const { messagesByProfile, adminStatusByProfile, adminInfoByProfile, mergeMessages, addOptimisticMessage, removeMessage, setAdminState } = useMessageStore()
+  
+  const messages = messagesByProfile[clientProfileId] || []
+  const adminStatus = adminStatusByProfile[clientProfileId] || "ACTIVE"
+  const adminInfo = adminInfoByProfile[clientProfileId] || null
+  
   const [content, setContent] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isSending, setIsSending] = useState(false)
@@ -85,14 +90,22 @@ export default function ChatInterface({
   }
 
   const fetchMessages = async (showLoader = true) => {
-    if (showLoader) setIsLoading(true)
+    // Only show loader on initial empty fetch, never when polling
+    if (showLoader && messages.length === 0) setIsLoading(true)
     const res = await getMessagesAction(clientProfileId)
+    console.log("CLIENT_RESPONSE", res)
+    console.log("CLIENT_DATA_LENGTH", res?.data?.length)
     if (res.success && res.data) {
-      setMessages(res.data)
-      if (res.adminStatus) setAdminStatus(res.adminStatus)
-      if (res.adminInfo) setAdminInfo(res.adminInfo)
+      console.log("MERGING", clientProfileId, res.data.length)
+      mergeMessages(clientProfileId, res.data)
+      if (res.adminStatus || res.adminInfo) {
+        setAdminState(clientProfileId, res.adminStatus || "ACTIVE", res.adminInfo || null)
+      }
+    } else if (res.error) {
+      toast.error("Failed to fetch messages")
+      console.error("Fetch Messages Failed:", res.error, res.stack)
     }
-    if (showLoader) setIsLoading(false)
+    if (showLoader && messages.length === 0) setIsLoading(false)
   }
 
   const handleSend = async (e: React.FormEvent) => {
@@ -103,37 +116,50 @@ export default function ChatInterface({
     const newMessage = {
       id: tempId,
       content,
+      clientProfileId,
       senderId: currentUserId,
       createdAt: new Date().toISOString(),
+      isRead: false,
       isOptimistic: true,
+      sender: {
+        id: currentUserId,
+        role: "CLIENT", // This component handles both sides, but optimistic role can be placeholder
+        email: "",
+        image: null,
+        clientProfile: { clientName: null, profileImageUrl: null }
+      }
     }
 
-    setMessages((prev) => [...prev, newMessage])
+    addOptimisticMessage(clientProfileId, newMessage)
     setContent("")
     setIsSending(true)
 
     const res = await sendMessageAction(clientProfileId, newMessage.content)
     if (res.success && res.data) {
-      setMessages((prev) => prev.map(m => m.id === tempId ? res.data : m))
+      removeMessage(clientProfileId, tempId) // Remove optimistic message
+      mergeMessages(clientProfileId, [res.data])
       removeAttachment() // Clear attachment on send
     } else {
       // Revert if failed
-      setMessages((prev) => prev.filter(m => m.id !== tempId))
-      toast.error(res.error || "Failed to send message")
+      removeMessage(clientProfileId, tempId)
+      console.error("SendMessage Action Failed:", res.error, res.stack)
+      toast.error("Failed to send message")
       setContent(newMessage.content) // restore input
     }
     setIsSending(false)
   }
 
   const handleDeleteMessage = async (messageId: string) => {
-    // Optimistic delete
-    const previousMessages = [...messages]
-    setMessages(prev => prev.filter(m => m.id !== messageId))
+    // We cannot revert easily without keeping the old message in memory,
+    // but in a production store, you'd mark it as 'deleted' optimistically.
+    // For now, we'll just optimistically remove it.
+    removeMessage(clientProfileId, messageId)
     
     const res = await deleteMessageAction(messageId, clientProfileId)
     if (!res?.success) {
       toast.error(res?.error || "Failed to delete message")
-      setMessages(previousMessages) // Revert on failure
+      // To fully revert we'd need to re-fetch or store the removed message.
+      fetchMessages(false) 
     }
   }
 
@@ -153,32 +179,34 @@ export default function ChatInterface({
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
+  const pathname = usePathname()
+
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)] min-h-[500px] w-full relative bg-gradient-to-br from-[#f4f7fb] via-white to-[#eef2f7] dark:from-[#0b0d12] dark:via-[#0a0a0a] dark:to-[#111318] rounded-[24px] overflow-hidden border border-slate-200 dark:border-[#222]">
+    <div className="flex flex-col h-[calc(100vh-116px)] min-h-[500px] w-full relative bg-gradient-to-br from-[#f4f7fb] via-white to-[#eef2f7] dark:from-[#0b0d12] dark:via-[#0a0a0a] dark:to-[#111318] rounded-[24px] overflow-hidden border border-slate-200 dark:border-[#222]">
       
       {/* Background container */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
 
       {/* Chat Header (Only visible for Clients) */}
-      {typeof window !== 'undefined' && window.location.pathname.includes('/client') && !window.location.pathname.includes('/admin') && (
+      {pathname && pathname.includes('/client') && !pathname.includes('/admin') && (
         <div className="px-5 sm:px-8 py-3 sm:py-4 bg-white/80 dark:bg-black/40 backdrop-blur-md border-b border-slate-200/60 dark:border-white/5 z-20 shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-[#333] shadow-sm">
             {adminInfo?.image ? (
               <img src={getAvatarSrc(adminInfo.image)} alt="Admin" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-[14px]">
+              <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-normal text-[14px]">
                 {adminInfo?.name ? adminInfo.name.charAt(0).toUpperCase() : 'A'}
               </div>
             )}
           </div>
           <div className="flex flex-col">
-            <span className="text-[14.5px] font-bold text-slate-800 dark:text-slate-100 leading-tight">
+            <span className="text-[14.5px] font-normal text-slate-800 dark:text-slate-100 leading-tight">
               {adminInfo?.name || "Admin"}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
               <div className={`w-2 h-2 rounded-full ${adminStatus === 'ACTIVE' ? 'bg-[#10B981]' : adminStatus === 'AWAY' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`} />
-              <span className="text-[12.5px] font-medium text-slate-500">{adminStatus.charAt(0).toUpperCase() + adminStatus.slice(1).toLowerCase()}</span>
+              <span className="text-[12.5px] font-normal text-slate-500">{adminStatus.charAt(0).toUpperCase() + adminStatus.slice(1).toLowerCase()}</span>
             </div>
           </div>
         </div>
@@ -186,114 +214,140 @@ export default function ChatInterface({
       )}
 
       {/* Chat Messages */}
+      {(() => {
+        console.log("RENDER_MESSAGES_DEBUG", {
+          totalMessages: messages.length,
+          clientProfileId,
+          currentUserId,
+          isLoading,
+          sampleMessage: messages.length > 0 ? messages[0] : null
+        })
+        return null
+      })()}
       <div 
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto hidden-scrollbar px-4 sm:px-8 py-4 sm:py-6 flex flex-col z-10 bg-transparent"
       >
-        {isLoading ? (
-          <div className="flex h-full items-center justify-center flex-1">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-500/50" />
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center space-y-3 flex-1">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-emerald-200 relative">
-              <Send className="w-8 h-8 ml-1" />
-              <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${adminStatus === 'ACTIVE' ? 'bg-[#10B981]' : adminStatus === 'AWAY' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`} />
-            </div>
-            <p className="text-[#64748B] font-medium max-w-[200px]">No messages yet. Say hello to start the conversation!</p>
-            <p className="text-[12px] font-medium text-slate-400">Agency is currently {adminStatus.toLowerCase()}</p>
-          </div>
-        ) : (
-          <>
-            <div className="flex-1 min-h-[20px]" />
-            <div className="flex flex-col space-y-6">
-            {Object.entries(
-              messages.reduce((groups: { [key: string]: any[] }, msg) => {
-                const date = new Date(msg.createdAt).toLocaleDateString()
-                if (!groups[date]) groups[date] = []
-                groups[date].push(msg)
-                return groups
-              }, {})
-            ).map(([dateString, msgs]) => {
-              const today = new Date().toLocaleDateString()
-              const yesterday = new Date(Date.now() - 86400000).toLocaleDateString()
-              let label = dateString
-              if (dateString === today) label = "Today"
-              else if (dateString === yesterday) label = "Yesterday"
-              else label = new Date(dateString).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-
-              return (
-                <div key={dateString} className="space-y-6">
-                  {/* Date divider */}
-                  <div className="flex items-center justify-center my-6">
-                    <span className="px-3 py-1 text-[11px] font-bold text-slate-500 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm border border-slate-200/50 dark:border-white/5">
-                      {label}
-                    </span>
-                  </div>
-                  
-                  {msgs.map((msg) => {
-              const isMe = msg.senderId === currentUserId
-              return (
-                <div key={msg.id} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                  <div className={`flex items-end gap-3 max-w-[85%] sm:max-w-[70%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                    
-                    {/* Avatar */}
-                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0 flex items-center justify-center overflow-hidden border border-white dark:border-[#222] shadow-sm">
-                       {msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image ? (
-                         <img 
-                           src={getAvatarSrc(msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image)} 
-                           alt="Profile" 
-                           className="w-full h-full object-cover" 
-                         />
-                       ) : (
-                         <img 
-                           src={`https://i.pravatar.cc/150?u=${isMe ? currentUserId : msg.senderId}`} 
-                           alt="Profile" 
-                           className="w-full h-full object-cover" 
-                           onError={(e) => {
-                             // Fallback if image fails to load
-                             (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${isMe ? 'ME' : 'CL'}&background=random`
-                           }}
-                         />
-                       )}
-                    </div>
-
-                    <div className="flex flex-col relative group/message">
-                      <div
-                        className={`px-5 py-3 text-[14.5px] leading-relaxed transition-all duration-200 ${isMe
-                            ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[22px] rounded-br-[4px] shadow-md shadow-blue-500/20'
-                            : 'bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#E2E8F0] rounded-[22px] rounded-bl-[4px] shadow-sm border border-slate-100 dark:border-transparent'
-                          } ${msg.isOptimistic ? 'opacity-70 scale-[0.98]' : 'opacity-100 scale-100'}`}
-                      >
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
-                      </div>
-                      
-                      {/* Delete Button (visible on hover) */}
-                      <button 
-                        onClick={() => setMessageToDelete(msg.id)}
-                        className={`absolute top-1/2 -translate-y-1/2 ${isMe ? '-left-10' : '-right-10'} p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover/message:opacity-100 transition-opacity bg-white dark:bg-[#111] rounded-full shadow-sm border border-slate-100 dark:border-[#333] z-10`}
-                        title="Delete for everyone"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* Time below bubble */}
-                      <div className={`flex items-center mt-1 ${isMe ? 'justify-end text-slate-400' : 'justify-start text-slate-400'}`}>
-                        <span className="text-[10px] font-medium tracking-wide">
-                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-            </div>
+        {(() => {
+          if (isLoading && messages.length === 0) {
+            return (
+              <div className="flex h-full items-center justify-center flex-1">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-500/50" />
+              </div>
             )
-          })}
-            </div>
-          </>
-        )}
+          }
+          if (messages.length === 0) {
+            console.log("EMPTY_STATE_REASON", {
+              loading: isLoading,
+              messagesLength: messages.length,
+              clientProfileId
+            })
+            return (
+              <div className="flex h-full flex-col items-center justify-center text-center space-y-3 flex-1">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm text-emerald-200 relative">
+                  <Send className="w-8 h-8 ml-1" />
+                  <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${adminStatus === 'ACTIVE' ? 'bg-[#10B981]' : adminStatus === 'AWAY' ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`} />
+                </div>
+                <p className="text-[#64748B] font-normal max-w-[200px]">No messages yet. Say hello to start the conversation!</p>
+                <p className="text-[12px] font-normal text-slate-400">Agency is currently {adminStatus.toLowerCase()}</p>
+              </div>
+            )
+          }
+          return (
+            <>
+              <div className="flex-1 min-h-[20px]" />
+              <div className="flex flex-col space-y-6">
+              {Object.entries(
+                messages.reduce((groups: { [key: string]: any[] }, msg) => {
+                  const date = new Date(msg.createdAt).toLocaleDateString()
+                  if (!groups[date]) groups[date] = []
+                  groups[date].push(msg)
+                  return groups
+                }, {})
+              ).map(([dateString, msgs]) => {
+                const today = new Date().toLocaleDateString()
+                const yesterday = new Date(Date.now() - 86400000).toLocaleDateString()
+                let label = dateString
+                if (dateString === today) label = "Today"
+                else if (dateString === yesterday) label = "Yesterday"
+                else label = new Date(dateString).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+  
+                return (
+                  <div key={dateString} className="space-y-6">
+                    {/* Date divider */}
+                    <div className="flex items-center justify-center my-6">
+                      <span className="px-3 py-1 text-[11px] font-normal text-slate-500 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm border border-slate-200/50 dark:border-white/5">
+                        {label}
+                      </span>
+                    </div>
+                    
+                    {msgs.map((msg) => {
+                      const isMe = msg.senderId === currentUserId
+                      return (
+                        <div key={msg.id} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                          <div className={`flex items-end gap-3 max-w-[85%] sm:max-w-[70%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                            
+                            {/* Avatar */}
+                            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0 flex items-center justify-center overflow-hidden border border-white dark:border-[#222] shadow-sm">
+                               {msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image ? (
+                                 <img 
+                                   src={getAvatarSrc(msg.sender?.clientProfile?.profileImageUrl || msg.sender?.image)} 
+                                   alt="Profile" 
+                                   className="w-full h-full object-cover" 
+                                   onError={(e) => {
+                                     (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${isMe ? 'ME' : 'AD'}&background=random`
+                                   }}
+                                 />
+                               ) : (
+                                 <img 
+                                   src={`https://i.pravatar.cc/150?u=${isMe ? currentUserId : msg.senderId}`} 
+                                   alt="Profile" 
+                                   className="w-full h-full object-cover" 
+                                   onError={(e) => {
+                                     // Fallback if image fails to load
+                                     (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${isMe ? 'ME' : 'CL'}&background=random`
+                                   }}
+                                 />
+                               )}
+                            </div>
+        
+                            <div className="flex flex-col relative group/message">
+                              <div
+                                className={`px-5 py-3 text-[14.5px] leading-relaxed transition-all duration-200 ${isMe
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-[22px] rounded-br-[4px] shadow-md shadow-blue-500/20'
+                                    : 'bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#E2E8F0] rounded-[22px] rounded-bl-[4px] shadow-sm border border-slate-100 dark:border-transparent'
+                                  } ${msg.isOptimistic ? 'opacity-70 scale-[0.98]' : 'opacity-100 scale-100'}`}
+                              >
+                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                              </div>
+                              
+                              {/* Delete Button (visible on hover) */}
+                              <button 
+                                onClick={() => setMessageToDelete(msg.id)}
+                                className={`absolute top-1/2 -translate-y-1/2 ${isMe ? '-left-10' : '-right-10'} p-2 text-slate-400 hover:text-red-500 opacity-0 group-hover/message:opacity-100 transition-opacity bg-white dark:bg-[#111] rounded-full shadow-sm border border-slate-100 dark:border-[#333] z-10`}
+                                title="Delete for everyone"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+        
+                              {/* Time below bubble */}
+                              <div className={`flex items-center mt-1 ${isMe ? 'justify-end text-slate-400' : 'justify-start text-slate-400'}`}>
+                                <span className="text-[10px] font-normal tracking-wide">
+                                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+              </div>
+            </>
+          )
+        })()}
         <div ref={messagesEndRef} className="h-2" />
       </div>
 
@@ -307,8 +361,8 @@ export default function ChatInterface({
               <Paperclip className="w-5 h-5 text-blue-500" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-[#0F172A] dark:text-slate-200 max-w-[150px] truncate">{attachedFile.name}</span>
-              <span className="text-[11px] font-medium text-[#64748B]">{(attachedFile.size / 1024).toFixed(1)} KB</span>
+              <span className="text-[13px] font-normal text-[#0F172A] dark:text-slate-200 max-w-[150px] truncate">{attachedFile.name}</span>
+              <span className="text-[11px] font-normal text-[#64748B]">{(attachedFile.size / 1024).toFixed(1)} KB</span>
             </div>
             <button onClick={removeAttachment} className="ml-2 w-8 h-8 rounded-full flex items-center justify-center text-[#94A3B8] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors">
               <X className="w-4 h-4" />
@@ -366,7 +420,7 @@ export default function ChatInterface({
       <AlertDialog open={!!messageToDelete} onOpenChange={(open) => !open && setMessageToDelete(null)}>
         <AlertDialogContent className="max-w-[360px] rounded-[24px] border border-slate-100 dark:border-[#222] p-6 shadow-2xl dark:bg-[#111]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">Delete message?</AlertDialogTitle>
+            <AlertDialogTitle className="text-xl font-normal">Delete message?</AlertDialogTitle>
             <AlertDialogDescription className="text-slate-500 dark:text-slate-400">
               This message will be deleted for everyone in this chat. This action cannot be undone.
             </AlertDialogDescription>

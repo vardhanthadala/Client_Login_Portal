@@ -102,9 +102,11 @@ const StatusDropdown = ({ invoiceId, status, onChange, config }: any) => {
 export default function ManageInvoices({
   clientProfileId,
   initialInvoices,
+  projects = [],
 }: {
   clientProfileId: string
   initialInvoices: Invoice[]
+  projects?: { id: string; name: string }[]
 }) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices)
   const [isAdding, setIsAdding] = useState(false)
@@ -112,6 +114,7 @@ export default function ManageInvoices({
   
   // Form state
   const [title, setTitle] = useState("")
+  const [projectId, setProjectId] = useState<string>("")
   const [type, setType] = useState("ONE_OFF")
   const [currency, setCurrency] = useState("INR")
   const [dueDate, setDueDate] = useState("")
@@ -144,6 +147,7 @@ export default function ManageInvoices({
     setIsSaving(true)
     const res = await createInvoiceAction({
       clientProfileId,
+      projectId: projectId === "" ? null : projectId,
       title,
       currency,
       type,
@@ -157,6 +161,7 @@ export default function ManageInvoices({
       setIsAdding(false)
       // Reset form
       setTitle("")
+      setProjectId("")
       setDueDate("")
       setNotes("")
       setItems([{ description: "", quantity: 1, rate: 0 }])
@@ -227,6 +232,19 @@ export default function ManageInvoices({
               <div>
                 <Label className="text-xs uppercase tracking-wider mb-2 block">Invoice Title *</Label>
                 <Input placeholder="e.g., Website Redesign Phase 1" value={title} onChange={(e) => setTitle(e.target.value)} />
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wider mb-2 block">Project (Optional)</Label>
+                <select 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={projectId}
+                  onChange={(e) => setProjectId(e.target.value)}
+                >
+                  <option value="">General / No Project</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <Label className="text-xs uppercase tracking-wider mb-2 block">Type</Label>

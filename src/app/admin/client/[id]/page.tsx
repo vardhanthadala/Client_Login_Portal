@@ -52,8 +52,8 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
           aiAnalysis: true,
           questionnaire: true,
           projects: { orderBy: { createdAt: "asc" } },
-          approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } } }, orderBy: { createdAt: "desc" } },
-          invoices: { include: { items: true }, orderBy: { createdAt: "desc" } }
+          approvals: { include: { items: { include: { feedback: true }, orderBy: { createdAt: "asc" } }, project: true }, orderBy: { createdAt: "desc" } },
+          invoices: { include: { items: true, project: true }, orderBy: { createdAt: "desc" } }
         }
       }
     }
@@ -294,12 +294,14 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
                               </div>
                             </div>
                             <div className="flex gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity ml-4">
-                              <a href={asset.fileUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-[#2A2E35] text-[#64748B] dark:text-[#888] hover:bg-[#22C55E] hover:text-white dark:hover:bg-[#22C55E] dark:hover:text-white transition-colors shadow-sm" title="View">
-                                <ExternalLink className="w-4 h-4" />
-                              </a>
-                              <a href={`/api/download?url=${encodeURIComponent(asset.fileUrl)}`} download className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-[#2A2E35] text-[#64748B] dark:text-[#888] hover:bg-[#22C55E] hover:text-white dark:hover:bg-[#22C55E] dark:hover:text-white transition-colors shadow-sm" title="Download">
-                                <Download className="w-4 h-4" />
-                              </a>
+                              <div className="flex items-center gap-2">
+                                <a href={"/api/file?url=" + encodeURIComponent(asset.fileUrl)} target="_blank" rel="noreferrer" className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-[#2A2E35] text-[#64748B] dark:text-[#888] hover:bg-[#22C55E] hover:text-white dark:hover:bg-[#22C55E] dark:hover:text-white transition-colors shadow-sm" title="View">
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                                <a href={"/api/file?url=" + encodeURIComponent(asset.fileUrl) + "&download=true"} download className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-[#2A2E35] text-[#64748B] dark:text-[#888] hover:bg-[#22C55E] hover:text-white dark:hover:bg-[#22C55E] dark:hover:text-white transition-colors shadow-sm" title="Download">
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              </div>
                             </div>
                           </li>
                         ))}
@@ -365,11 +367,11 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
             </TabsContent>
 
             <TabsContent value="approvals" className="mt-0 outline-none w-full">
-              <ManageApprovals clientProfileId={clientProfile.id} initialApprovals={clientProfile.approvals as any} />
+              <ManageApprovals clientProfileId={clientProfile.id} initialApprovals={clientProfile.approvals as any} projects={clientProfile.projects as any} />
             </TabsContent>
 
             <TabsContent value="billing" className="mt-0 outline-none w-full">
-              <ManageInvoices clientProfileId={clientProfile.id} initialInvoices={clientProfile.invoices as any} />
+              <ManageInvoices clientProfileId={clientProfile.id} initialInvoices={clientProfile.invoices as any} projects={clientProfile.projects as any} />
             </TabsContent>
 
             <TabsContent value="messages" className="mt-0 outline-none flex-1 flex flex-col w-full">

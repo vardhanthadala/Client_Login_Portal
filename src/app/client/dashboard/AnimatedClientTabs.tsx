@@ -42,7 +42,7 @@ export default function AnimatedClientTabs({ tabs, initialTab }: AnimatedClientT
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`relative z-10 flex items-center justify-center px-7 py-3 text-[15px] font-sans font-semibold tracking-wide transition-colors duration-300 whitespace-nowrap rounded-[18px] ${
+                className={`relative z-10 flex items-center justify-center px-7 py-3 text-[15px] font-sans font-normal tracking-wide transition-colors duration-300 whitespace-nowrap rounded-[18px] ${
                   isActive ? "text-[#5A52FF]" : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
                 style={{ WebkitTapHighlightColor: "transparent" }}

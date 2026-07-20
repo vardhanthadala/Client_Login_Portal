@@ -1,0 +1,8 @@
+
+Invalid `prisma.clientProfile.findUnique()` invocation in
+C:\Users\abhii\OneDrive\Desktop\Client_Login_Portal\test-prisma-temp.ts:6:32
+
+  3 
+  4 async function main() {
+  5   try {
+→ 6     await prisma.clientProfile.findUnique(

@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { addBrandAssetAction } from "@/app/actions/client"
 
-export default function ClientUploader() {
+export default function ClientUploader({ projects = [] }: { projects?: any[] }) {
   const [isUploading, setIsUploading] = useState(false)
   const [description, setDescription] = useState("")
+  const [selectedProjectId, setSelectedProjectId] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isDragging, setIsDragging] = useState(false)
 
@@ -53,7 +54,7 @@ export default function ClientUploader() {
       }
 
       // 3. Save to Database
-      const actionRes = await addBrandAssetAction(fileUrl, selectedFile.name, description)
+      const actionRes = await addBrandAssetAction(fileUrl, selectedFile.name, description, selectedProjectId || undefined)
       if (actionRes.error) {
         throw new Error(actionRes.error)
       }
@@ -63,6 +64,7 @@ export default function ClientUploader() {
       // Reset input
       setSelectedFile(null)
       setDescription("")
+      setSelectedProjectId("")
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || "An unknown error occurred.")
@@ -102,7 +104,7 @@ export default function ClientUploader() {
             <div className={`mb-3 transition-transform duration-500 max-w-full ${!isDragging && !isUploading ? 'animate-[pulse_4s_ease-in-out_infinite]' : ''}`}>
               <UploadCloud className={`h-8 w-8 ${isDragging ? 'text-[#10B981] animate-bounce' : 'text-[#10B981]'}`} />
             </div>
-            <p className="text-[15px] font-semibold text-[#0F172A] dark:text-white mb-1.5 break-words max-w-full">
+            <p className="text-[15px] font-normal text-[#0F172A] dark:text-white mb-1.5 break-words max-w-full">
               Drag & drop your files here
             </p>
             <p className="text-[13px] text-[#64748B] dark:text-[#888] mb-6 break-words max-w-full">
@@ -121,17 +123,35 @@ export default function ClientUploader() {
                 <UploadCloud className="w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#0F172A] dark:text-white">{selectedFile.name}</span>
+                <span className="text-[15px] font-normal text-[#0F172A] dark:text-white">{selectedFile.name}</span>
                 <span className="text-[13px] text-[#64748B] dark:text-[#888]">{(selectedFile.size / 1024).toFixed(1)} KB</span>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setSelectedFile(null)} disabled={isUploading} className="h-8 rounded-lg text-[13px] font-medium border-[#E2E8F0] dark:border-[#333] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 dark:hover:border-rose-800 transition-all">
+            <Button variant="outline" size="sm" onClick={() => setSelectedFile(null)} disabled={isUploading} className="h-8 rounded-lg text-[13px] font-normal border-[#E2E8F0] dark:border-[#333] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 dark:hover:border-rose-800 transition-all">
               Change
             </Button>
           </div>
 
+          {projects.length > 0 && (
+            <div>
+              <label htmlFor="asset-project" className="block text-[13px] font-normal text-[#0F172A] dark:text-white mb-2 tracking-wide uppercase">Select Project</label>
+              <select
+                id="asset-project"
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                disabled={isUploading}
+                className="w-full px-4 py-3 border border-[#E2E8F0] dark:border-[#333] bg-white dark:bg-[#1A1A1A] rounded-[12px] text-[14px] text-[#0F172A] dark:text-white focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all shadow-sm"
+              >
+                <option value="">No Project</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
-            <label htmlFor="asset-desc" className="block text-[13px] font-semibold text-[#0F172A] dark:text-white mb-2 tracking-wide uppercase">Description (Optional)</label>
+            <label htmlFor="asset-desc" className="block text-[13px] font-normal text-[#0F172A] dark:text-white mb-2 tracking-wide uppercase">Description (Optional)</label>
             <input 
               type="text" 
               id="asset-desc"
@@ -144,7 +164,7 @@ export default function ClientUploader() {
           </div>
 
           <Button 
-            className="w-full bg-[#10B981] hover:bg-[#059669] text-white rounded-[12px] h-12 text-[15px] font-semibold transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5" 
+            className="w-full bg-[#10B981] hover:bg-[#059669] text-white rounded-[12px] h-12 text-[15px] font-normal transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5" 
             onClick={handleUpload}
             disabled={isUploading}
           >

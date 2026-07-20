@@ -1,0 +1,14 @@
+{
+  "1. Session user.id": "5422d5c1-0c20-4451-aa4d-31062e59f39e",
+  "2. Session email": "thadalavardhangoud1@gmail.com",
+  "3. Session role": "CLIENT",
+  "4. clientProfile.id resolved from session": "a989a7ca-e3a0-494e-adec-32495606961f",
+  "5. clientProfileId passed into getMessagesAction": "a989a7ca-e3a0-494e-adec-32495606961f",
+  "6. clientProfileId received inside getMessagesAction": "a989a7ca-e3a0-494e-adec-32495606961f",
+  "7. Prisma where clause": {
+    "clientProfileId": "a989a7ca-e3a0-494e-adec-32495606961f"
+  },
+  "8. Number of messages returned": 54,
+  "9. First message clientProfileId": "a989a7ca-e3a0-494e-adec-32495606961f",
+  "10. Active conversationId": "a989a7ca-e3a0-494e-adec-32495606961f"
+}

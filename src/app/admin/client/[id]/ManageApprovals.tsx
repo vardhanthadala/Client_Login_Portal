@@ -41,6 +41,10 @@ type Approval = {
   description: string | null
   items: ApprovalItem[]
   createdAt: string
+  project?: {
+    id: string
+    name: string
+  } | null
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string; icon: any }> = {
@@ -52,9 +56,11 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; icon: an
 export default function ManageApprovals({
   clientProfileId,
   initialApprovals,
+  projects = [],
 }: {
   clientProfileId: string
   initialApprovals: Approval[]
+  projects?: any[]
 }) {
   const [approvals, setApprovals] = useState<Approval[]>(initialApprovals)
   const [isAdding, setIsAdding] = useState(false)
@@ -63,6 +69,7 @@ export default function ManageApprovals({
   const [uploadedFiles, setUploadedFiles] = useState<{ url: string; name: string; type: string }[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("")
   const [expandedApproval, setExpandedApproval] = useState<string | null>(null)
   const [expandedItemFeedback, setExpandedItemFeedback] = useState<string | null>(null)
   const [resubmitItemId, setResubmitItemId] = useState<string | null>(null)
@@ -113,12 +120,13 @@ export default function ManageApprovals({
   const handleCreate = async () => {
     if (!title || uploadedFiles.length === 0) return
     setIsSaving(true)
-    const res = await createApprovalAction(clientProfileId, title, description, uploadedFiles)
+    const res = await createApprovalAction(clientProfileId, title, description, uploadedFiles, selectedProjectId || undefined)
     if (res.success && res.data) {
       setApprovals([res.data as any, ...approvals])
       setIsAdding(false)
       setTitle("")
       setDescription("")
+      setSelectedProjectId("")
       setUploadedFiles([])
     } else {
       toast.error(res.error)
@@ -208,6 +216,23 @@ export default function ManageApprovals({
               <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Batch Title *</Label>
               <Input className="bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#333] rounded-xl" placeholder="e.g. Social Media Ads - Week 3, Logo Concepts..." value={title} onChange={(e) => setTitle(e.target.value)} />
             </div>
+            
+            {projects && projects.length > 0 && (
+              <div>
+                <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Project (optional)</Label>
+                <select
+                  value={selectedProjectId}
+                  onChange={(e) => setSelectedProjectId(e.target.value)}
+                  className="flex h-10 w-full rounded-xl border border-slate-200 dark:border-[#333] bg-white dark:bg-[#1A1A1A] px-3 py-2 text-[14px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4F46E5] text-slate-800 dark:text-slate-200"
+                >
+                  <option value="">Select a project...</option>
+                  {projects.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div>
               <Label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2 block">Description (optional)</Label>
               <textarea
@@ -257,7 +282,7 @@ export default function ManageApprovals({
               )}
             </div>
             <div className="flex gap-2 justify-end pt-4">
-              <Button variant="ghost" size="sm" className="rounded-xl text-slate-500 font-medium hover:bg-slate-100" onClick={() => { setIsAdding(false); setTitle(""); setDescription(""); setUploadedFiles([]) }}>Cancel</Button>
+              <Button variant="ghost" size="sm" className="rounded-xl text-slate-500 font-medium hover:bg-slate-100" onClick={() => { setIsAdding(false); setTitle(""); setDescription(""); setSelectedProjectId(""); setUploadedFiles([]) }}>Cancel</Button>
               <Button size="sm" className="rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-sm font-medium" onClick={handleCreate} disabled={!title || uploadedFiles.length === 0 || isSaving}>
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                 Send {uploadedFiles.length} File(s) for Approval
@@ -289,6 +314,11 @@ export default function ManageApprovals({
                         <h4 className="font-medium text-[15.5px] text-slate-800 dark:text-slate-200 flex items-center gap-2 break-words">
                           <span className="break-words">{approval.title}</span>
                           <span className="text-[12.5px] text-slate-400 font-normal shrink-0">{approval.items.length} file(s)</span>
+                          {approval.project && (
+                            <span className="text-[12.5px] text-slate-500 font-normal shrink-0">
+                              (Project : {approval.project.name} )
+                            </span>
+                          )}
                         </h4>
                         {approval.description && <p className="text-[12.5px] text-slate-500 break-words mt-0.5 whitespace-pre-wrap">{approval.description}</p>}
                       </div>

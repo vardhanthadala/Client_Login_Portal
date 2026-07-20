@@ -23,6 +23,7 @@ interface NotificationsState {
   fetchNotifications: () => Promise<void>
   markAsRead: (id: string) => Promise<void>
   markAllAsRead: () => Promise<void>
+  clearAllNotifications: () => Promise<void>
 }
 
 export const useNotificationsStore = create<NotificationsState>((set, get) => ({
@@ -36,9 +37,15 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
       const res = await fetch('/api/notifications')
       if (!res.ok) return
       const data = await res.json()
-      set({ notifications: data.notifications || [], isLoaded: true })
+      
+      const lastClearedTime = parseInt(localStorage.getItem('lastClearedTime') || '0', 10)
+      const validNotifs = (data.notifications || []).filter((n: RealTimeNotification) => 
+        new Date(n.createdAt).getTime() > lastClearedTime
+      )
+      
+      set({ notifications: validNotifs, isLoaded: true })
     } catch (err) {
-      console.error('Failed to fetch notifications:', err)
+      // Ignore network errors during background polling to prevent Next.js error overlays
     }
   },
 
@@ -75,6 +82,22 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
       })
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err)
+    }
+  },
+
+  clearAllNotifications: async () => {
+    localStorage.setItem('lastClearedTime', Date.now().toString())
+    set({ notifications: [] })
+    
+    // Also mark them as read in the backend so unread count is 0 on other devices
+    try {
+      await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markAll: true }),
+      })
+    } catch (err) {
+      console.error('Failed to clear notifications on backend:', err)
     }
   },
 }))

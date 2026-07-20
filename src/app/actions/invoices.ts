@@ -20,6 +20,7 @@ async function getAuthSession() {
 
 export async function createInvoiceAction(data: {
   clientProfileId: string
+  projectId?: string | null
   title: string
   currency: string
   type: string
@@ -41,6 +42,7 @@ export async function createInvoiceAction(data: {
     const invoice = await prisma.invoice.create({
       data: {
         clientProfileId: data.clientProfileId,
+        projectId: data.projectId || null,
         title: data.title,
         amount: totalAmount,
         currency: data.currency,

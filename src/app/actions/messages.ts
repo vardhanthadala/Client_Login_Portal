@@ -25,7 +25,7 @@ export async function getMessagesAction(clientProfileId: string) {
       },
       orderBy: { createdAt: "asc" }
     })
-    console.log("getMessagesAction found", messages.length, "messages")
+    console.log("PRISMA_COUNT", messages.length)
 
     // Find the admin user's status for this client
     let adminStatus = "ACTIVE"
@@ -46,10 +46,11 @@ export async function getMessagesAction(clientProfileId: string) {
       }
     }
 
+    console.log("RETURNING_TO_CLIENT", messages.length)
     return { success: true, data: messages, adminStatus, adminInfo }
   } catch (error: any) {
     console.error("Failed to fetch messages:", error)
-    return { error: "Failed to fetch messages" }
+    return { error: `Failed to fetch messages: ${error.message || String(error)}`, stack: process.env.NODE_ENV === 'development' ? error.stack : undefined }
   }
 }
 
@@ -88,7 +89,10 @@ export async function sendMessageAction(clientProfileId: string, content: string
     return { success: true, data: message }
   } catch (error: any) {
     console.error("Failed to send message:", error)
-    return { error: "Failed to send message" }
+    return { 
+      error: `Failed to send message: ${error.message || String(error)}`,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    }
   }
 }
 

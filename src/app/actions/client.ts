@@ -151,7 +151,7 @@ export async function submitWizardAction(data: any) {
   }
 }
 
-export async function addBrandAssetAction(fileUrl: string, fileName: string, description?: string) {
+export async function addBrandAssetAction(fileUrl: string, fileName: string, description?: string, projectId?: string) {
   try {
     const reqCookies = await cookies()
     const reqHeaders = await headers()
@@ -177,6 +177,7 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string, des
         type: fileName,
         fileUrl: fileUrl,
         description: description || null,
+        projectId: projectId || null,
       }
     })
 

@@ -22,7 +22,8 @@ export async function createApprovalAction(
   clientProfileId: string,
   title: string,
   description: string,
-  files: { url: string; name: string; type: string }[]
+  files: { url: string; name: string; type: string }[],
+  projectId?: string
 ) {
   try {
     const token = await getAuthSession()
@@ -37,6 +38,7 @@ export async function createApprovalAction(
         clientProfileId,
         title,
         description: description || null,
+        projectId: projectId || null,
         items: {
           create: files.map(f => ({
             fileUrl: f.url,
@@ -45,7 +47,18 @@ export async function createApprovalAction(
           }))
         }
       },
-      include: { items: { include: { feedback: true } } }
+      include: { items: { include: { feedback: true } }, project: true }
+    })
+
+    await prisma.notification.create({
+      data: {
+        userId: profile.userId,
+        type: "APPROVAL",
+        title: "New Approval Request",
+        message: `Your agency has sent a new file batch for your review: ${title}`,
+        link: "/client/dashboard?tab=approvals",
+        sourceId: approval.id,
+      }
     })
 
     revalidatePath("/client/dashboard")

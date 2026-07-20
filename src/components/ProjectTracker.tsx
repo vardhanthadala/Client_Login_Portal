@@ -16,8 +16,9 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
   const currentStage = Math.max(0, Math.min(project.currentStageIdx, stages.length - 1))
   
   // Strict production stages logic for the progress bar
+  const maxIdx = Math.max(1, stages.length - 1)
   const rawProgress = stages.length > 0 
-    ? Math.round(((project.currentStageIdx ?? 0) / stages.length) * 100)
+    ? Math.round(((project.currentStageIdx ?? 0) / maxIdx) * 100)
     : 0
   const overallProgress = Math.min(100, Math.max(0, rawProgress))
 
@@ -53,8 +54,9 @@ export default function ProjectTracker({ project, assetsCount = 0, approvalsCoun
         <div className="flex flex-col gap-4 mt-6">
           <h3 className="text-[14px] font-bold text-[#0F172A] dark:text-white mb-2">Milestones</h3>
           {stages.map((stage: string, idx: number) => {
-            const isCompleted = idx < project.currentStageIdx
-            const isActive = idx === project.currentStageIdx
+            const isFinished = project.currentStageIdx >= stages.length - 1;
+            const isCompleted = idx < project.currentStageIdx || (isFinished && idx === stages.length - 1);
+            const isActive = idx === project.currentStageIdx && !isFinished;
             
             return (
               <div key={idx} className="flex items-center gap-4">

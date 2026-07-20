@@ -114,14 +114,14 @@ export default function ClientOnboardingWizard() {
         {/* Onboarding Header Banner */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-[#5A52FF]/10 text-[#5A52FF] text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
+            <span className="bg-[#5A52FF]/10 text-[#5A52FF] text-[11px] font-normal uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> Getting Started
             </span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-[#0F172A] font-sans">
             Client Onboarding Questionnaire
           </h1>
-          <p className="text-[#64748B] text-sm mt-1 font-medium">
+          <p className="text-[#64748B] text-sm mt-1 font-normal">
             Please complete your brand profile details and sign the agreement to activate your portal.
           </p>
         </div>
@@ -137,12 +137,12 @@ export default function ClientOnboardingWizard() {
                 </div>
                 <div>
                   <span className="font-extrabold text-lg text-[#0F172A] tracking-tight">Client Portal</span>
-                  <span className="text-xs text-[#64748B] block font-medium -mt-1">Onboarding Setup</span>
+                  <span className="text-xs text-[#64748B] block font-normal -mt-1">Onboarding Setup</span>
                 </div>
               </div>
 
               <div className="mb-6">
-                <div className="flex justify-between text-xs font-bold text-[#64748B] tracking-wider mb-1.5">
+                <div className="flex justify-between text-xs font-normal text-[#64748B] tracking-wider mb-1.5">
                   <span>SETUP PROGRESS</span>
                   <span>{progressPercentage}%</span>
                 </div>
@@ -153,7 +153,7 @@ export default function ClientOnboardingWizard() {
                   />
                 </div>
                 <h2 className="text-xl font-extrabold text-[#0F172A] tracking-tight">Get Started</h2>
-                <p className="text-sm text-[#64748B] mt-1 font-medium">Complete these sections to customize your brand experience inside your portal.</p>
+                <p className="text-sm text-[#64748B] mt-1 font-normal">Complete these sections to customize your brand experience inside your portal.</p>
               </div>
 
               <div className="space-y-2 flex-1">
@@ -179,7 +179,7 @@ export default function ClientOnboardingWizard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className={`font-bold text-sm leading-none ${isActive ? "text-[#5A52FF]" : "text-[#0F172A]"}`}>
+                          <span className={`font-normal text-sm leading-none ${isActive ? "text-[#5A52FF]" : "text-[#0F172A]"}`}>
                             {step.title}
                           </span>
                           {step.complete && (
@@ -188,7 +188,7 @@ export default function ClientOnboardingWizard() {
                             </div>
                           )}
                         </div>
-                        <p className="text-xs text-[#64748B] mt-1 font-medium">{step.desc}</p>
+                        <p className="text-xs text-[#64748B] mt-1 font-normal">{step.desc}</p>
                       </div>
                     </button>
                   )
@@ -199,7 +199,7 @@ export default function ClientOnboardingWizard() {
                   <Button 
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="w-full bg-[#5A52FF] hover:bg-[#4F46E5] text-white font-bold text-sm h-12 rounded-2xl transition-all shadow-lg shadow-[#5A52FF]/20"
+                    className="w-full bg-[#5A52FF] hover:bg-[#4F46E5] text-white font-normal text-sm h-12 rounded-2xl transition-all shadow-lg shadow-[#5A52FF]/20"
                   >
                     {isSubmitting ? (
                       <>
@@ -217,7 +217,7 @@ export default function ClientOnboardingWizard() {
               <div className="absolute right-[-20%] bottom-[-20%] w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
               <Sparkles className="w-8 h-8 text-[#5A52FF] mb-3 animate-pulse" />
               <h4 className="font-extrabold text-sm tracking-tight">Enterprise Onboarding</h4>
-              <p className="text-gray-400 text-xs mt-1 leading-relaxed font-medium">
+              <p className="text-gray-400 text-xs mt-1 leading-relaxed font-normal">
                 Your details will be processed automatically to configure your dedicated dashboard, brand assets gallery, and communication line.
               </p>
             </div>
@@ -230,28 +230,28 @@ export default function ClientOnboardingWizard() {
             <div className="p-8 border-b border-[#F3F4F6]">
               {activeTab === "business" && (
                 <div>
-                  <span className="text-[#5A52FF] text-xs font-bold uppercase tracking-widest">Section 1 of 4</span>
+                  <span className="text-[#5A52FF] text-xs font-normal uppercase tracking-widest">Section 1 of 4</span>
                   <h3 className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-1 font-sans">Business Profile</h3>
                   <p className="text-[#64748B] text-sm mt-1">Provide basic information about your company name, website, and industry focus.</p>
                 </div>
               )}
               {activeTab === "brand" && (
                 <div>
-                  <span className="text-[#5A52FF] text-xs font-bold uppercase tracking-widest">Section 2 of 4</span>
+                  <span className="text-[#5A52FF] text-xs font-normal uppercase tracking-widest">Section 2 of 4</span>
                   <h3 className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-1 font-sans">Brand Assets</h3>
                   <p className="text-[#64748B] text-sm mt-1">Upload brand assets like dark/light logos, design guides, or reference imagery.</p>
                 </div>
               )}
               {activeTab === "goals" && (
                 <div>
-                  <span className="text-[#5A52FF] text-xs font-bold uppercase tracking-widest">Section 3 of 4</span>
+                  <span className="text-[#5A52FF] text-xs font-normal uppercase tracking-widest">Section 3 of 4</span>
                   <h3 className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-1 font-sans">Marketing Questionnaire</h3>
                   <p className="text-[#64748B] text-sm mt-1">Share your business goals and describe the customers you aim to reach.</p>
                 </div>
               )}
               {activeTab === "sla" && (
                 <div>
-                  <span className="text-[#5A52FF] text-xs font-bold uppercase tracking-widest">Section 4 of 4</span>
+                  <span className="text-[#5A52FF] text-xs font-normal uppercase tracking-widest">Section 4 of 4</span>
                   <h3 className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-1 font-sans">Service Agreement</h3>
                   <p className="text-[#64748B] text-sm mt-1">Read and sign our digital Service Level Agreement terms to complete authorization.</p>
                 </div>
@@ -276,7 +276,7 @@ export default function ClientOnboardingWizard() {
                           value={businessDetails?.businessName || ""} 
                           onChange={(e) => updateData("businessDetails", { businessName: e.target.value })}
                           placeholder="e.g. Acme Corporation" 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 font-medium text-[#0F172A]"
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 font-normal text-[#0F172A]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -285,7 +285,7 @@ export default function ClientOnboardingWizard() {
                           value={businessDetails?.website || ""} 
                           onChange={(e) => updateData("businessDetails", { website: e.target.value })}
                           placeholder="e.g. https://acme.com" 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 font-medium text-[#0F172A]"
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 font-normal text-[#0F172A]"
                         />
                       </div>
                       <div className="space-y-2">
@@ -294,7 +294,7 @@ export default function ClientOnboardingWizard() {
                           value={businessDetails?.description || ""} 
                           onChange={(e) => updateData("businessDetails", { description: e.target.value })}
                           placeholder="What does your company do? What is your industry?" 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-medium text-[#0F172A]"
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-normal text-[#0F172A]"
                         />
                       </div>
                     </div>
@@ -337,7 +337,7 @@ export default function ClientOnboardingWizard() {
                         <div className="w-14 h-14 bg-[#F3F4F6] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                           <UploadCloud className="h-7 w-7 text-[#94A3B8] group-hover:text-[#5A52FF] transition-colors" />
                         </div>
-                        <p className="font-bold text-[#0F172A] text-base">Drag & drop files or click to browse</p>
+                        <p className="font-normal text-[#0F172A] text-base">Drag & drop files or click to browse</p>
                         <p className="text-xs mt-1 text-[#64748B]">PNG, JPG, SVG, vector graphics, or PDF guidelines</p>
                       </Label>
                       
@@ -347,7 +347,7 @@ export default function ClientOnboardingWizard() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {businessDetails.brandAssets.map((asset: any, idx: number) => (
                               <div key={idx} className="flex items-center justify-between p-3 bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl">
-                                <span className="text-xs font-bold text-[#0F172A] truncate max-w-[80%]">{asset.name}</span>
+                                <span className="text-xs font-normal text-[#0F172A] truncate max-w-[80%]">{asset.name}</span>
                                 <Check className="w-4 h-4 text-[#10B981] shrink-0" />
                               </div>
                             ))}
@@ -365,7 +365,7 @@ export default function ClientOnboardingWizard() {
                           value={businessDetails?.questionnaire?.audience || ""}
                           onChange={(e) => updateData("businessDetails", { questionnaire: { ...businessDetails?.questionnaire, audience: e.target.value } })}
                           placeholder="Who are your ideal customers? Mention age, location, habits, or industries." 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-medium text-[#0F172A]" 
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-normal text-[#0F172A]" 
                         />
                       </div>
                       <div className="space-y-2">
@@ -374,7 +374,7 @@ export default function ClientOnboardingWizard() {
                           value={businessDetails?.questionnaire?.goals || ""}
                           onChange={(e) => updateData("businessDetails", { questionnaire: { ...businessDetails?.questionnaire, goals: e.target.value } })}
                           placeholder="Describe the main objectives (e.g. brand visibility, click-through-rates, launch awareness)." 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-medium text-[#0F172A]" 
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none min-h-[140px] resize-none px-4 py-3 font-normal text-[#0F172A]" 
                         />
                       </div>
                     </div>
@@ -403,7 +403,7 @@ export default function ClientOnboardingWizard() {
                           />
                           <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity stroke-[3px]" />
                         </div>
-                        <Label htmlFor="sla-agree" className="text-sm font-semibold text-[#0F172A] cursor-pointer hover:text-[#5A52FF] transition-colors">
+                        <Label htmlFor="sla-agree" className="text-sm font-normal text-[#0F172A] cursor-pointer hover:text-[#5A52FF] transition-colors">
                           I have read and agree to the Service Level Agreement
                         </Label>
                       </div>
@@ -414,9 +414,9 @@ export default function ClientOnboardingWizard() {
                           value={slaDetails?.signature || ""} 
                           onChange={(e) => updateData("slaDetails", { signature: e.target.value })}
                           placeholder="Type your full legal name to sign" 
-                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 text-[#0F172A] font-medium"
+                          className="bg-white border-[#E5E7EB] hover:bg-[#F9FAFB] focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#5A52FF]/10 focus-visible:border-[#5A52FF] rounded-xl transition-all shadow-none h-12 px-4 text-[#0F172A] font-normal"
                         />
-                        <p className="text-xs text-[#94A3B8] font-medium">Typing your name acts as a legally binding digital signature.</p>
+                        <p className="text-xs text-[#94A3B8] font-normal">Typing your name acts as a legally binding digital signature.</p>
                       </div>
                     </div>
                   )}
@@ -425,14 +425,14 @@ export default function ClientOnboardingWizard() {
             </div>
 
             <div className="p-6 bg-[#F9FAFB] border-t border-[#F3F4F6] flex justify-between items-center rounded-b-3xl">
-              <span className="text-xs font-bold text-[#64748B]">
+              <span className="text-xs font-normal text-[#64748B]">
                 {activeTab === "sla" ? "Final Step" : "Save and proceed to continue"}
               </span>
               
               {activeTab !== "sla" ? (
                 <Button 
                   onClick={handleNext}
-                  className="bg-[#5A52FF] hover:bg-[#4F46E5] text-white font-bold h-10 px-5 rounded-xl transition-all shadow-sm"
+                  className="bg-[#5A52FF] hover:bg-[#4F46E5] text-white font-normal h-10 px-5 rounded-xl transition-all shadow-sm"
                 >
                   Continue <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
@@ -440,7 +440,7 @@ export default function ClientOnboardingWizard() {
                 <Button 
                   onClick={handleSubmit}
                   disabled={isSubmitting || !allComplete}
-                  className={`font-bold h-10 px-6 rounded-xl transition-all shadow-md ${
+                  className={`font-normal h-10 px-6 rounded-xl transition-all shadow-md ${
                     allComplete 
                       ? "bg-[#5A52FF] hover:bg-[#4F46E5] text-white shadow-[#5A52FF]/10" 
                       : "bg-[#F3F4F6] text-[#94A3B8] border border-[#E5E7EB] cursor-not-allowed"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 
@@ -58,22 +58,21 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <head />
+      <head>
+        <Script id="theme-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
+          try {
+            var theme = localStorage.getItem('theme');
+            var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (theme === 'dark' || (!theme && systemDark)) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+          } catch (e) {}
+        `}} />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <Script 
-          id="theme-script" 
-          dangerouslySetInnerHTML={{ __html: `
-            try {
-              var theme = localStorage.getItem('theme');
-              var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-              if (theme === 'dark' || (!theme && systemDark)) {
-                document.documentElement.classList.add('dark');
-              } else {
-                document.documentElement.classList.remove('dark');
-              }
-            } catch (e) {}
-          `}}
-        />
+
         <ThemeProvider>
           {!showMaintenance && <SessionGuard />}
           {showMaintenance ? <MaintenancePage /> : children}

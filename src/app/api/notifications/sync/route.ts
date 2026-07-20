@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
 
         // Pending approvals
         for (const approval of (profile.approvals || [])) {
-          if (approval.status === "PENDING") {
+          const hasPending = approval.items?.some((item: any) => item.status === "PENDING");
+          if (hasPending) {
             notifications.push({
               userId,
               type: "APPROVAL",

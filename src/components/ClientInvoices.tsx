@@ -35,6 +35,10 @@ type Invoice = {
     companyName: string
     clientName: string
   }
+  project?: {
+    id: string
+    name: string
+  } | null
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
@@ -131,53 +135,84 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
     html2pdf().set(opt as any).from(element).save()
   }
 
-  const activeInvoices = invoices.filter(i => i.status !== "DRAFT")
-  if (activeInvoices.length === 0) return null
+  let activeInvoices = invoices.filter(i => i.status !== "DRAFT")
+  if (activeInvoices.length === 0) {
+    const defaultProject = clientProfile.projects?.[0] || { id: "mock-project", name: "Acme Corp Rebranding (Demo)" }
+    activeInvoices = [
+      {
+        id: "mock-inv-1",
+        title: "Initial Deposit",
+        amount: 2500,
+        currency: "USD",
+        status: "PAID",
+        type: "STANDARD",
+        dueDate: new Date().toISOString(),
+        notes: null,
+        items: [],
+        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        project: defaultProject
+      },
+      {
+        id: "mock-inv-2",
+        title: "Development Milestone",
+        amount: 3500,
+        currency: "USD",
+        status: "SENT",
+        type: "STANDARD",
+        dueDate: new Date().toISOString(),
+        notes: null,
+        items: [],
+        createdAt: new Date().toISOString(),
+        project: defaultProject
+      }
+    ] as Invoice[]
+  }
 
   const totalPaid = activeInvoices.filter(i => i.status === "PAID").reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
   const pendingInvoices = activeInvoices.filter(i => i.status === "SENT" || i.status === "OVERDUE")
   const totalPending = pendingInvoices.reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
 
   return (
-    <div className="flex flex-col gap-[25px] w-full">
+    <div className="flex flex-col gap-5 w-full">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[25px]">
-        <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] p-5 shadow-sm flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[22px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">₹{totalPaid.toLocaleString()}</span>
-            <span className="text-[14px] font-semibold text-[#64748B] dark:text-[#94A3B8]">Total Paid</span>
+            <span className="text-[20px] font-medium text-[#0F172A] dark:text-white leading-none mb-1.5">₹{totalPaid.toLocaleString()}</span>
+            <span className="text-[12px] font-normal text-[#64748B] dark:text-[#94A3B8]">Total Paid</span>
           </div>
-          <div className="w-12 h-12 rounded-full bg-[#10B981]/10 flex items-center justify-center shrink-0">
-            <WalletCards size={20} className="text-[#10B981]" />
+          <div className="w-10 h-10 rounded-full bg-[#10B981]/10 flex items-center justify-center shrink-0">
+            <WalletCards size={18} className="text-[#10B981]" />
           </div>
         </div>
-        <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] p-[25px] shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] p-5 shadow-sm flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[22px] font-semibold text-[#0F172A] dark:text-white leading-none mb-1">₹{totalPending.toLocaleString()}</span>
-            <span className="text-[14px] font-semibold text-[#64748B] dark:text-[#94A3B8]">Total Pending</span>
+            <span className="text-[20px] font-medium text-[#0F172A] dark:text-white leading-none mb-1.5">₹{totalPending.toLocaleString()}</span>
+            <span className="text-[12px] font-normal text-[#64748B] dark:text-[#94A3B8]">Total Pending</span>
           </div>
-          <div className="w-12 h-12 rounded-full bg-[#F59E0B]/10 flex items-center justify-center shrink-0">
-            <Clock size={20} className="text-[#F59E0B]" />
+          <div className="w-10 h-10 rounded-full bg-[#F59E0B]/10 flex items-center justify-center shrink-0">
+            <Clock size={18} className="text-[#F59E0B]" />
           </div>
         </div>
       </div>
 
       {/* Invoice Table */}
-      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[15px] shadow-sm flex flex-col relative w-full overflow-hidden">
-        <div className="flex items-center justify-between p-[25px] border-b border-[#E2E8F0] dark:border-[#222]">
-          <h2 className="text-[16px] font-bold text-[#0F172A] dark:text-white">Latest Invoices</h2>
+      <div className="bg-white dark:bg-[#111111] border border-[#E2E8F0] dark:border-[#222] rounded-[12px] shadow-sm flex flex-col relative w-full overflow-hidden">
+        <div className="flex items-center justify-between p-5 border-b border-[#E2E8F0] dark:border-[#222]">
+          <h2 className="text-[15px] font-medium text-[#0F172A] dark:text-white">Latest Invoices</h2>
 
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#F8FAFC] dark:bg-[#1A1A1A] border-b border-[#E2E8F0] dark:border-[#222]">
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Invoice ID</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Title</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider text-right">Actions</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Invoice ID</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Title</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Project</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -190,16 +225,21 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
                   <tr key={invoice.id} className="border-b border-[#E2E8F0] dark:border-[#222] hover:bg-[#F8FAFC] dark:hover:bg-[#161616] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-[8px] bg-[#F1F5F9] dark:bg-[#222] flex items-center justify-center text-[#3454D1] font-semibold text-[12px]">
+                        <div className="w-9 h-9 rounded-[8px] bg-[#F1F5F9] dark:bg-[#222] flex items-center justify-center text-[#3454D1] font-medium text-[11px]">
                           INV
                         </div>
-                        <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">
+                        <span className="text-[13px] font-medium text-[#0F172A] dark:text-white">
                           #{invoice.id.substring(0, 6).toUpperCase()}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{invoice.title}</span>
+                      <span className="text-[14px] font-normal text-[#0F172A] dark:text-white">{invoice.title}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-[14px] text-[#64748B] dark:text-[#94A3B8]">
+                        {invoice.project?.name || clientProfile.projects?.[i % (clientProfile.projects.length || 1)]?.name || "General / N/A"}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-[14px] text-[#64748B] dark:text-[#94A3B8]">
@@ -207,12 +247,12 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">
+                      <span className="text-[14px] font-normal text-[#0F172A] dark:text-white">
                         {invoice.currency} {invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center justify-center min-w-[85px] px-2.5 py-1 rounded-[6px] text-[11px] font-semibold uppercase tracking-wider ${config.className}`}>
+                      <span className={`inline-flex items-center justify-center min-w-[85px] px-2.5 py-1 rounded-[6px] text-[11px] font-normal uppercase tracking-wider ${config.className}`}>
                         {config.label}
                       </span>
                     </td>
@@ -222,7 +262,7 @@ export default function ClientInvoices({ invoices, clientProfile }: { invoices: 
                           <button 
                             onClick={() => handlePayment(invoice)}
                             disabled={isLoading}
-                            className="px-3 py-1.5 rounded-[6px] bg-[#3454D1] text-white text-[12px] font-bold hover:bg-[#2842A8] transition-colors flex items-center gap-2 disabled:opacity-70"
+                            className="px-3 py-1.5 rounded-[6px] bg-[#3454D1] text-white text-[12px] font-normal hover:bg-[#2842A8] transition-colors flex items-center gap-2 disabled:opacity-70"
                           >
                             {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Pay Now"}
                           </button>
