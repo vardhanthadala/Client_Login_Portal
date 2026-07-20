@@ -58,7 +58,7 @@ export default function ManageSubscriptionDialog({
       <div className="grid gap-5 py-2">
         <div className="grid gap-2">
           <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Subscription Plan</label>
-          <Select value={plan} onValueChange={setPlan}>
+          <Select value={plan} onValueChange={(val) => setPlan(val || "ALL")}>
             <SelectTrigger className="w-full h-10 rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#111] px-3 py-2 text-[14px] text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-colors shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1A1E24]">
               <SelectValue placeholder="Select a plan" />
             </SelectTrigger>

@@ -46,7 +46,7 @@ export default function CancelSubscriptionButton({ tenantId, onClose }: { tenant
       
       <div className="py-2">
         <label className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-2">Reason for Cancellation</label>
-        <Select value={reason} onValueChange={setReason}>
+        <Select value={reason} onValueChange={(val) => setReason(val || "")}>
           <SelectTrigger className="w-full h-10 rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#111] px-3 py-2 text-[14px] text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20 dark:focus:ring-rose-500/40 transition-colors shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1A1E24]">
             <SelectValue placeholder="Select a reason" />
           </SelectTrigger>
