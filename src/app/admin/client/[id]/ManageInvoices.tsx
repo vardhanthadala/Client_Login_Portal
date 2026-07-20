@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createInvoiceAction, deleteInvoiceAction, updateInvoiceStatusAction } from "@/app/actions/invoices"
-import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send, ChevronDown, CreditCard } from "lucide-react"
+import { createInvoiceAction, deleteInvoiceAction, updateInvoiceStatusAction, sendInvoiceReminderAction } from "@/app/actions/invoices"
+import { Loader2, Plus, Trash2, Receipt, CheckCircle2, Clock, X, FileText, Send, ChevronDown, CreditCard, Mail } from "lucide-react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -168,6 +168,19 @@ export default function ManageInvoices({
 
   const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null)
   const isDeleting = deleteInvoiceId !== null
+
+  const [sendingReminderId, setSendingReminderId] = useState<string | null>(null)
+
+  const handleSendReminder = async (id: string) => {
+    setSendingReminderId(id)
+    const res = await sendInvoiceReminderAction(id)
+    if (res.success) {
+      toast.success("Invoice sent successfully to client")
+    } else {
+      toast.error(res.error || "Failed to send invoice")
+    }
+    setSendingReminderId(null)
+  }
 
   const confirmDelete = async () => {
     if (!deleteInvoiceId) return
@@ -344,9 +357,19 @@ export default function ManageInvoices({
                         config={config} 
                       />
                     </div>
-                    <button onClick={() => handleDeleteClick(invoice.id)} className="text-red-400 hover:text-red-600 p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button 
+                        onClick={() => handleSendReminder(invoice.id)} 
+                        disabled={sendingReminderId === invoice.id || invoice.status === "PAID" || invoice.status === "CANCELLED"}
+                        className="text-slate-400 hover:text-indigo-600 p-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors disabled:opacity-50"
+                        title="Send Invoice to Client"
+                      >
+                        {sendingReminderId === invoice.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                      </button>
+                      <button onClick={() => handleDeleteClick(invoice.id)} className="text-red-400 hover:text-red-600 p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )
