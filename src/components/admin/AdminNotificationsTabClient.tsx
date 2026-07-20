@@ -212,7 +212,7 @@ export default function AdminNotificationsTabClient() {
                   return (
                     <Link
                       key={item.id}
-                      href={item.link || "#"}
+                      href={item.type === "SYSTEM" ? "?tab=broadcasts" : (item.link || "#")}
                       onClick={() => markAsRead(item.id)}
                       className={`group flex items-center gap-4 py-4 pl-0 pr-5 sm:pr-7 transition-all duration-150 relative ${
                         !isLast ? "border-b border-[#F1F5F9] dark:border-white/[0.04]" : ""

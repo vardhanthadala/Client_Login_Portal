@@ -19,12 +19,39 @@ export const metadata: Metadata = {
 import { Toaster } from "@/components/ui/sonner";
 import SessionGuard from "@/components/SessionGuard";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import MaintenancePage from "@/app/maintenance/page";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  const session = await auth();
+  const isSuperAdmin = (session?.user as any)?.role === "SUPER_ADMIN";
+  
+  let isMaintenanceMode = false;
+  try {
+    const settings = await prisma.platformSettings.findUnique({ where: { id: "global" }});
+    isMaintenanceMode = settings?.isMaintenanceMode || false;
+    
+    // Check scheduling if manual toggle isn't on
+    if (!isMaintenanceMode && settings?.scheduledMaintenanceStart) {
+      const now = new Date();
+      if (now >= settings.scheduledMaintenanceStart) {
+        if (!settings.scheduledMaintenanceEnd || now <= settings.scheduledMaintenanceEnd) {
+          isMaintenanceMode = true;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Failed to check maintenance mode:", e);
+  }
+
+  const showMaintenance = isMaintenanceMode && !isSuperAdmin;
+
   return (
     <html
       lang="en"
@@ -48,8 +75,8 @@ export default function RootLayout({
           `}}
         />
         <ThemeProvider>
-          <SessionGuard />
-          {children}
+          {!showMaintenance && <SessionGuard />}
+          {showMaintenance ? <MaintenancePage /> : children}
           <Toaster 
             position="top-center" 
             toastOptions={{

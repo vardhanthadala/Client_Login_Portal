@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { PremiumIcon } from "@/components/PremiumIcon"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
-import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Users, Settings, LifeBuoy, Clock, Building2, Calendar, ShieldCheck, Bell, Search, Plus, Maximize2, Minimize2, User, Activity, CreditCard, LogOut, Key } from "lucide-react"
+import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Users, Settings, LifeBuoy, Clock, Building2, Calendar, ShieldCheck, Bell, Search, Plus, Maximize2, Minimize2, User, Activity, CreditCard, LogOut, Key, Megaphone } from "lucide-react"
 import SignOutButton from "./SignOutButton"
 import Link from "next/link"
 import { useNotificationsStore } from "@/store/notificationsStore"
@@ -452,6 +452,31 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
                       {unreadCount}
                     </span>
                   )
+                )}
+              </Link>
+
+              {/* Broadcasts Link */}
+              <Link
+                href="/admin/dashboard?tab=broadcasts"
+                onClick={() => setIsSidebarOpen(false)}
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-semibold transition-colors w-full text-left ${
+                  activeTab === "broadcasts"
+                    ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
+                    : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
+                }`}
+              >
+                <Megaphone 
+                  className={`w-[18px] h-[18px] transition-colors ${activeTab === "broadcasts" ? "text-[#0F172A] dark:text-white" : "text-[#0F172A] dark:text-[#CBD5E1] group-hover:text-[#000] dark:group-hover:text-white"}`} 
+                />
+                {!isMiniMenu && (
+                  <div className="flex-1 flex items-center justify-between">
+                    <span>Broadcasts</span>
+                    {activeTab === "broadcasts" ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 opacity-50" />
+                    )}
+                  </div>
                 )}
               </Link>
 

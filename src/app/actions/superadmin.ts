@@ -431,4 +431,156 @@ export async function updateSuperAdminProfileAction(formData: FormData) {
     console.error("Failed to update super admin profile:", error)
     return { error: "Failed to update profile" }
   }
+}
+
+export async function getMaintenanceMode() {
+  try {
+    const settings = await prisma.platformSettings.findUnique({
+      where: { id: "global" }
+    })
+    
+    let isMaintenance = settings?.isMaintenanceMode || false;
+    
+    if (!isMaintenance && settings?.scheduledMaintenanceStart) {
+       const now = new Date();
+       if (now >= settings.scheduledMaintenanceStart) {
+         if (!settings.scheduledMaintenanceEnd || now <= settings.scheduledMaintenanceEnd) {
+            isMaintenance = true;
+         }
+       }
+    }
+    
+    return { success: true, isMaintenanceMode: isMaintenance }
+  } catch (error) {
+    console.error("Failed to fetch maintenance mode", error)
+    return { success: false, isMaintenanceMode: false }
+  }
+}
+
+export async function setMaintenanceMode(isMaintenanceMode: boolean) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const updateData: any = { isMaintenanceMode }
+    if (!isMaintenanceMode) {
+      updateData.scheduledMaintenanceStart = null
+      updateData.scheduledMaintenanceEnd = null
+    }
+
+    await prisma.platformSettings.upsert({
+      where: { id: "global" },
+      update: updateData,
+      create: { id: "global", ...updateData }
+    })
+    
+    // Log it
+    await prisma.superAdminLog.create({
+      data: {
+        action: "MAINTENANCE_MODE_TOGGLED",
+        message: `Maintenance mode was turned ${isMaintenanceMode ? "ON" : "OFF (and schedule cleared)"}.`
+      }
+    })
+
+    revalidatePath("/", "layout")
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to toggle maintenance mode", error)
+    return { error: error.message || "Failed to toggle maintenance mode" }
+  }
+}
+
+import { sendBroadcastEmail } from "@/lib/mail"
+
+export async function sendBroadcastAction(data: { subject: string; message: string; sendEmail: boolean; sendInApp: boolean; startTime?: string; endTime?: string; isMaintenanceType?: boolean }) {
+  try {
+    const token = await getAuthSession()
+    if (!token?.id || token.role !== "SUPER_ADMIN") return { error: "Unauthorized" }
+
+    const { subject, sendEmail, sendInApp, startTime, endTime, isMaintenanceType } = data
+    let { message } = data
+    if (!subject || !message) return { error: "Subject and message are required." }
+
+    // If it's a maintenance broadcast and a schedule is provided, append times to message and update PlatformSettings
+    const scheduledStart = startTime ? new Date(startTime) : null;
+    const scheduledEnd = endTime ? new Date(endTime) : null;
+
+    if (isMaintenanceType) {
+      if (scheduledStart) {
+        message += `\n\nStart Time: ${scheduledStart.toLocaleString()}`
+      }
+      if (scheduledEnd) {
+        message += `\nEnd Time: ${scheduledEnd.toLocaleString()}`
+      }
+
+      await prisma.platformSettings.upsert({
+        where: { id: "global" },
+        update: { 
+          scheduledMaintenanceStart: scheduledStart,
+          scheduledMaintenanceEnd: scheduledEnd
+        },
+        create: { 
+          id: "global", 
+          isMaintenanceMode: false,
+          scheduledMaintenanceStart: scheduledStart,
+          scheduledMaintenanceEnd: scheduledEnd
+        }
+      });
+      
+      // Also log the scheduling
+      await prisma.superAdminLog.create({
+        data: {
+          action: "MAINTENANCE_SCHEDULED",
+          message: `Maintenance scheduled from ${scheduledStart?.toISOString()} to ${scheduledEnd?.toISOString() || "indefinitely"}.`
+        }
+      })
+      revalidatePath("/", "layout");
+    }
+
+    // Fetch all admins
+    const admins = await prisma.user.findMany({
+      where: { role: "ADMIN" }
+    })
+
+    if (admins.length === 0) {
+      return { error: "No company admins found." }
+    }
+
+    if (sendInApp) {
+      const notifications = admins.map((admin: any) => ({
+        userId: admin.id,
+        type: "SYSTEM",
+        title: subject,
+        message: message,
+        isRead: false
+      }))
+
+      await prisma.notification.createMany({
+        data: notifications
+      })
+    }
+
+    if (sendEmail) {
+      // Send emails concurrently
+      await Promise.all(
+        admins.map(async (admin: any) => {
+          if (admin.email) {
+            await sendBroadcastEmail(admin.email, subject, message)
+          }
+        })
+      )
+    }
+
+    await prisma.superAdminLog.create({
+      data: {
+        action: "BROADCAST_SENT",
+        message: `Broadcast "${subject}" sent to ${admins.length} admins. (Email: ${sendEmail}, In-App: ${sendInApp})`
+      }
+    })
+
+    return { success: true, count: admins.length }
+  } catch (error: any) {
+    console.error("Failed to send broadcast:", error)
+    return { error: error.message || "Failed to send broadcast." }
+  }
 }

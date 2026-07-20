@@ -24,6 +24,7 @@ import ClientRosterTable from "@/components/admin/ClientRosterTable"
 import AdminBillingTab from "./AdminBillingTab"
 import AdminPortalSettingsTab from "./AdminPortalSettingsTab"
 import NotificationSync from "@/components/NotificationSync"
+import AdminBroadcastsTab from "@/components/admin/AdminBroadcastsTab"
 
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined }
@@ -429,6 +430,11 @@ export default async function AdminDashboard({ searchParams }: PageProps) {
       id: "notifications",
       label: "Notifications",
       content: <NotificationsTab />
+    },
+    {
+      id: "broadcasts",
+      label: "Broadcasts",
+      content: <AdminBroadcastsTab />
     },
     {
       id: "billing",

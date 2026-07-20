@@ -300,3 +300,11 @@ model InvoiceItem {
   amount      Float
 }
 
+model PlatformSettings {
+  id                      String    @id @default("global")
+  isMaintenanceMode       Boolean   @default(false)
+  maintenanceMessage      String?
+  scheduledMaintenanceStart DateTime?
+  scheduledMaintenanceEnd   DateTime?
+  updatedAt               DateTime  @updatedAt
+}

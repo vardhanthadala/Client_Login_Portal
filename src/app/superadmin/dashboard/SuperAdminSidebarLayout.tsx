@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { PremiumIcon } from "@/components/PremiumIcon"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "@/components/ThemeProvider"
-import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Building2, Maximize2, Minimize2, Settings, Loader2 } from "lucide-react"
+import { Moon, Sun, Menu, ChevronDown, ChevronRight, LayoutDashboard, Building2, Maximize2, Minimize2, Settings, Loader2, Megaphone } from "lucide-react"
 import SignOutButton from "@/app/admin/dashboard/SignOutButton"
 import Link from "next/link"
 import { format } from "date-fns"
@@ -261,6 +261,31 @@ export default function SuperAdminSidebarLayout({ tabs, initialTab, adminName, a
                   <div className="flex-1 flex items-center justify-between">
                     <span>Companies</span>
                     {activeTab === "agencies" ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 opacity-50" />
+                    )}
+                  </div>
+                )}
+              </Link>
+
+              {/* Broadcast Link */}
+              <Link
+                href="/superadmin/dashboard?tab=broadcast"
+                onClick={() => setIsSidebarOpen(false)}
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[14px] font-normal transition-colors w-full text-left ${
+                  activeTab === "broadcast"
+                    ? "bg-[#E2E8F0] dark:bg-white/10 text-[#0F172A] dark:text-white" 
+                    : "text-[#0F172A] dark:text-[#CBD5E1] hover:bg-[#F1F5F9] dark:hover:bg-white/5 hover:text-[#000] dark:hover:text-white"
+                }`}
+              >
+                <Megaphone 
+                  className={`w-[18px] h-[18px] transition-colors ${activeTab === "broadcast" ? "text-[#0F172A] dark:text-white" : "text-[#0F172A] dark:text-[#CBD5E1] group-hover:text-[#000] dark:group-hover:text-white"}`} 
+                />
+                {!isMiniMenu && (
+                  <div className="flex-1 flex items-center justify-between">
+                    <span>Broadcast</span>
+                    {activeTab === "broadcast" ? (
                       <ChevronDown className="w-4 h-4" />
                     ) : (
                       <ChevronRight className="w-4 h-4 opacity-50" />

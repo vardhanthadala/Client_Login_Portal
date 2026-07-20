@@ -389,3 +389,29 @@ export async function sendInvoiceReminderEmail(toEmail: string, clientName: stri
   }
 }
 
+export async function sendBroadcastEmail(toEmail: string, subject: string, message: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    console.warn(`[MAILER] SMTP credentials not set. Skipping broadcast to ${toEmail}.`);
+    return { success: false, error: "SMTP credentials not set." };
+  }
+  
+  try {
+    const info = await transporter.sendMail({
+      from: `"Dexze SuperAdmin" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="color: #101828; margin-bottom: 24px;">Platform Announcement</h2>
+          <div style="background-color: #f9fafb; border: 1px solid #e4e7ec; border-radius: 8px; padding: 20px; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">${message}</div>
+          <p style="margin-top: 24px; font-size: 14px; color: #667085;">You are receiving this email because you are a registered administrator on the platform.</p>
+        </div>
+      `
+    });
+    return { success: true, data: info.messageId };
+  } catch (error: any) {
+    console.error("Failed to send broadcast email:", error);
+    return { success: false, error: error.message };
+  }
+}
+

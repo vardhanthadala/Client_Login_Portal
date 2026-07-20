@@ -29,7 +29,7 @@ export default function AddAgencyDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white h-10 px-5 inline-flex items-center justify-center rounded-[14px] text-[13px] font-bold transition-all shadow-[0_4px_14px_rgba(168,85,247,0.3)] hover:shadow-[0_6px_20px_rgba(168,85,247,0.5)] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 tracking-wide">
+      <DialogTrigger className="w-full sm:w-auto whitespace-nowrap bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white h-10 px-5 inline-flex items-center justify-center rounded-[14px] text-[13px] font-bold transition-all shadow-[0_4px_14px_rgba(168,85,247,0.3)] hover:shadow-[0_6px_20px_rgba(168,85,247,0.5)] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 tracking-wide">
         Add Company
       </DialogTrigger>
       <DialogContent className="w-[95vw] sm:max-w-[500px] rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] bg-white dark:bg-[#111111] shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-6 sm:p-8">

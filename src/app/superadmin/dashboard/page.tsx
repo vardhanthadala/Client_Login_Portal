@@ -10,6 +10,7 @@ import ManageSubscriptionDialog from "./ManageSubscriptionDialog"
 import AnalyticsCharts from "./AnalyticsCharts"
 import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
+import BroadcastTab from "./BroadcastTab"
 import AgencySearch from "./AgencySearch"
 import AgencyFilter from "./AgencyFilter"
 import MrrArrWidget from "@/components/superadmin/MrrArrWidget"
@@ -211,6 +212,11 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
           </div>
         </div>
       )
+    },
+    {
+      id: "broadcast",
+      label: "Broadcast",
+      content: <BroadcastTab />
     }
   ]
 
