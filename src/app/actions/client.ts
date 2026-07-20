@@ -176,8 +176,7 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string, des
         clientProfileId: clientProfile.id,
         type: fileName,
         fileUrl: fileUrl,
-        description: description || null,
-        projectId: projectId || null,
+        description: description || null
       }
     })
 
