@@ -131,7 +131,7 @@ export default function BroadcastTab() {
             <label className="text-[12px] font-medium text-gray-500 dark:text-gray-400 mb-2 block">
               Message Type
             </label>
-            <Select value={type} onValueChange={setType}>
+            <Select value={type} onValueChange={(val) => setType(val || "STANDARD")}>
               <SelectTrigger className="w-full sm:max-w-[280px] h-10 rounded-lg border-0 bg-white dark:bg-[#1A1E24] shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-[#333] focus:ring-2 focus:ring-inset focus:ring-indigo-600 px-3 py-2 text-[14px] text-gray-900 dark:text-white font-medium cursor-pointer transition-all">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
