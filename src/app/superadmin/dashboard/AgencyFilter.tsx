@@ -7,7 +7,7 @@ export default function AgencyFilter() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const handleFilter = (val: string) => {
+  const handleFilter = (val: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (val && val !== "ALL") {
       params.set("plan", val)
@@ -25,7 +25,6 @@ export default function AgencyFilter() {
         </SelectTrigger>
         <SelectContent 
           className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#2A2E35] border-t-0 rounded-b-md rounded-t-none shadow-lg p-0 z-50 overflow-hidden"
-          position="popper"
           sideOffset={-1}
           alignItemWithTrigger={false}
         >
