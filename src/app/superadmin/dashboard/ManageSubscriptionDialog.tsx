@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { overrideSubscriptionAction } from "@/app/actions/superadmin"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function ManageSubscriptionDialog({ 
   tenantId, 
@@ -40,47 +47,46 @@ export default function ManageSubscriptionDialog({
   }
 
   return (
-    <div className="pt-4 border-t border-[#E9EDF4] dark:border-[#2A2E35] mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
-      <div className="mb-4">
-        <h4 className="text-lg font-bold tracking-tight text-[#0F172A] dark:text-white font-sans">Override Subscription</h4>
-        <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed mt-1">
+    <div className="pt-5 border-t border-gray-100 dark:border-[#222] mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
+      <div className="mb-5">
+        <h4 className="text-[14px] font-semibold tracking-tight text-gray-900 dark:text-white">Override Subscription</h4>
+        <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed mt-1">
           Manually change this company's plan tier or expiration date. This overrides Razorpay's billing sync.
         </p>
       </div>
       
       <div className="grid gap-5 py-2">
         <div className="grid gap-2">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] ml-1">Subscription Plan</label>
-          <select 
-            value={plan} 
-            onChange={(e) => setPlan(e.target.value)}
-            className="w-full h-10 rounded-[12px] border border-[#E2E8F0] dark:border-[#333] bg-[#F8FAFC] dark:bg-[#1A1E24] px-4 py-2 text-[14px] text-[#0F172A] dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200 shadow-inner appearance-none cursor-pointer"
-          >
-            <option value="FREE">FREE</option>
-            <option value="MONTHLY">MONTHLY</option>
-            <option value="YEARLY">YEARLY</option>
-            <option value="VIP">VIP (Custom)</option>
-            <option value="LIFETIME">LIFETIME (Custom)</option>
-          </select>
+          <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Subscription Plan</label>
+          <Select value={plan} onValueChange={setPlan}>
+            <SelectTrigger className="w-full h-10 rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#111] px-3 py-2 text-[14px] text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-colors shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-[#1A1E24]">
+              <SelectValue placeholder="Select a plan" />
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-[#111] border border-gray-200 dark:border-[#333] rounded-lg shadow-md animate-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+              <SelectItem value="FREE" className="text-[13px] font-medium hover:bg-gray-100 dark:hover:bg-[#1A1E24] focus:bg-gray-100 dark:focus:bg-[#1A1E24] cursor-pointer rounded-md my-0.5 text-gray-700 dark:text-gray-300">FREE</SelectItem>
+              <SelectItem value="MONTHLY" className="text-[13px] font-medium hover:bg-gray-100 dark:hover:bg-[#1A1E24] focus:bg-gray-100 dark:focus:bg-[#1A1E24] cursor-pointer rounded-md my-0.5 text-gray-700 dark:text-gray-300">MONTHLY</SelectItem>
+              <SelectItem value="VIP" className="text-[13px] font-medium hover:bg-gray-100 dark:hover:bg-[#1A1E24] focus:bg-gray-100 dark:focus:bg-[#1A1E24] cursor-pointer rounded-md my-0.5 text-gray-700 dark:text-gray-300">VIP (Custom)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         
         <div className="grid gap-2">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] ml-1">Expiration Date <span className="opacity-60">(Optional)</span></label>
+          <label className="text-[12px] font-medium text-gray-700 dark:text-gray-300">Expiration Date <span className="text-gray-400 dark:text-gray-500 font-normal">(Optional)</span></label>
           <input 
             type="date" 
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full h-10 rounded-[12px] border border-[#E2E8F0] dark:border-[#333] bg-[#F8FAFC] dark:bg-[#1A1E24] px-4 py-2 text-[14px] text-[#0F172A] dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200 shadow-inner"
+            className="w-full h-10 rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#111] px-3 py-2 text-[14px] text-gray-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-colors shadow-sm"
           />
-          <p className="text-[12px] font-medium text-[#64748B] dark:text-[#94A3B8] ml-1 mt-1">Leave blank for no expiration date.</p>
+          <p className="text-[12px] font-medium text-gray-400 dark:text-gray-500 mt-1">Leave blank for no expiration date.</p>
         </div>
       </div>
 
       <div className="mt-6 flex flex-col-reverse sm:flex-row gap-3 sm:gap-2 sm:justify-end">
-        <Button variant="outline" onClick={onClose} disabled={loading} className="w-full sm:w-auto h-11 rounded-[12px] px-6 text-[14px] font-bold border-[#E2E8F0] dark:border-[#333] hover:bg-[#F8FAFC] dark:hover:bg-[#1A1E24] text-[#64748B] dark:text-[#94A3B8]">
+        <Button variant="outline" onClick={onClose} disabled={loading} className="w-full sm:w-auto h-10 rounded-lg px-5 text-[13px] font-medium border-gray-200 dark:border-[#333] hover:bg-gray-50 dark:hover:bg-[#1A1E24] text-gray-700 dark:text-[#94A3B8]">
           Back
         </Button>
-        <Button onClick={handleSave} disabled={loading} className="w-full sm:w-auto h-11 rounded-[12px] px-6 text-[14px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_4px_14px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] transition-all duration-300">
+        <Button onClick={handleSave} disabled={loading} className="w-full sm:w-auto h-10 rounded-lg px-5 text-[13px] font-semibold bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black shadow-sm transition-colors">
           {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
           Save Override
         </Button>

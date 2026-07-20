@@ -1,171 +1,98 @@
 "use client"
 
-import { useState } from "react"
 import { format } from "date-fns"
-import { Mail, Calendar, Users, Hash, Settings2 } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import ManageSubscriptionDialog from "./ManageSubscriptionDialog"
-import CancelSubscriptionButton from "./CancelSubscriptionButton"
+import { Mail, Users } from "lucide-react"
+import Link from "next/link"
 
 export default function AgencyCard({ tenant, isExpired }: { tenant: any, isExpired: boolean }) {
-  const [open, setOpen] = useState(false)
-  const [activeView, setActiveView] = useState<'details' | 'manage' | 'cancel'>('details')
+  const colorMap = {
+    FREE: { bg: 'bg-emerald-100/80 dark:bg-emerald-900/20', badgeBg: 'bg-emerald-200/80 dark:bg-emerald-800/40', text: 'text-emerald-900 dark:text-emerald-300' },
+    PREMIUM_MONTHLY: { bg: 'bg-blue-100/80 dark:bg-blue-900/20', badgeBg: 'bg-blue-200/80 dark:bg-blue-800/40', text: 'text-blue-900 dark:text-blue-300' },
+    PREMIUM_YEARLY: { bg: 'bg-purple-100/80 dark:bg-purple-900/20', badgeBg: 'bg-purple-200/80 dark:bg-purple-800/40', text: 'text-purple-900 dark:text-purple-300' },
+    EXPIRED: { bg: 'bg-rose-100/80 dark:bg-rose-900/20', badgeBg: 'bg-rose-200/80 dark:bg-rose-800/40', text: 'text-rose-900 dark:text-rose-300' }
+  };
+  
+  let theme = colorMap[tenant.subscriptionPlan as keyof typeof colorMap] || colorMap.FREE;
+  if (isExpired) {
+    theme = colorMap.EXPIRED;
+  }
 
   return (
-    <Dialog open={open} onOpenChange={(val) => {
-      setOpen(val)
-      if (!val) setTimeout(() => setActiveView('details'), 300)
-    }}>
-      <DialogTrigger
-        nativeButton={false}
-        render={
-          <div className="w-full bg-white dark:bg-[#111111] border border-[#E9EDF4] dark:border-[#2A2E35] rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300 min-w-0 flex flex-col overflow-hidden group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            <div className="flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0 p-6 sm:p-8 gap-3 relative transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform duration-500 group-hover:scale-110"></div>
-              <div className="min-w-0 flex-1 relative z-10 flex items-center gap-4">
-                <div className="min-w-0">
-                  <h3 className="text-xl sm:text-2xl font-sans font-bold text-[#0F172A] dark:text-white truncate tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                    {tenant.name}
-                  </h3>
-                  <div className="mt-2 flex items-center">
-                    <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-mono bg-[#F8FAFC] dark:bg-[#1A1E24] border border-[#E2E8F0] dark:border-[#333] px-2 py-0.5 rounded-md">
-                      ID: {tenant.id.slice(0, 8)}...{tenant.id.slice(-6)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center shrink-0 w-full sm:w-auto justify-start sm:justify-end gap-2 mt-2 sm:mt-0 relative z-10">
-                <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm ${isExpired ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'}`}>
-                  {isExpired ? "Expired" : "Active"}
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 shadow-sm">
-                  {tenant.subscriptionPlan.replace('_', ' ')}
-                </span>
-              </div>
+    <div className="w-full border border-gray-100 dark:border-[#2A2E35] rounded-3xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group bg-white dark:bg-[#111111]">
+      
+      {/* Top Colored Section */}
+      <div className={`${theme.bg} p-6 pb-7 relative flex flex-col`}>
+        
+        {/* Floating Avatar */}
+        <div className="absolute top-5 right-5 z-10 transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3">
+          {tenant.users?.[0]?.image ? (
+            <img src={tenant.users[0].image} alt={tenant.name} className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full object-cover shadow-md ring-4 ring-white/60 dark:ring-white/10" />
+          ) : (
+            <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full bg-white/50 dark:bg-black/20 flex items-center justify-center shadow-md ring-4 ring-white/60 dark:ring-white/10 backdrop-blur-md">
+              <span className={`text-2xl font-semibold uppercase ${theme.text}`}>
+                {tenant.name.substring(0, 2)}
+              </span>
             </div>
-          </div>
-        }
-      />
+          )}
+        </div>
 
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] bg-white dark:bg-[#111111] shadow-[0_20px_60px_rgba(0,0,0,0.12)] p-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div className="p-6 sm:p-8 border-b border-[#F1F5F9] dark:border-[#222] bg-slate-50/50 dark:bg-[#161B22]/50 relative overflow-hidden rounded-t-[24px]">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-bl-full -mr-10 -mt-10"></div>
-          <DialogHeader className="relative z-10 text-left">
-            <DialogTitle className="text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white font-sans pr-6">{tenant.name}</DialogTitle>
-            <DialogDescription className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1">
-              Complete company details and subscription management.
-            </DialogDescription>
-          </DialogHeader>
+        {/* Plan Badge */}
+        <div className="mb-4">
+          <span className={`px-3 py-1 rounded-full text-[11px] font-medium tracking-wide capitalize ${theme.badgeBg} ${theme.text}`}>
+            {tenant.subscriptionPlan.replace('_', ' ').toLowerCase()}
+          </span>
         </div>
         
-        <div className="p-6 sm:p-8 space-y-6">
-          <div className="space-y-5">
-            <div className="flex items-start gap-4">
-              <div className="bg-indigo-50 dark:bg-indigo-500/10 p-2 rounded-xl mt-0.5">
-                <Hash className="w-5 h-5 text-indigo-500" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1.5">Company ID</p>
-                <p className="text-[13px] text-[#0F172A] dark:text-white font-mono font-medium bg-[#F8FAFC] dark:bg-[#1A1E24] border border-[#E2E8F0] dark:border-[#333] px-3 py-2 rounded-[12px] break-all shadow-inner">
-                  {tenant.id}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4">
-              <div className="bg-indigo-50 dark:bg-indigo-500/10 p-2 rounded-xl mt-0.5">
-                <Mail className="w-5 h-5 text-indigo-500" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1.5">Admin Email</p>
-                <p className="text-[15px] text-[#0F172A] dark:text-white font-bold break-all">
-                  {tenant.users[0]?.email || "No admin email"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="bg-indigo-50 dark:bg-indigo-500/10 p-2 rounded-xl mt-0.5">
-                <Users className="w-5 h-5 text-indigo-500" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] dark:text-[#888] mb-1.5">Total Clients</p>
-                <p className="text-[18px] text-[#0F172A] dark:text-white font-bold tabular-nums">
-                  {tenant._count.clientProfiles}
-                </p>
-              </div>
-            </div>
+        {/* Title */}
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white pr-20 leading-tight mb-2 tracking-tight">
+          {tenant.name}
+        </h3>
+        
+        {/* Subtitle */}
+        <p className="text-[13px] text-gray-700 dark:text-gray-300 pr-20 mb-5 leading-snug line-clamp-2">
+          Manage tenant access, platform clients, and subscription limits.
+        </p>
+        
+        {/* Stats Icons */}
+        <div className="flex items-center gap-4 text-[13px] font-medium text-gray-800 dark:text-gray-200 mb-6">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Users className="w-4 h-4 stroke-[2.5]" />
+            <span>{tenant._count?.clientProfiles || 0} clients</span>
           </div>
-
-          <div className="bg-[#F8FAFC] dark:bg-[#161B22] border border-[#E2E8F0] dark:border-[#333] rounded-2xl p-5 shadow-inner">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-start gap-3">
-                <Calendar className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.1em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">Started</p>
-                  <p className="text-[14px] font-bold text-[#0F172A] dark:text-white">{tenant.subscriptionStart ? format(new Date(tenant.subscriptionStart), "MMM d, yyyy") : "N/A"}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Calendar className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.1em] text-[#64748B] dark:text-[#888] uppercase mb-1.5">Ends</p>
-                  <p className="text-[14px] font-bold text-[#0F172A] dark:text-white">{tenant.subscriptionEnd ? format(new Date(tenant.subscriptionEnd), "MMM d, yyyy") : "N/A"}</p>
-                </div>
-              </div>
+          {tenant.users?.[0]?.email && (
+            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 min-w-0">
+              <Mail className="w-4 h-4 stroke-[2.5] shrink-0" />
+              <span className="truncate">{tenant.users[0].email}</span>
             </div>
+          )}
+        </div>
+        
+        {/* Progress Bar / Status */}
+        <div className="w-full">
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="text-[12px] font-medium text-gray-600 dark:text-gray-400">Status</span>
+            <span className="text-[12px] font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{isExpired ? 'Expired' : 'Active'}</span>
           </div>
-          
-          <div className="pt-2 flex flex-col items-stretch justify-end gap-3 border-t border-[#F1F5F9] dark:border-[#222]">
-            {tenant.cancelAtPeriodEnd ? (
-              <span className="px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-200 dark:border-orange-500/20 w-full text-center shadow-sm">
-                Cancels Soon
-              </span>
-            ) : (
-              !isExpired && tenant.subscriptionStatus !== "CANCELLED" && (
-                <>
-                  {activeView === 'details' && (
-                    <div className="flex w-full sm:w-auto gap-3 items-center sm:justify-end">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setActiveView('manage')}
-                        className="h-9 px-4 text-[12px] font-bold text-[#0F172A] dark:text-white bg-white dark:bg-[#222] border border-[#E2E8F0] dark:border-[#333] shadow-sm hover:shadow-md hover:border-indigo-500/30 transition-all duration-300 rounded-xl"
-                      >
-                        <Settings2 className="w-3.5 h-3.5 mr-2 text-indigo-500" />
-                        Manage Sub
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setActiveView('cancel')}
-                        className="h-9 px-4 text-[12px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 shadow-sm hover:shadow-md hover:border-rose-500/40 transition-all duration-300 rounded-xl"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
-                  {activeView === 'manage' && (
-                    <ManageSubscriptionDialog 
-                      tenantId={tenant.id} 
-                      currentPlan={tenant.subscriptionPlan} 
-                      currentEnd={tenant.subscriptionEnd} 
-                      onClose={() => setActiveView('details')}
-                    />
-                  )}
-                  {activeView === 'cancel' && (
-                    <CancelSubscriptionButton 
-                      tenantId={tenant.id} 
-                      onClose={() => setActiveView('details')}
-                    />
-                  )}
-                </>
-              )
-            )}
+          <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+            <div className={`h-full ${isExpired ? 'bg-rose-500 w-full' : 'bg-gray-900 dark:bg-white w-[75%] rounded-r-full'} transition-all duration-1000 ease-out`}></div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
-  )
+        
+      </div>
+
+      {/* Bottom White Section */}
+      <div className="bg-white dark:bg-[#111111] p-4 px-6 flex items-center justify-between border-t border-gray-100 dark:border-[#222]">
+        <div className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
+          Start date: <span className="font-medium text-gray-900 dark:text-white">{format(new Date(tenant.createdAt), 'dd MMM yyyy')}</span>
+        </div>
+        <Link 
+          href={`/superadmin/dashboard/company/${tenant.id}`}
+          className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-2.5 rounded-full text-[13px] font-medium shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer outline-none inline-flex items-center justify-center"
+        >
+          Manage
+        </Link>
+      </div>
+
+    </div>
+  );
 }

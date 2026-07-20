@@ -11,6 +11,7 @@ import AnalyticsCharts from "./AnalyticsCharts"
 import ActivityFeed from "./ActivityFeed"
 import ExportCsvButton from "./ExportCsvButton"
 import AgencySearch from "./AgencySearch"
+import AgencyFilter from "./AgencyFilter"
 import MrrArrWidget from "@/components/superadmin/MrrArrWidget"
 import { ShieldCheck, Search, Download, Building2, Zap, AlertCircle, MoreVertical } from "lucide-react"
 import SuperAdminSidebarLayout, { TabData } from "./SuperAdminSidebarLayout"
@@ -19,6 +20,7 @@ import AgencyCard from "./AgencyCard"
 export default async function SuperAdminDashboard(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams
   const q = (searchParams?.q as string)?.toLowerCase() || ""
+  const planFilter = (searchParams?.plan as string) || "ALL"
   const initialTab = (searchParams?.tab as string) || "overview"
 
   const session = await auth()
@@ -40,9 +42,21 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
   // Basic check for Webhook Health
   const webhookHealthy = !!process.env.RAZORPAY_KEY_ID
 
-  const filteredTenants = tenants.filter(t =>
-    t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q)
-  )
+  const filteredTenants = tenants.filter(t => {
+    const matchesSearch = t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q);
+    const isExpired = t.subscriptionStatus === "EXPIRED" || !!(t.subscriptionEnd && new Date(t.subscriptionEnd) < new Date());
+    
+    let matchesPlan = true;
+    if (planFilter !== "ALL") {
+      if (planFilter === "EXPIRED") {
+        matchesPlan = isExpired;
+      } else {
+        matchesPlan = t.subscriptionPlan === planFilter && !isExpired;
+      }
+    }
+    
+    return matchesSearch && matchesPlan;
+  })
 
   const tabs: TabData[] = [
     {
@@ -81,7 +95,7 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white dark:bg-[#111111] rounded-[16px] border border-[#E9EDF4] dark:border-[#2A2E35] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[140px] relative group">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-4">
@@ -105,14 +119,14 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
                   </span>
                 </div>
                 <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-emerald-500 rounded-full" 
+                  <div
+                    className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "ACTIVE").length / tenants.length) * 100) : 0}%` }}
                   ></div>
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white dark:bg-[#111111] rounded-[16px] border border-[#E9EDF4] dark:border-[#2A2E35] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[140px] relative group">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-4">
@@ -136,8 +150,8 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
                   </span>
                 </div>
                 <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-rose-500 rounded-full" 
+                  <div
+                    className="h-full bg-rose-500 rounded-full"
                     style={{ width: `${tenants.length > 0 ? Math.round((tenants.filter(t => t.subscriptionStatus === "EXPIRED").length / tenants.length) * 100) : 0}%` }}
                   ></div>
                 </div>
@@ -161,18 +175,21 @@ export default async function SuperAdminDashboard(props: { searchParams: Promise
       label: "Companies",
       content: (
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[24px] border border-[#E9EDF4] dark:border-[#2A2E35] shadow-sm gap-4 xl:gap-6">
-            <div className="w-full xl:w-auto">
-              <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Companies Directory</h2>
-              <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all registered companies, their subscriptions, and limits.</p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto mt-2 xl:mt-0">
-              <div className="w-full sm:w-auto">
-                <AgencySearch />
+          <div className="relative p-[2px] rounded-[24px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-md">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between bg-white dark:bg-[#111111] p-6 rounded-[22px] gap-4 xl:gap-6 w-full">
+              <div className="w-full xl:w-auto">
+                <h2 className="text-2xl text-[#0F172A] dark:text-white font-sans tracking-tight mb-1">Companies Directory</h2>
+                <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] font-medium max-w-md">Manage all registered companies, their subscriptions, and limits.</p>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                <ExportCsvButton tenants={tenants} />
-                <AddAgencyDialog />
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto mt-2 xl:mt-0">
+                <div className="w-full sm:w-auto">
+                  <AgencySearch />
+                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                  <AgencyFilter />
+                  <ExportCsvButton tenants={tenants} />
+                  <AddAgencyDialog />
+                </div>
               </div>
             </div>
           </div>

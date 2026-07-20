@@ -162,9 +162,18 @@ export async function getSuperAdminAnalytics() {
     let premiumYearlyCount = 0;
     
     tenants.forEach(t => {
-      if (t.subscriptionPlan === "FREE") freeCount++;
-      if (t.subscriptionPlan === "PREMIUM_MONTHLY") premiumMonthlyCount++;
-      if (t.subscriptionPlan === "PREMIUM_YEARLY") premiumYearlyCount++;
+      // The chart is meant to show active tenants only
+      if (t.subscriptionStatus !== "ACTIVE") return;
+
+      const plan = (t.subscriptionPlan || "FREE").toUpperCase().trim();
+      
+      if (plan.includes("MONTHLY")) {
+        premiumMonthlyCount++;
+      } else if (plan.includes("YEARLY")) {
+        premiumYearlyCount++;
+      } else {
+        freeCount++; // Fallback any 'Free', null, or improperly named plans to Free
+      }
     })
     
     // 2. Growth over last 6 months

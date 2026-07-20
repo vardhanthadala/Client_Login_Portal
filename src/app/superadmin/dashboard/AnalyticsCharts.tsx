@@ -114,38 +114,38 @@ export default function AnalyticsCharts() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" strokeOpacity={0.5} />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 400 }}
                   dy={15}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 400 }}
                   allowDecimals={false}
                   dx={-10}
                 />
-                <Tooltip 
-                  content={<PremiumTooltip />} 
+                <Tooltip
+                  content={<PremiumTooltip />}
                   cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="agencies" 
+                <Area
+                  type="monotone"
+                  dataKey="agencies"
                   name="New Companies"
-                  stroke="#5A52FF" 
+                  stroke="#5A52FF"
                   strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#premiumGrowthGradient)" 
-                  activeDot={{ 
-                    r: 6, 
-                    fill: '#5A52FF', 
-                    stroke: '#fff', 
+                  fillOpacity={1}
+                  fill="url(#premiumGrowthGradient)"
+                  activeDot={{
+                    r: 6,
+                    fill: '#5A52FF',
+                    stroke: '#fff',
                     strokeWidth: 3,
-                    style: { filter: 'drop-shadow(0px 4px 8px rgba(90, 82, 255, 0.5))' } 
+                    style: { filter: 'drop-shadow(0px 4px 8px rgba(90, 82, 255, 0.5))' }
                   }}
                 />
               </AreaChart>
@@ -181,19 +181,19 @@ export default function AnalyticsCharts() {
                   stroke="none"
                 >
                   {data.planDistribution.map((entry: any, index: number) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[index % COLORS.length]} 
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
                       className="hover:opacity-80 transition-opacity duration-300 outline-none"
                       style={{ filter: `drop-shadow(0px 4px 10px ${COLORS[index % COLORS.length]}66)` }}
                     />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomPieTooltip />} />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36} 
-                  iconType="circle" 
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
+                  iconType="circle"
                   formatter={(value) => <span className="text-[#64748B] dark:text-[#94A3B8] font-normal text-[13px] ml-1">{value}</span>}
                 />
               </PieChart>
@@ -201,7 +201,7 @@ export default function AnalyticsCharts() {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Move Churn Analytics out or keep it here if layout allows */}
     </div>
   )
