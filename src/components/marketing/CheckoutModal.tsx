@@ -141,7 +141,7 @@ export function CheckoutModal({ triggerClassName, buttonText }: { triggerClassNa
             <DialogDescription className="text-[15px] font-medium text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8 px-2">
               Your workspace has been created. We have sent an email with your temporary password.
             </DialogDescription>
-            <Button onClick={() => window.location.href = "/login"} className="w-full rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors">
+            <Button onClick={() => window.location.href = "/client-login"} className="w-full rounded-[16px] h-12 text-[15px] font-semibold bg-[#0F172A] hover:bg-[#1E293B] dark:bg-white dark:hover:bg-[#E2E8F0] dark:text-black text-white transition-colors">
               Go to Login
             </Button>
           </div>

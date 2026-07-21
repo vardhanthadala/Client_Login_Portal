@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useState } from "react"
-import { Loader2, LogOut } from "lucide-react"
+import { Loader2, LogOut, X } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -22,7 +22,7 @@ export default function SignOutButton({ isMini = false, variant = "button" }: { 
 
   const handleSignOut = async () => {
     setIsLoading(true)
-    toast.success("Signing out...", { duration: 2000 })
+    toast.success("Logging out...", { duration: 2000 })
     await signOut({ callbackUrl: "/login" })
   }
 
@@ -46,44 +46,42 @@ export default function SignOutButton({ isMini = false, variant = "button" }: { 
           }
         >
           <LogOut className={isMini ? "w-5 h-5" : "w-[18px] h-[18px] shrink-0"} />
-          {!isMini && <span>Sign Out</span>}
+          {!isMini && <span>Logout</span>}
         </Button>
       )}
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className="sm:max-w-[400px] p-0 rounded-[28px] overflow-hidden border border-white/20 dark:border-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.3)] bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-2xl">
-          <div className="p-8">
-            <div className="flex flex-col items-center text-center">
-              {/* Premium Icon Container */}
-              <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-tr from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/10 flex items-center justify-center relative shadow-inner border border-black/5 dark:border-white/5">
-                <div className="absolute inset-0 bg-red-500/10 rounded-2xl blur-xl animate-pulse"></div>
-                <LogOut className="w-7 h-7 text-red-500 relative z-10 ml-1" strokeWidth={2} />
-              </div>
+        <AlertDialogContent className="max-w-[400px] w-full p-6 rounded-[24px] border-0 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] bg-white dark:bg-[#111111]">
+          
+          <AlertDialogCancel className="absolute right-4 top-4 z-10 border-0 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded-full w-auto h-auto mt-0 shadow-none">
+            <X className="w-5 h-5 text-gray-500" />
+          </AlertDialogCancel>
 
-              {/* Typography */}
-              <AlertDialogTitle className="text-[22px] font-normal text-[#0F172A] dark:text-white tracking-tight mb-2">
-                Ready to leave?
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-[14px] font-normal text-[#64748B] dark:text-[#94A3B8] leading-relaxed mb-8">
-                You will be securely signed out of your session. You can sign back in anytime.
-              </AlertDialogDescription>
+          <div className="flex flex-col items-center justify-center text-center mt-4">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+              <LogOut className="w-6 h-6 text-gray-600 dark:text-gray-400 ml-1" />
+            </div>
+            <AlertDialogTitle className="text-[20px] font-bold text-gray-900 dark:text-white tracking-tight mb-2">
+              Logout
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-[14px] font-medium text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
+              Are you sure you want to log out? You will need to log back in to access your account.
+            </AlertDialogDescription>
 
-              {/* Buttons */}
-              <div className="flex items-center gap-3 w-full">
-                <AlertDialogCancel 
-                  disabled={isLoading}
-                  className="flex-1 rounded-xl h-11 text-[14px] font-normal border-0 bg-gray-100/80 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-[#0F172A] dark:text-white transition-colors m-0"
-                >
-                  Stay
-                </AlertDialogCancel>
-                <Button 
-                  onClick={handleSignOut} 
-                  disabled={isLoading}
-                  className="flex-1 rounded-xl h-11 text-[14px] font-normal bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_14px_0_rgba(239,68,68,0.39)] transition-all border-0 m-0"
-                >
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Sign Out
-                </Button>
-              </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+              <AlertDialogCancel 
+                disabled={isLoading}
+                className="flex-1 w-full rounded-lg h-11 text-[14px] font-medium border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 mt-0 text-gray-700 dark:text-gray-300 transition-colors shadow-sm"
+              >
+                Cancel
+              </AlertDialogCancel>
+              <Button 
+                onClick={handleSignOut} 
+                disabled={isLoading}
+                className="flex-1 w-full rounded-lg h-11 text-[14px] font-medium bg-[#111827] hover:bg-[#1f2937] text-white transition-colors border-0"
+              >
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Logout
+              </Button>
             </div>
           </div>
         </AlertDialogContent>

@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   const userRole = token?.role
 
   const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-  const isPublicRoute = nextUrl.pathname === "/" || nextUrl.pathname === "/login" || nextUrl.pathname === "/admin/setup"
+  const isPublicRoute = nextUrl.pathname === "/" || nextUrl.pathname === "/login" || nextUrl.pathname === "/client-login" || nextUrl.pathname === "/admin/setup"
   const isAdminRoute = nextUrl.pathname.startsWith("/admin")
   const isClientRoute = nextUrl.pathname.startsWith("/client")
 
@@ -39,7 +39,7 @@ export async function middleware(req: NextRequest) {
     const isSuperAdmin = userRole === "SUPER_ADMIN"
     const isSuperAdminRoute = nextUrl.pathname.startsWith("/superadmin")
 
-    if (nextUrl.pathname === "/login") {
+    if (nextUrl.pathname === "/login" || nextUrl.pathname === "/client-login") {
       if (isSuperAdmin) {
         return NextResponse.redirect(new URL("/superadmin/dashboard", nextUrl))
       }

@@ -50,11 +50,10 @@ export function Navbar() {
             <Image 
               src="/images/logo.png" 
               alt="Dexze Logo" 
-              width={140}
-              height={36}
+              width={100}
+              height={26}
               priority
-              className="w-auto h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform duration-300"
-              style={{ width: 'auto', height: 'auto' }}
+              className="w-[100px] h-auto object-contain group-hover:scale-105 transition-transform duration-300"
             />
           </Link>
 
@@ -84,7 +83,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3">
               <Link
-                href="/login"
+                href="/client-login"
                 className="h-[40px] sm:h-[44px] px-5 sm:px-6 rounded-lg bg-white text-black text-sm font-normal flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm hover:translate-y-[3px]"
               >
                 Login
@@ -118,7 +117,7 @@ export function Navbar() {
             <a href="#faq" onClick={() => setMobileOpen(false)} className="text-black/60 hover:text-[#27C93F] text-lg font-medium uppercase tracking-widest py-2">FAQ</a>
             <div className="pt-4 border-t-[3px] border-gray-100 flex flex-col gap-3">
               <Link
-                href="/login"
+                href="/client-login"
                 className="w-full h-[48px] px-6 rounded-xl bg-white text-black text-sm font-normal flex items-center justify-center border border-gray-200 hover:bg-black hover:text-white hover:border-black transition-all duration-200 shadow-sm"
               >
                 Login

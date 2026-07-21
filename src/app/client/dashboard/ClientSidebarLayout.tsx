@@ -734,42 +734,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
                             Edit Profile
                           </span>
                         </button>
-                        <div className="relative">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIsStatusMenuOpen(!isStatusMenuOpen);
-                            }}
-                            className="flex items-center justify-between px-5 py-2.5 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors w-full text-left"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-4 flex justify-center">
-                                <div className={`w-2.5 h-2.5 rounded-full ${statusColors[activeStatus]}`}></div>
-                              </div>
-                              <span className="text-[#0F172A] dark:text-white text-[14px]">{activeStatus}</span>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
-                          </button>
-                          
-                          {/* Submenu */}
-                          <div className={`absolute right-full top-0 mr-1 w-48 bg-white dark:bg-[#0A0A0A] rounded-[16px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-[#E2E8F0]/80 dark:border-[#222] transition-all duration-200 py-2 z-50 ${isStatusMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                            {(Object.keys(statusColors) as Array<keyof typeof statusColors>).map((status) => (
-                              <button 
-                                key={status}
-                                onClick={() => {
-                                  setActiveStatus(status);
-                                  setIsStatusMenuOpen(false);
-                                }}
-                                className="flex items-center gap-3 px-5 py-2 hover:bg-[#F8FAFC] dark:hover:bg-[#1A1A1A] transition-colors w-full text-left"
-                              >
-                                <div className="w-4 flex justify-center">
-                                  <div className={`w-2.5 h-2.5 rounded-full ${statusColors[status]}`}></div>
-                                </div>
-                                <span className="text-[#0F172A] dark:text-white text-[13px]">{status}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+
                         <button 
                           onClick={() => {
                             setIsProfileOpen(false);

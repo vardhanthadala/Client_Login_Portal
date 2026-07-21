@@ -110,9 +110,17 @@ export default async function ClientDashboardPage({ searchParams }: PageProps) {
   const allApprovals = clientProfile.approvals || [];
   const allApprovalItems = allApprovals.flatMap(a => a.items || []);
   const totalApprovalItemsCount = allApprovalItems.length;
-  const pendingApprovalItemsCount = allApprovalItems.filter(item => item.status === "PENDING").length;
-  const completedApprovalItemsCount = totalApprovalItemsCount - pendingApprovalItemsCount;
-  const approvalPercentage = totalApprovalItemsCount > 0 ? Math.round((completedApprovalItemsCount / totalApprovalItemsCount) * 100) : 0;
+  const isAllProjectsCompleted = totalProjectsCount > 0 && completedProjectsCount === totalProjectsCount;
+  
+  const pendingApprovalItemsCount = isAllProjectsCompleted
+    ? 0
+    : allApprovalItems.filter(item => item.status === "PENDING").length;
+  const completedApprovalItemsCount = isAllProjectsCompleted
+    ? totalApprovalItemsCount
+    : totalApprovalItemsCount - pendingApprovalItemsCount;
+  const approvalPercentage = totalApprovalItemsCount > 0 
+    ? Math.round((completedApprovalItemsCount / totalApprovalItemsCount) * 100) 
+    : (isAllProjectsCompleted ? 100 : 0);
 
   // Assets
   const totalAssetsCount = clientProfile.brandAssets?.length || 0;
