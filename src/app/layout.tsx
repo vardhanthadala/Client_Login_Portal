@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import Script from "next/script";
 
 import "./globals.css";
 
-const inter = Inter({ 
+const poppins = Poppins({ 
+  weight: ['300', '400', '500', '600', '700'],
   variable: "--font-sans", 
   subsets: ["latin"], 
   display: "swap" 
@@ -56,7 +57,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} h-full antialiased`}
+      className={`${poppins.variable} h-full antialiased`}
     >
       <head>
         <Script id="theme-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `

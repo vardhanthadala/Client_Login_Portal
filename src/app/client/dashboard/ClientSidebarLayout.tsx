@@ -559,12 +559,7 @@ export default function ClientSidebarLayout({ tabs, initialTab, clientProfile, c
             </div>
             
 
-            <button 
-              onClick={toggleFullscreen}
-              className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#1A1A1A] transition-colors"
-            >
-              {isFullscreen ? <FiMinimize size={18} /> : <FiMaximize size={18} />}
-            </button>
+
             
             <button 
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

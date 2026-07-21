@@ -507,12 +507,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
             </nav>
           </div>
 
-          {/* Bottom Profile Widget */}
-          <div className="p-4 mt-auto">
-            <div className={`px-2 pt-4 border-t border-[#E5E7EB] dark:border-[#222] ${isMiniMenu ? "flex justify-center" : ""}`}>
-              <SignOutButton isMini={isMiniMenu} />
-            </div>
-          </div>
+          {/* Bottom Profile Widget Removed */}
         </div>
       </motion.aside>
 
@@ -543,9 +538,7 @@ export default function AdminSidebarLayout({ tabs, initialTab, adminName, adminU
               <span className="text-[#CBD5E1] dark:text-[#334155]">|</span>
               <span className="tabular-nums">{currentTime ? format(currentTime, 'hh:mm:ss a') : '--:--:-- --'}</span>
             </div>
-            <button onClick={toggleFullscreen} className="hidden sm:inline-flex p-2 text-[#64748B] dark:text-[#94A3B8] hover:bg-[#FAFBFD] dark:hover:bg-[#1A1A1A] rounded-[4px] transition-colors">
-              {isFullscreen ? <Minimize2 className="w-4.5 h-4.5" /> : <Maximize2 className="w-4.5 h-4.5" />}
-            </button>
+
             <button 
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 text-[#64748B] dark:text-[#888] hover:bg-[#FAFBFD] dark:hover:bg-[#1A1A1A] rounded-[4px] transition-colors"
