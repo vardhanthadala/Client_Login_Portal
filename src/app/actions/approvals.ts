@@ -20,8 +20,6 @@ async function getAuthSession() {
 // Admin creates a batch approval with multiple files
 export async function createApprovalAction(
   clientProfileId: string,
-    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
-    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
   title: string,
   description: string,
   files: { url: string; name: string; type: string }[],

@@ -76,8 +76,6 @@ export async function requestPasswordReset(formData: FormData) {
 
     await prisma.user.update({
       where: { email },
-    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
-    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
       data: { resetOtp: otp, resetOtpExpiry: expiry }
     })
 

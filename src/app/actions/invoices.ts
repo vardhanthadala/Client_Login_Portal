@@ -37,9 +37,7 @@ export async function createInvoiceAction(data: {
     if (!profile || profile.tenantId !== token.tenantId) return { error: "Unauthorized or not found" }
 
     // Calculate total amount
-    const totalAmount = data.items.reduce((sum,
-    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
-    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token", item) => sum + (item.quantity * item.rate), 0)
+    const totalAmount = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0)
 
     const invoice = await prisma.invoice.create({
       data: {

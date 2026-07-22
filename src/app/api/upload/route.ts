@@ -24,9 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!token?.id) {
-      return NextResponse.json({ error: "Unauthorized - Token missing or invalid" },
-    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
-    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token", { status: 401 })
+      return NextResponse.json({ error: "Unauthorized - Token missing or invalid" }, { status: 401 })
     }
 
     const { filename, contentType, fileSize } = await req.json()
