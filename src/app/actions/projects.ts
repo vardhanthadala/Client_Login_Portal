@@ -18,7 +18,9 @@ async function getAuthSession() {
   return getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
 }
 
-export async function createProjectAction(clientProfileId: string, name: string, stages: string[]) {
+export async function createProjectAction(clientProfileId: string,
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token", name: string, stages: string[]) {
   try {
     const token = await getAuthSession()
     if (!token?.id || token.role !== "ADMIN" || !token.tenantId) return { error: "Unauthorized" }

@@ -17,7 +17,9 @@ export async function PATCH(req: NextRequest) {
     const token = await getToken({ req: mockReq, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
     
     if (!token?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" },
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token", { status: 401 })
     }
 
     const { profileImageUrl, clientName } = await req.json()

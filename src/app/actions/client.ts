@@ -32,6 +32,8 @@ export async function submitWizardAction(data: any) {
     // 1. Find ClientProfile
     const clientProfile = await prisma.clientProfile.findUnique({
       where: { userId },
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
       include: { user: true }
     })
 
@@ -174,6 +176,8 @@ export async function addBrandAssetAction(fileUrl: string, fileName: string, des
     await prisma.brandAsset.create({
       data: {
         clientProfileId: clientProfile.id,
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
         type: fileName,
         fileUrl: fileUrl,
         description: description || null
@@ -212,6 +216,8 @@ export async function adminResetClientPassword(clientId: string, newPassword: st
 
     const clientProfile = await prisma.clientProfile.findUnique({
       where: { id: clientId },
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
       include: { user: true }
     })
 

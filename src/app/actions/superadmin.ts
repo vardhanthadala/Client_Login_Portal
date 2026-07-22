@@ -38,7 +38,9 @@ export async function createAgencyAction(formData: FormData) {
       return { error: "A user with this email already exists." }
     }
 
-    const passwordHash = await bcrypt.hash(password, 10)
+    const passwordHash = await bcrypt.hash(password,
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token", 10)
 
     const trialDays = parseInt((formData.get("trialDays") as string) || "15", 10)
     const subscriptionEnd = new Date()

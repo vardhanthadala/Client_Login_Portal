@@ -38,6 +38,8 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
 
   const client = await prisma.user.findUnique({
     where: { id },
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
     select: {
       id: true,
       email: true,

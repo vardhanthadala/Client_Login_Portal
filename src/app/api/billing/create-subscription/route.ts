@@ -9,7 +9,13 @@ const razorpay = new Razorpay({
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET })
+    const isSecure = process.env.NODE_ENV === "production" || process.env.VERCEL === "1"
+    const token = await getToken({ 
+      req, 
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+      secureCookie: isSecure,
+      cookieName: isSecure ? "__Secure-authjs.session-token" : "authjs.session-token"
+    })
     if (!token?.id || token.role !== "ADMIN" || !token.tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

@@ -31,6 +31,8 @@ export async function markAllAdminMessagesAsReadAction() {
         clientProfile: {
           user: { tenantId: token.tenantId }
         },
+    secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1",
+    cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token",
         senderId: { not: token.id },
         isRead: false
       },
