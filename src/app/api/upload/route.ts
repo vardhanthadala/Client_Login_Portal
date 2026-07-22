@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       headers: Object.fromEntries(reqHeaders.entries())
     } as any
 
-    let token = await getToken({ req: mockReq, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
+    let token = await getToken({ req: mockReq, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn", secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1", cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token" })
     
     if (reqHeaders.get('x-test-bypass') === 'true') {
       const firstUser = await prisma.user.findFirst({ where: { tenantId: { not: null } } });

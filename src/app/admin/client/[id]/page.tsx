@@ -34,7 +34,7 @@ export default async function ClientDetailsPage({ params, searchParams }: Props)
     cookies: Object.fromEntries(reqCookies.getAll().map(c => [c.name, c.value])),
     headers: Object.fromEntries(reqHeaders.entries())
   } as any
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn" })
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "c4d8Y0Pq9rK2nX7fWm3JvL8aZs1QeH5tBg9NpRx6UcIyEoDn", secureCookie: process.env.NODE_ENV === "production" || process.env.VERCEL === "1", cookieName: (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") ? "__Secure-authjs.session-token" : "authjs.session-token" })
 
   const client = await prisma.user.findUnique({
     where: { id },
