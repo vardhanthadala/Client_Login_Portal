@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
-import Script from "next/script";
 
 import "./globals.css";
 
@@ -60,7 +59,7 @@ export default async function RootLayout({
       className={`${poppins.variable} h-full antialiased`}
     >
       <head>
-        <Script id="theme-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
+        <script id="theme-script" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `
           try {
             var theme = localStorage.getItem('theme');
             var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
